@@ -205,9 +205,9 @@ public interface RobotMap {
 
         /**
          * Gains used in Motion Magic, to be adjusted accordingly
-         * Gains(kp, ki, kd, kf, izone, peak output);
+         * Gains(kp, ki, kd, kf, izone, peak output); kP & kF have been converted.
          */
-        public static final Gains kGains = new Gains(0.2, 0.0, 0.0, 0.2, 0, 1.0);
+        public static final Gains kGains = new Gains(0.04, 0.0, 0.0, 0.04, 0, 1.0);
 
         
     }

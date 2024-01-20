@@ -82,6 +82,7 @@ public class SwerveModule {
 		driveMotor.getConfigurator().apply(new TalonFXConfiguration());
 
 		/* Configure Sensor Source for Pirmary PID */
+        
 		driveMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, AutoConstants.kPIDLoopIdx,
         AutoConstants.kTimeoutMs);
 
@@ -94,7 +95,7 @@ public class SwerveModule {
 		 * have green LEDs when driving Talon Forward / Requesting Postiive Output Phase
 		 * sensor to have positive increment when driving Talon Forward (Green LED)
 		 */
-		driveMotor.setSensorPhase(false);
+		driveMotor.setInverted(false);
 		/*
 		 * Talon FX does not need sensor phase set for its integrated sensor
 		 * This is because it will always be correct if the selected feedback device is integrated sensor (default value)
@@ -121,6 +122,15 @@ public class SwerveModule {
         slot0Configs.kD = AutoConstants.kGains.kD;
 		driveMotor.getConfigurator().apply(slot0Configs, AutoConstants.kGains.kF);
 
+
+        /*
+         * CONFIGURE MOTION MAGIC----------------------------------------------------
+         */
+
+        var talonFXConfigs = new TalonFXConfiguration();
+
+        var motionMagicCongifs = talonFXConfigs.MotionMagic;
+        
 		/* Set acceleration and vcruise velocity - see documentation */
 		driveMotor.configMotionCruiseVelocity(26000, AutoConstants.kTimeoutMs);
 		driveMotor.configMotionAcceleration(10000, AutoConstants.kTimeoutMs);
