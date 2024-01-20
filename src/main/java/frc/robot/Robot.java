@@ -9,11 +9,8 @@ public class Robot extends TimedRobot {
      * for any
      * initialization code.
      */
-
     @Override
-    public void robotInit() {
-        
-    }
+    public void robotInit() {}
 
     /**
      * This function is called every robot packet, no matter the mode. Use this for
@@ -27,43 +24,29 @@ public class Robot extends TimedRobot {
      * SmartDashboard integrated updating.
      */
     @Override
-    public void robotPeriodic() {
-        
-    }
+    public void robotPeriodic() {}
 
     @Override
-    public void disabledInit() {
-        
-    }
+    public void disabledInit() {}
 
 
     @Override
-    public void disabledPeriodic() {
-        
-    }
+    public void disabledPeriodic() {}
 
     /** This function is called one time before autonomousPeriodic is run. */
     @Override
-    public void autonomousInit() {
-        
-    }
+    public void autonomousInit() {}
 
     /** This function is called periodically during autonomous. */
     @Override
-    public void autonomousPeriodic() {
-        
-    }
+    public void autonomousPeriodic() {}
 
     /** This function is called one time before operator takes control. */
     @Override
-    public void teleopInit() {
-        
-    }
+    public void teleopInit() {}
 
     /** This function is called periodically during operator control. */
     @Override
-    public void teleopPeriodic() {
-
-    }
+    public void teleopPeriodic() {}
 
 }

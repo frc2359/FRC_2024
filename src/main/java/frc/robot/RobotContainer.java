@@ -96,7 +96,7 @@ public class RobotContainer {
         TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
                 DriveConstants.kTeleDriveMaxSpeedMetersPerSecond, 
                 DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-        trajectoryConfig.setKinematics(DriveConstants.kDriveKinematics);
+        trajectoryConfig.setKinematics(DriveConstants.Physical.kDriveKinematics);
 
         // 2. Generate trajectory
         Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
@@ -118,7 +118,7 @@ public class RobotContainer {
         SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
                 trajectory,
                 swerveSubsystem::getPose,
-                DriveConstants.kDriveKinematics,
+                DriveConstants.Physical.kDriveKinematics,
                 xController,
                 yController,
                 thetaController,
@@ -159,7 +159,7 @@ public class RobotContainer {
          
       
         // 5. Convert chassis speeds to individual module states
-        SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveModuleState[] moduleStates = DriveConstants.Physical.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
  
         // 6. Output each module states to wheels
         swerveSubsystem.setModuleStates(moduleStates);

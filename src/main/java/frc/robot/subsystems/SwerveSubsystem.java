@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
@@ -14,7 +13,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.IO;
-import frc.robot.RobotMap;
 import frc.robot.IO.GyroType;
 import frc.robot.RobotMap.AutoConstants;
 import frc.robot.RobotMap.DriveConstants;
@@ -64,7 +62,7 @@ public class SwerveSubsystem extends SubsystemBase {
     
 
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(
-                    RobotMap.DriveConstants.kDriveKinematics,
+                    DriveConstants.Physical.kDriveKinematics,
                     new Rotation2d(0),
                     new SwerveModulePosition[] {
                         frontRight.getPosition(),

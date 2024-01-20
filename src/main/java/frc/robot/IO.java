@@ -36,11 +36,6 @@ public class IO {
     private static GenericHID buttonBox = new GenericHID(OIConstants.BOX_PORT);
 
     private static PowerDistribution pdh = new PowerDistribution();
-
-    
-    private static DigitalInput white = new DigitalInput(SETTING_BUTTON_0);
-    private static DigitalInput yellow = new DigitalInput(SETTING_BUTTON_1);
-    private static DigitalInput red = new DigitalInput(SETTING_BUTTON_2);
     
     /* ----------------------------- POWER DIST HUB ----------------------------- */
     public static double getBattVoltage() {
@@ -56,28 +51,6 @@ public class IO {
 
     /* ---------------------------------- GYRO ---------------------------------- */
     private static final AHRS navx = new AHRS(SPI.Port.kMXP);
-    // private static final ADXRS450_Gyro adx = new ADXRS450_Gyro();
-
-    public static final class SettingConstants {
-        public static final int kWhite = 0;
-        public static final int kYellow = 1;
-        public static final int kRed = 2;
-    }
-
-    public static boolean getDIO(int port) {
-        if (port == SettingConstants.kRed || port == SettingConstants.kWhite || port == SettingConstants.kYellow) {
-            switch(port) {
-                case SettingConstants.kWhite:
-                    return !white.get();
-                case SettingConstants.kRed:
-                    return !red.get();
-                case SettingConstants.kYellow:
-                    return !yellow.get();
-            }
-        }
-        return false;
-            
-    }
 
     /* -------------------------------------------------------------------------- */
     /*                                    GYRO                                    */
@@ -261,16 +234,6 @@ public class IO {
 
     public static boolean isRightBumpPressed() {
         return liftCont.getRightBumperPressed();
-    }
-
-    public static void setRumble(int rumb, int side) {
-        if(side == ClawConstants.kBoth) {
-            liftCont.setRumble(RumbleType.kBothRumble, rumb);
-        } else if(side == ClawConstants.kLeft) {
-            liftCont.setRumble(RumbleType.kLeftRumble, rumb);
-        } else if(side == ClawConstants.kRight) {
-            liftCont.setRumble(RumbleType.kRightRumble, rumb);
-        }
     }
     
     /**Checks X Axis <b>FOR THE DRIVE CONTROLLER</b> */
