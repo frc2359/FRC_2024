@@ -1,19 +1,13 @@
 package frc.robot.subsystems;
 
-//import edu.wpi.first.wpilibj.DigitalInput;
-import static frc.robot.RobotMap.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.SerialPort;
 
-import edu.wpi.first.wpilibj.I2C;
 
 
 
 public class Arduino {
     private SerialPort arduinoUSB;
-    private Timer timer; 
 
     private String cmd;
     private boolean arduinoFound;
@@ -60,7 +54,6 @@ public class Arduino {
          }
         
         SmartDashboard.putBoolean("Arduino", arduinoFound);
-        String testString = "Init";
         System.out.print("Init nessage - ");
         // System.out.println(writeArduino(testString));
     }  
@@ -77,51 +70,6 @@ public class Arduino {
             return "Arduino not found. No buffer to read.";
         }
     }
-     
-    public int getBallColor() {     
-            
-        //Color detectedColor = m_colorSensor.getColor();
-
-        //Run the color match algorithm on our detected color
-        
-        String colorString = "Unknown";
-        /*
-        ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
-    
-        if (match.color == kBlueTarget && detectedColor.blue > .37) {
-          colorString = "Blue";
-          ballColor = COLOR_BLUE;
-        } else if (match.color == kRedTarget && detectedColor.red > .44) {
-          colorString = "Red";
-          ballColor = COLOR_RED;
-        } else if (match.color == kBlankTarget || detectedColor.green > .47) {
-            colorString = "Empty";
-            ballColor = COLOR_UNKNOWN;
-        } else {
-          colorString = "Unknown";
-          ballColor = COLOR_UNKNOWN;
-        }
-        /*
-    
-        /**
-         * Open Smart Dashboard or Shuffleboard to see the color detected by the 
-         * sensor.
-         */
-        /*
-        SmartDashboard.putNumber("Red", detectedColor.red);
-        SmartDashboard.putNumber("Green", detectedColor.green);
-        SmartDashboard.putNumber("Blue", detectedColor.blue);
-        SmartDashboard.putNumber("Conf.", match.confidence);
-        SmartDashboard.putString("Detected", colorString);
-        */
-
-        int COLOR_UNKNOWN = 0; //placeholder to avoid errors from copied code.
-        
-        return COLOR_UNKNOWN; //ballColor;
-        
-
-    }
-
 
     public boolean isArduinoFound() {
         return arduinoFound;

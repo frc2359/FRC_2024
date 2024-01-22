@@ -1,17 +1,11 @@
 package frc.robot.subsystems;
 
-import static frc.robot.RobotMap.*;
-
 import java.lang.Math;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -23,8 +17,6 @@ import frc.robot.RobotMap.AutoConstants;
 import frc.robot.RobotMap.DriveConstants;
 import frc.robot.RobotMap.ModuleConstants;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 
@@ -43,8 +35,6 @@ public class SwerveModule {
     private final CANcoder absoluteEncoder; // Use CANCoder for absolute position
     private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetRad;
-
-    private boolean isBrakeMode;
 
     public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
             int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
@@ -84,7 +74,6 @@ public class SwerveModule {
     public boolean setDriveMode(boolean isBrakeMode) {
         driveMotor.setNeutralMode(isBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast);
         turningMotor.setIdleMode(isBrakeMode ? IdleMode.kBrake : IdleMode.kCoast);
-        this.isBrakeMode = isBrakeMode;
         return isBrakeMode;
     }
 

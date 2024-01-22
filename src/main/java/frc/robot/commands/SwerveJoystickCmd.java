@@ -1,17 +1,12 @@
 package frc.robot.commands;
 
-import frc.robot.IO;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.DriveConstants;
 
 import java.util.function.Supplier;
-
-import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -22,13 +17,6 @@ public class SwerveJoystickCmd extends Command {
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
     private final Supplier<Boolean> fieldOrientedFunction;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
-
-    // private final ADXRS450_Gyro gyroNew = new ADXRS450_Gyro();
-    // private final AHRS gyro = new AHRS(SPI.Port.kMXP);
-
-    // double pitchAngleDegrees    = gyro.getPitch();
-    // double rollAngleDegrees     = gyro.getRoll();
-
 
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,

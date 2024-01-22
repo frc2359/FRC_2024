@@ -8,19 +8,6 @@ import edu.wpi.first.networktables.*;
 
 public class Limelight implements Subsystem{
 
-    //NetworkTables values
-    private static NetworkTableInstance rpi3;
-    private static NetworkTable table;
-    private static NetworkTableEntry ultrasonicReading;
-
-    public Limelight() {
-        initNetworkTables();
-    }
-    
-    public static void initNetworkTables() {
-        rpi3 = NetworkTableInstance.getDefault();
-        table = rpi3.getTable("datatable");
-    }
 
     public static double getLimelightXAngle() {
         NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
