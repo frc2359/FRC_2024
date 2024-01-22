@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
+
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -57,9 +59,9 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad,
             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
-    // private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+    private final SwerveModule[] modules = new SwerveModule[]{frontRight, frontLeft, backRight, backLeft};
 
-    
+    // private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(
                     DriveConstants.Physical.kDriveKinematics,
@@ -68,10 +70,28 @@ public class SwerveSubsystem extends SubsystemBase {
                         frontRight.getPosition(),
                         frontLeft.getPosition(),
                         backRight.getPosition(),
-                        backLeft.getPosition()}
-                    );
+                        backLeft.getPosition()
+                    });
 
     public SwerveSubsystem() {
+        // Configure autonomous
+        AutoBuilder.configureHolonomic(
+            this::getPose,
+            this::resetOdometry,
+            this::getSpeeds,
+            this::driveRobotRelative,
+            AutoConstants.PATH_FOLLOWER_CONFIG,
+            () -> {
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            },
+            this
+        );
+
+
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
@@ -93,6 +113,10 @@ public class SwerveSubsystem extends SubsystemBase {
         return odometer.getPoseMeters();
     }
 
+    public ChassisSpeeds getSpeeds() {
+        return kinematics.toChassisSpeeds(getModuleStates());
+    }
+
     public void resetOdometry(Pose2d pose) {
         odometer.resetPosition(getRotation2d(),
                                 new SwerveModulePosition[] {
@@ -103,6 +127,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                 pose);
     }
 
+    /** Periodically runs */
     @Override
     public void periodic() {
         backLeft.invertDrive(true);
@@ -112,9 +137,6 @@ public class SwerveSubsystem extends SubsystemBase {
                             frontLeft.getPosition(),
                             backRight.getPosition(),
                             backLeft.getPosition()});
-        
-        
-        
         showData();
     }
 
@@ -159,14 +181,27 @@ public class SwerveSubsystem extends SubsystemBase {
         backRight.stop();
     }
 
-    public void setModuleStates
-    (SwerveModuleState[] desiredStates) {
-        
+    public SwerveModuleState[] getModuleStates() {
+        SwerveModuleState[] states = new SwerveModuleState[modules.length];
+        for (int i = 0; i < modules.length; i++) {
+            states[i] = modules[i].getState();
+        }
+        return states;
+    }
+
+    public void setModuleStates (SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, (DriveConstants.kPhysicalMaxSpeedMetersPerSecond));
         frontLeft.setDesiredState(desiredStates[0]);
         frontRight.setDesiredState(desiredStates[1]);
         backLeft.setDesiredState(desiredStates[2]);
         backRight.setDesiredState(desiredStates[3]);
+    }
+
+    public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
+        ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(robotRelativeSpeeds, 0.02);
+
+        SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(targetSpeeds);
+        setModuleStates(targetStates);
     }
 
     public void setAutoModuleStates(SwerveModuleState[] desiredStates) {
@@ -182,4 +217,7 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("SpeedDriveMult", spdMultiplier);
         return spdMultiplier;
     }
+
+
+    
 }

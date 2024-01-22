@@ -1,6 +1,9 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -41,6 +44,8 @@ public interface RobotMap {
             
             // set Distance between front and back wheels
             public static final double kWheelBase = Units.inchesToMeters(20);
+
+            public static final double kBaseRadius = Math.sqrt(Math.pow((kTrackWidth / 2), 2) * Math.pow((kWheelBase / 2), 2));
             
             // set location of each module in relation to the center
             public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
@@ -124,6 +129,8 @@ public interface RobotMap {
                 new TrapezoidProfile.Constraints(
                         kMaxAngularSpeedRadiansPerSecond,
                         kMaxAngularAccelerationRadiansPerSecondSquared);
+
+        public static final HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(kMaxSpeedMetersPerSecond, DriveConstants.Physical.kBaseRadius, new ReplanningConfig());
 
         public static final class MotionMagic {
             /**

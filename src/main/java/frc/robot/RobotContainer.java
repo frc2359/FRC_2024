@@ -5,11 +5,8 @@ import java.util.List;
 
 import javax.swing.text.StyleContext.SmallAttributeSet;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.FollowPathWithEvents;
 
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
@@ -38,9 +35,6 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class RobotContainer {
 
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-    private final SlewRateLimiter xLimiter, yLimiter;
-
-//     private final Joystick driverJoytick = new Joystick(OIConstants.kDriverControllerPort);
 
     public RobotContainer() {
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
@@ -49,45 +43,11 @@ public class RobotContainer {
                 () -> -IO.getDriveX() * swerveSubsystem.convToSpeedMult(),
                 () -> -IO.getDriveTwist() * swerveSubsystem.convToSpeedMult(),
                 () -> !IO.getTrigger()));
-
-        this.xLimiter = new SlewRateLimiter(RobotMap.DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-        this.yLimiter = new SlewRateLimiter(RobotMap.DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-        //configureButtonBindings();
     }
 
     /**Returns the current instance of the swerve subsystem */
     public SwerveSubsystem getSwerveSubsystem() {
         return swerveSubsystem;
-    }
-
-    /**Runs inputted path from the helper application "Path Planner (from Microsoft Store)
-     * @param pathName is the name of the path set in PathPlanner
-     * @param maxV is the velocity on the path
-     * @param maxAccel is the acceleration of the path
-     * @return the command for the path the follow */
-    public Command runPath(String pathName, int maxV, int maxAccel) {
-        final AutoPathCmd command = new AutoPathCmd();
-        PathPlannerTrajectory examplePath = PathPlanner.loadPath(pathName, new PathConstraints(maxV, maxAccel));
-        return command.followTrajectoryCommand(swerveSubsystem, examplePath, true);
-    }
-
-    /**Runs inputted path (that includes events) from the helper application "Path Planner (from Microsoft Store)
-     * @param pathName is the name of the path set in PathPlanner
-     * @param maxV is the velocity on the path
-     * @param maxAccel is the acceleration of the path
-     * @param events is a Hash Map of events that are to be run (in the format ("Key", event()))
-     * @return the command for the path the follow */
-    public Command runPathWithEvents(String pathName, int maxV, int maxAccel, HashMap<String, Command> events) {
-        // final AutoPathCmd command = new AutoPathCmd();
-
-        PathPlannerTrajectory examplePath = PathPlanner.loadPath(pathName, new PathConstraints(maxV, maxAccel));
-        
-        FollowPathWithEvents command = new FollowPathWithEvents(
-                runPath(pathName, maxV, maxAccel), examplePath.getMarkers(), events
-                );
-
-        return command;
-        // return command.followTrajectoryCommand(swerveSubsystem, examplePath, true);
     }
     
 
@@ -131,38 +91,4 @@ public class RobotContainer {
                 swerveControllerCommand,
                 new InstantCommand(() -> swerveSubsystem.stopModules()));
     }
-
-    public void balance() {
-        double pitchAngleRadians = IO.getPitch() * (Math.PI / 180.0);
-        // double yAxisRate = Math.sin(pitchAngleRadians);
-        double yAxisRate = 0;
-
-        
-        double rollAngleRadians = IO.getRoll() * (Math.PI / 180.0);
-        double xAxisRate = Math.sin(rollAngleRadians);
-
-        // 2. Apply deadband
-        // xAxisRate = Math.abs(xAxisRate) > RobotMap.OIConstants.kDriverDeadband ? xAxisRate : 0.0;
-        // yAxisRate = Math.abs(yAxisRate) > RobotMap.OIConstants.kDriverDeadband ? yAxisRate : 0.0;
-
-        // 3. Make the driving smoother
-        xAxisRate = xLimiter.calculate(xAxisRate) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * 0.9;
-        yAxisRate = yLimiter.calculate(yAxisRate) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * 0.8;
-
-        SmartDashboard.putNumber("xRate", xAxisRate);
-        SmartDashboard.putNumber("yRate", yAxisRate);
-
-
-        // 4. Construct desired chassis speeds
-        ChassisSpeeds chassisSpeeds;
-        chassisSpeeds = new ChassisSpeeds(xAxisRate, yAxisRate, 0);
-         
-      
-        // 5. Convert chassis speeds to individual module states
-        SwerveModuleState[] moduleStates = DriveConstants.Physical.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
- 
-        // 6. Output each module states to wheels
-        swerveSubsystem.setModuleStates(moduleStates);
-    }
-
 }

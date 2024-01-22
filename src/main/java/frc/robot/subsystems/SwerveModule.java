@@ -162,12 +162,9 @@ public class SwerveModule {
         // convToSensorCounts = convToSensorCounts >
         // DriveConstants.kPhysicalMaxSpeedMetersPerSecond ?
         // DriveConstants.kPhysicalMaxSpeedMetersPerSecond : convToSensorCounts;
-        // System.out.println(state.speedMetersPerSecond);
         // driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond);
 
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
-        // SmartDashboard.putString("Swerve[" + absoluteEncoder.getChannel() + "]
-        // state", state.toString());
     }
 
     public void setAutoDesiredState(SwerveModuleState state) {
