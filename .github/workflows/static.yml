@@ -31,11 +31,11 @@ jobs:
       - name: Generate JavaDocs
         run: ./gradlew javadoc
 
-      - name: Adjust JavaDoc paths for GitHub Pages
-        run: |
-          REPO_NAME="BASE_2024"
-          find ./docs/javadoc -name '*.html' -exec sed -i "s|href=\"/\(.*\)\"|href=\"/${REPO_NAME}/\1\"|g" {} +
-          find ./docs/javadoc -name '*.html' -exec sed -i "s|src=\"/\(.*\)\"|src=\"/${REPO_NAME}/\1\"|g" {} +
+      # - name: Adjust JavaDoc paths for GitHub Pages
+      #   run: |
+      #     REPO_NAME="BASE_2024"
+      #     find ./docs/javadoc -name '*.html' -exec sed -i "s|href=\"/\(.*\)\"|href=\"/${REPO_NAME}/\1\"|g" {} +
+      #     find ./docs/javadoc -name '*.html' -exec sed -i "s|src=\"/\(.*\)\"|src=\"/${REPO_NAME}/\1\"|g" {} +
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -43,7 +43,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './docs/javadoc/frc/robot'
+          path: './docs/javadoc'
 
       - name: Deploy to GitHub Pages
         id: deployment
