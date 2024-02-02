@@ -25,10 +25,10 @@ public class RobotContainer {
     public RobotContainer() {
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                 swerveSubsystem,
-                () -> -IO.getDriveY() * swerveSubsystem.convToSpeedMult(),
-                () -> -IO.getDriveX() * swerveSubsystem.convToSpeedMult(),
-                () -> -IO.getDriveTwist() * swerveSubsystem.convToSpeedMult(),
-                () -> !IO.getTrigger()));
+                () -> -IO.OI.getDriveY() * swerveSubsystem.convToSpeedMult(),
+                () -> -IO.OI.getDriveX() * swerveSubsystem.convToSpeedMult(),
+                () -> -IO.OI.getDriveTwist() * swerveSubsystem.convToSpeedMult(),
+                () -> !IO.OI.getTrigger()));
     }
 
     /**Returns the current instance of the swerve subsystem */

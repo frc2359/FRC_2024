@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.RobotMap.LEDConstants.*;
 
-
+// Code from Mr. R to control LEDs attached to the Robot. Can be used for system checks, etc
 
 public class LEDSubsystem extends SubsystemBase {
 

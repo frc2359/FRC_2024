@@ -179,7 +179,7 @@ public interface RobotMap {
     }
 
     public static final class OIConstants {
-        public static final int DRIVE_PORT = 0; //USB IO Port  -- joystick init in robotcontainer, too.  Swith if needed
+        public static final int DRIVE_PORT = 0; //USB IO Port  -- joystick init in robotcontainer, too.  Switch if needed
         public static final int LIFT_PORT = 1;
         public static final int BOX_PORT = 2;
 

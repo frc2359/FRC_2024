@@ -13,8 +13,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.IO;
-import frc.robot.IO.GyroType;
+import frc.robot.IO.Gyro;
+import frc.robot.IO.OI;
+import frc.robot.IO.Gyro.GyroType;
 import frc.robot.RobotMap.AutoConstants;
 import frc.robot.RobotMap.DriveConstants;
 
@@ -94,14 +95,14 @@ public class SwerveSubsystem extends SubsystemBase {
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
-                IO.zeroHeading();
+                Gyro.zeroHeading();
             } catch (Exception e) {
             }
         }).start();
     }
 
     public double getCalculatedHeading() {
-        return -1 * Math.IEEEremainder(IO.getAngle(GyroType.kNAVX), 360);
+        return -1 * Math.IEEEremainder(Gyro.getAngle(GyroType.kNAVX), 360);
     }
 
     public Rotation2d getRotation2d() {
@@ -145,16 +146,14 @@ public class SwerveSubsystem extends SubsystemBase {
         frontLeft.setDriveMode(isBrakeMode);
         backRight.setDriveMode(isBrakeMode);
         backLeft.setDriveMode(isBrakeMode);
-        
         SmartDashboard.putBoolean("SwerveBrakeMode?", isBrakeMode);
-
         DriveConstants.currentBrakeMode = isBrakeMode;
-
         return isBrakeMode;
     }
+
     /**Show swerve data */
     public void showData() {
-        SmartDashboard.putNumber("Robot Fused Heading", IO.getFusedHeading());
+        SmartDashboard.putNumber("Robot Fused Heading", Gyro.getFusedHeading());
         SmartDashboard.putNumber("Robot Heading", getCalculatedHeading());
         SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
         SmartDashboard.putNumber("FL Abs", frontLeft.getAbsoluteEncoderDeg());
@@ -180,6 +179,10 @@ public class SwerveSubsystem extends SubsystemBase {
         backRight.stop();
     }
 
+    /** Get "states" of each swerve module. A state is the angle and speed at which the module is moving.
+     * 
+     * @return states of each module 
+     */
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = new SwerveModuleState[modules.length];
         for (int i = 0; i < modules.length; i++) {
@@ -188,6 +191,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return states;
     }
 
+    /** Sets "states" of each swerve module. A state is the angle and speed at which the module is moving. */
     public void setModuleStates (SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, (DriveConstants.kPhysicalMaxSpeedMetersPerSecond));
         frontLeft.setDesiredState(desiredStates[0]);
@@ -196,13 +200,15 @@ public class SwerveSubsystem extends SubsystemBase {
         backRight.setDesiredState(desiredStates[3]);
     }
 
+    /** Sets drive mode to be relative to the robot instead of the field. */
     public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
         ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(robotRelativeSpeeds, 0.02);
-
         SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(targetSpeeds);
         setModuleStates(targetStates);
     }
 
+    /*
+    // Not entirely sure what the function below does...
     public void setAutoModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, (DriveConstants.kPhysicalMaxSpeedMetersPerSecond));
         frontLeft.setAutoDesiredState(desiredStates[0]);
@@ -210,9 +216,10 @@ public class SwerveSubsystem extends SubsystemBase {
         backLeft.setAutoDesiredState(desiredStates[2]);
         backRight.setAutoDesiredState(desiredStates[3]);
     }
+    */
     
     public double convToSpeedMult() {
-        double spdMultiplier = ((IO.getSpeedDial() + 1) * 0.25) + 0.5;
+        double spdMultiplier = ((OI.getSpeedDial() + 1) * 0.25) + 0.5;
         SmartDashboard.putNumber("SpeedDriveMult", spdMultiplier);
         return spdMultiplier;
     }
