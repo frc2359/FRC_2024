@@ -10,6 +10,17 @@ java {
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
+javadoc {
+    source = sourceSets.main.allJava
+    classpath += configurations.compileClasspath
+    destinationDir = file("${projectDir}/docs/javadoc")
+    options.memberLevel = JavadocMemberLevel.PUBLIC
+    options.author = true
+    options.version = true
+    options.links('https://docs.oracle.com/javase/8/docs/api/'); // Adjust for your JDK version
+}
+
+
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
