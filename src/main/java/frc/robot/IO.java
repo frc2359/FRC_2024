@@ -176,7 +176,7 @@ public class IO {
             // }
         }
 
-        /** @returns true if the NavX is available */
+        /** @return true if the NavX is available */
         public static boolean isNavXAvail() {
             return navx.isConnected();
         }
