@@ -18,6 +18,7 @@ public class SwerveJoystickCmd extends Command {
     private final Supplier<Boolean> fieldOrientedFunction;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 
+    /** Command that is run during TeleOp that allows for controls from the Driver Joystick */
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,
             Supplier<Boolean> fieldOrientedFunction) {

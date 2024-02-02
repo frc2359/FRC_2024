@@ -9,7 +9,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public interface RobotMap {
-
+    /** Configuration constants for Limelight */
     public static final class LimelightConsants {
         public static final int kPipelineLedSettings = 0;
         public static final int kLedOff = 1;
@@ -17,6 +17,7 @@ public interface RobotMap {
         public static final int kLedOn = 3;
     }
 
+    /** Constants for a Swerve Module (needs restructuring to separate TeleOp consts and Drivetrain consts) */
     public static final class ModuleConstants {
         public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
         public static final double kDriveMotorGearRatio =  (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0);  // check
@@ -29,6 +30,7 @@ public interface RobotMap {
         public static final double kPDriving = 0.5;
     }
 
+    /** Constants for the Teleop and Drivetrain (needs restructuring to separate TeleOp consts and Drivetrain consts) */
     public static final class DriveConstants {
         public static final boolean INI_BRAKE_MODE_DRIVE = true;
 
@@ -37,27 +39,23 @@ public interface RobotMap {
 
         public static boolean currentBrakeMode = INI_BRAKE_MODE_DRIVE;
 
+        /**Physical constants that represent physical meansurements, motor offsets, etc */
         public static final class Physical {
-            // set Distance between right and left wheels
+            /** Distance between left and right wheels */
             public static final double kTrackWidth = Units.inchesToMeters(20);
             
-            // set Distance between front and back wheels
+            /** Distance between front and back wheels */
             public static final double kWheelBase = Units.inchesToMeters(20);
 
             public static final double kBaseRadius = Math.sqrt(Math.pow((kTrackWidth / 2), 2) * Math.pow((kWheelBase / 2), 2));
             
-            // set location of each module in relation to the center
+            /** Kinematics configured with the location of each module in relation to the center */
             public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
                 new Translation2d(kWheelBase / 2, kTrackWidth / 2),    // front right
                 new Translation2d(kWheelBase / 2, -kTrackWidth / 2),     // front left
                 new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // rear right
                 new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));   // rear left
         }
-        
-    
-        /* -------------------------------------------------------------------------- */
-        /*                            DRIVETRAIN CONSTANTS                            */
-        /* -------------------------------------------------------------------------- */
 
         // MOTOR CONSTANTS ----------------------------------------------------------
         public static final int kFrontLeftDriveMotorPort = 4;
@@ -111,6 +109,7 @@ public interface RobotMap {
         
     }
 
+    /** Constants used for autonomous */
     public static final class AutoConstants {
         public static final double kMaxSpeedMetersPerSecond = 3.5;
         public static final double kMaxAngularSpeedRadiansPerSecond = //
@@ -131,6 +130,7 @@ public interface RobotMap {
 
         public static final HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(kMaxSpeedMetersPerSecond, DriveConstants.Physical.kBaseRadius, new ReplanningConfig());
 
+        /** Configuration constants for MotionMagic */
         public static final class MotionMagic {
             /**
              * Which PID slot to pull gains from
@@ -178,6 +178,7 @@ public interface RobotMap {
         }
     }
 
+    /** Configuration constants for Operator Input */
     public static final class OIConstants {
         public static final int DRIVE_PORT = 0; //USB IO Port  -- joystick init in robotcontainer, too.  Switch if needed
         public static final int LIFT_PORT = 1;
@@ -191,6 +192,7 @@ public interface RobotMap {
         public static final double kDriverDeadband = 0.2;
     }
 
+    /** Configuration constants for LEDs */
     public static final class LEDConstants {
         public static final int PWM_LEDS = 0;
 

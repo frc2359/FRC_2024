@@ -219,7 +219,7 @@ public class SwerveSubsystem extends SubsystemBase {
     */
     
     public double convToSpeedMult() {
-        double spdMultiplier = ((OI.getSpeedDial() + 1) * 0.25) + 0.5;
+        double spdMultiplier = ((OI.Driver.getSpeedDial() + 1) * 0.25) + 0.5;
         SmartDashboard.putNumber("SpeedDriveMult", spdMultiplier);
         return spdMultiplier;
     }

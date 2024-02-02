@@ -17,6 +17,7 @@ import frc.robot.RobotMap.AutoConstants;
 import frc.robot.RobotMap.DriveConstants;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.IO.OI;
 
 public class RobotContainer {
 
@@ -25,10 +26,10 @@ public class RobotContainer {
     public RobotContainer() {
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                 swerveSubsystem,
-                () -> -IO.OI.getDriveY() * swerveSubsystem.convToSpeedMult(),
-                () -> -IO.OI.getDriveX() * swerveSubsystem.convToSpeedMult(),
-                () -> -IO.OI.getDriveTwist() * swerveSubsystem.convToSpeedMult(),
-                () -> !IO.OI.getTrigger()));
+                () -> -OI.Driver.getDriveY() * swerveSubsystem.convToSpeedMult(),
+                () -> -OI.Driver.getDriveX() * swerveSubsystem.convToSpeedMult(),
+                () -> -OI.Driver.getDriveTwist() * swerveSubsystem.convToSpeedMult(),
+                () -> !OI.Driver.getTrigger()));
     }
 
     /**Returns the current instance of the swerve subsystem */
