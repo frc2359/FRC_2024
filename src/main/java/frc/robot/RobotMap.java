@@ -42,10 +42,10 @@ public interface RobotMap {
         /**Physical constants that represent physical meansurements, motor offsets, etc */
         public static final class Physical {
             /** Distance between left and right wheels */
-            public static final double kTrackWidth = Units.inchesToMeters(20);
+            public static final double kTrackWidth = Units.inchesToMeters(30);
             
             /** Distance between front and back wheels */
-            public static final double kWheelBase = Units.inchesToMeters(20);
+            public static final double kWheelBase = Units.inchesToMeters(30);
 
             public static final double kBaseRadius = Math.sqrt(Math.pow((kTrackWidth / 2), 2) * Math.pow((kWheelBase / 2), 2));
             
