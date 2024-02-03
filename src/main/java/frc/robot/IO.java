@@ -283,17 +283,17 @@ public class IO {
         /** The Operator Xbox Controller - currently configured for an Xbox Controller */
         public static class OperatorXbox {
             /** Checks Left Y Axis <b>FOR THE LIFT CONTROLLER</b> */
-            public static double getLiftControlLeftY() {
+            public static double getLeftY() {
                 return liftCont.getLeftY();
             }
 
             /** Checks Left X Axis <b>FOR THE LIFT CONTROLLER</b> */
-            public static double getLiftControlLeftX() {
+            public static double getLeftX() {
                 return liftCont.getLeftX();
             }
 
             /** Checks Right X Axis <b>FOR THE LIFT CONTROLLER</b> */
-            public static double getLiftControlRightX() {
+            public static double getRightX() {
                 return liftCont.getRightX();
             }
 

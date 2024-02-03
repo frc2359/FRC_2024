@@ -1,8 +1,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
+    private RobotContainer m_robotContainer;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -10,7 +12,11 @@ public class Robot extends TimedRobot {
      * initialization code.
      */
     @Override
-    public void robotInit() {}
+    public void robotInit() {
+        m_robotContainer = new RobotContainer();
+
+        m_robotContainer.getSwerveSubsystem().setDriveMode(true);
+    }
 
     /**
      * This function is called every robot packet, no matter the mode. Use this for
@@ -24,7 +30,9 @@ public class Robot extends TimedRobot {
      * SmartDashboard integrated updating.
      */
     @Override
-    public void robotPeriodic() {}
+    public void robotPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
 
     @Override
     public void disabledInit() {}
@@ -43,10 +51,14 @@ public class Robot extends TimedRobot {
 
     /** This function is called one time before operator takes control. */
     @Override
-    public void teleopInit() {}
+    public void teleopInit() {
+        m_robotContainer.getSwerveSubsystem().setDriveMode(true);
+    }
 
     /** This function is called periodically during operator control. */
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
 
 }
