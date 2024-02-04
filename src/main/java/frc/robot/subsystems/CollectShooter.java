@@ -36,9 +36,11 @@ public class CollectShooter extends SubsystemBase{
 
     /** Basic run function for the shooter wheels -- needs to be moved to a command     */
     public void runShooter() {
-        collector.set(OperatorXbox.getLeftX());
-        shootTop.set(OperatorXbox.getRightX());        
-        shootBottom.set(-OperatorXbox.getRightX());
+        double val1 = (Math.abs(OperatorXbox.getLeftX()) < 0.1 ? 0 : OperatorXbox.getLeftX());
+        double val2 = (Math.abs(OperatorXbox.getRightX()) < 0.1 ? 0 : OperatorXbox.getRightX());
+        collector.set(val1);
+        shootTop.set(val2);        
+        shootBottom.set(-val2);
 
     }
 
