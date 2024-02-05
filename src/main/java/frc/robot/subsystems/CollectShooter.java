@@ -4,7 +4,9 @@ import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.IO.Modifiers;
 import frc.robot.IO.OI.OperatorXbox;
 
 public class CollectShooter extends SubsystemBase{
@@ -34,14 +36,29 @@ public class CollectShooter extends SubsystemBase{
         shootBottom.clearFaults();
     }
 
-    /** Basic run function for the shooter wheels -- needs to be moved to a command     */
-    public void runShooter() {
-        double val1 = (Math.abs(OperatorXbox.getLeftX()) < 0.1 ? 0 : OperatorXbox.getLeftX());
-        double val2 = (Math.abs(OperatorXbox.getRightX()) < 0.1 ? 0 : OperatorXbox.getRightX());
-        collector.set(val1);
-        shootTop.set(val2);        
-        shootBottom.set(-val2);
+    /** Set percent power for the collector motor */
+    public void setCollectorPctPower(double percent) {
+        collector.set(percent);
+    }
 
+    /** Set percent power for the shooter motors */
+    public void setShooterPctPower(double percent) {
+        shootTop.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));        
+        shootBottom.set(-Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
+    }
+
+    /** Basic run function for the shooter */
+    public void runShooter() {
+        collector.set(Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1));
+        shootTop.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));        
+        shootBottom.set(-Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
+        
+    }
+
+    public Command collect() {
+        return this.run(() -> {
+            setCollectorPctPower(1);
+        });
     }
 
 }
