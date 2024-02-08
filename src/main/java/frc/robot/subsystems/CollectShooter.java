@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,7 +19,12 @@ public class CollectShooter extends SubsystemBase{
 
 
     /** Collector CAN Spark Flex Motor */
-    private CANSparkFlex collector = new CANSparkFlex(kCANCollector, MotorType.kBrushless);    
+    private CANSparkFlex collector = new CANSparkFlex(kCANCollector, MotorType.kBrushless);
+
+    // COLLECTORSPARK - use if we move to a CAN Spark Max and NEO instead of a SparkFlex. 
+    // Comment out every instance of "collector" and uncomment instances of "collectorSpark" to use.
+
+    // private CANSparkMax collectorSpark = new CANSparkMax(kCANCollector, MotorType.kBrushless);
     
     /** Upper shooter CAN Spark Flex Motor */
     private CANSparkFlex shootTop = new CANSparkFlex(kCANTop, MotorType.kBrushless);
@@ -28,17 +34,29 @@ public class CollectShooter extends SubsystemBase{
 
     /** Initialize systems to set constants and defaults */
     public void init() {
-        collector.restoreFactoryDefaults();        
+        collector.restoreFactoryDefaults();
+        // collectorSpark.restoreFactoryDefaults();   
+
         shootTop.restoreFactoryDefaults();
         shootBottom.restoreFactoryDefaults();
         collector.clearFaults();
         shootTop.clearFaults();
         shootBottom.clearFaults();
+        
+        collector.getPIDController();
+        // collectorSpark.getPIDController();   
+
+        // collector.();
     }
 
     /** Set percent power for the collector motor */
     public void setCollectorPctPower(double percent) {
         collector.set(percent);
+        // collectorSpark.set(percent);
+    }
+
+    public void setCollectorVelocity(double velocity) {
+        // collector.set`
     }
 
     /** Set percent power for the shooter motors */
@@ -49,6 +67,7 @@ public class CollectShooter extends SubsystemBase{
 
     /** Basic run function for the shooter */
     public void runShooter() {
+        // collectorSpark.set(Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1));
         collector.set(Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1));
         shootTop.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));        
         shootBottom.set(-Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
