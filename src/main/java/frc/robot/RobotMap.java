@@ -209,4 +209,17 @@ public interface RobotMap {
         public static final int PIECE_TYPE_CONE = 2;
     }
 
+    //** States for Collector - Shooter */
+    public static final class State_CS {
+        public static final int UNKNOWN = 0;
+        public static final int OFF = 1;
+        public static final int COLLECTOR_INTAKE = 2;
+        public static final int SHOOTER_INTAKE = 3;
+        public static final int NOTE_READY = 4;
+        public static final int PREPARE_TO_SHOOT = 5;
+        public static final int SHOOT = 6;
+        public static final int EJECT_NOTE = 7;
+        public static final int NOTE_DETECTED = 8;  
+    }
+
 }
