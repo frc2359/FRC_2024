@@ -38,6 +38,18 @@ public class IO {
     // sets up network access to access limelight
     private static final NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
 
+    /** Functions that modify values to filter or normalize them */
+    public static class Modifiers {
+        /** Adds a deadband to functions
+         * @param value value to apply a deadband to
+         * @param deadband the distance from 0 (both positive and negative) that still returns 0
+         */
+        public static double withDeadband(double value, double deadband) {
+            return (Math.abs(value) < deadband ? 0 : value);
+        }
+    }
+    
+
     /**
      * Provides information for the Robot Status, such as PDP stats, DS stats,
      * connection information, etc
@@ -282,62 +294,62 @@ public class IO {
 
         /** The Operator Xbox Controller - currently configured for an Xbox Controller */
         public static class OperatorXbox {
-            /** Checks Left Y Axis <b>FOR THE LIFT CONTROLLER</b> */
+            /** Checks Left Y Axis */
             public static double getLeftY() {
                 return liftCont.getLeftY();
             }
 
-            /** Checks Left X Axis <b>FOR THE LIFT CONTROLLER</b> */
+            /** Checks Left X Axis */
             public static double getLeftX() {
                 return liftCont.getLeftX();
             }
 
-            /** Checks Right X Axis <b>FOR THE LIFT CONTROLLER</b> */
+            /** Checks Right X Axis */
             public static double getRightX() {
                 return liftCont.getRightX();
             }
 
-            /** Checks left joystick pressed <b>FOR THE LIFT CONTROLLER</b> */
+            /** Checks left joystick pressed */
             public static boolean isLeftAxisPressed() {
                 return liftCont.getLeftStickButtonPressed();
             }
 
-            /** Checks left joystick pressed <b>FOR THE LIFT CONTROLLER</b> */
+            /** Checks left joystick pressed */
             public static boolean isRightAxisPressed() {
                 return liftCont.getRightStickButtonPressed();
             }
 
-            /** Checks X <b>FOR THE LIFT CONTROLLER</b> */
+            /** Checks X */
             public static boolean isXPressed() {
                 return liftCont.getXButtonPressed();
             }
 
-            /** Checks Y <b>FOR THE LIFT CONTROLLER</b> */
+            /** Checks Y */
             public static boolean isYPressed() {
                 return liftCont.getYButtonPressed();
             }
 
-            /** Checks POV <b>FOR THE LIFT CONTROLLER</b> */
+            /** Checks POV */
             public static int getLiftPOV() {
                 return liftCont.getPOV();
             }
 
-            /** Checks A <b>FOR THE LIFT CONTROLLER</b> */
+            /** Checks A */
             public static boolean isAPressed() {
                 return liftCont.getAButtonPressed();
             }
 
-            /** Checks B <b>FOR THE LIFT CONTROLLER</b> */
+            /** Checks B */
             public static boolean isBPressed() {
                 return liftCont.getBButtonPressed();
             }
 
-            /** Checks Left Bumper <b>FOR THE LIFT CONTROLLER</b> */
+            /** Checks Left Bumper */
             public static boolean isLeftBumpPressed() {
                 return liftCont.getLeftBumperPressed();
             }
 
-            /** Checks Right Bumper <b>FOR THE LIFT CONTROLLER</b> */
+            /** Checks Right Bumper */
             public static boolean isRightBumpPressed() {
                 return liftCont.getRightBumperPressed();
             }
