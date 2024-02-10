@@ -11,9 +11,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.IO.Modifiers;
 import frc.robot.IO.OI.OperatorXbox;
 import frc.robot.RobotMap.State_CS;
+import frc.robot.RobotMap.CS;
 
 public class CollectShooter extends SubsystemBase{
 
+    /** Class Variables */
+    private int currentState = State_CS.UNKNOWN;    // Collector/Shooter State
+    private double speedCollector = 0;
+    private double speedShooter = 0;
+    private int csTarget = CS.kTargetNone;
+    
     /** CAN IDs -- MOVE TO ROBOTMAP */
     private final int kCANCollector = 10;
     private final int kCANTop = 2;    
@@ -36,6 +43,8 @@ public class CollectShooter extends SubsystemBase{
 
     /** Initialize systems to set constants and defaults */
     public void init() {
+        currentState = State_CS.OFF;
+
         collector.restoreFactoryDefaults();
         // collectorSpark.restoreFactoryDefaults();   
 
@@ -74,7 +83,7 @@ public class CollectShooter extends SubsystemBase{
         shootTop.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));        
         shootBottom.set(-Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
         
-        /* - RObot Build Practice
+        /* - Robot Build Practice - Older code, likely obsolete
         double val1 = (Math.abs(OperatorXbox.getLeftX()) < 0.1 ? 0 : OperatorXbox.getLeftX());
         double val2 = (Math.abs(OperatorXbox.getRightX()) < 0.1 ? 0 : OperatorXbox.getRightX());
         collector.set(val1);
@@ -83,16 +92,31 @@ public class CollectShooter extends SubsystemBase{
          */
     }
 
+    private void setCollectorSpeed(double spdNew) {
+        speedCollector = spdNew;
+        collector.set(speedCollector);
+    }
+
+    private void setShooterSpeed(double spdNew) {
+        speedShooter = spdNew;
+        shootTop.set(speedShooter);
+        shootBottom.set(-speedShooter);
+    }
+
     public Command collect() {
         return this.run(() -> {
             setCollectorPctPower(1);
         });
     }
 
+    private void setCurrentState(int newState) {
+        currentState = newState;
+    }
+
     // Process the current state of the shooter
     // Execute code relevant to the state, and transition to a new state (if needed)
     // Return the value of the state machine after all code has executed
-    public int collecterShooterStateMachine(int currentState) {
+    public int collecterShooterStateMachine() {
 
         SmartDashboard.putNumber("Current State", currentState);
 
@@ -102,13 +126,16 @@ public class CollectShooter extends SubsystemBase{
                 // init the robot
 
                 // transition to a new state
-                currentState = State_CS.OFF;
+                //currentState = State_CS.OFF;
                 break;
 
             case State_CS.OFF:
 
                 // collector motor to zero power
+                setCollectorSpeed(0);
+                
                 // shooter motor to zero power
+                setShooterSpeed(0);
 
                 // when the INTAKE button is pressed - go to COLLECTOR_INTAKE
                 // if statement to check for the INTAKE button goes here
@@ -159,14 +186,26 @@ public class CollectShooter extends SubsystemBase{
             case State_CS.NOTE_READY:
 
                 // stop the collector motor (in case you collected from the ground)
+                setCollectorSpeed(0);
+                
                 // stop the shooter motor (in case you were collecting from the source)
+                setShooterSpeed(0);
 
                 // when the SHOOT button is pressed - go to PREPARE_TO_SHOOT
-                // DO NOT shoot until the wheels are at speed
                 // if statement to check for the SHOOT button goes here
                 // if true - transition to a new state
-                currentState = State_CS.PREPARE_TO_SHOOT;
-
+                /**
+                if (false) {        // Shoot Speaker Button Pressed
+                    csTarget = CS.kTargetSpeaker;
+                    currentState = State_CS.PREPARE_TO_SHOOT;
+                    break;
+                }
+                if (false) {        // Shoot Amp Button Pressed     
+                    csTarget = CS.kTargetAmp;
+                    currentState = State_CS.PREPARE_TO_SHOOT;
+                    break;
+                }
+                */
                 /* TODO
                 Do we want two different buttons for two different speeds, SPEAKER and AMP
                 or will one button do both?
@@ -176,14 +215,17 @@ public class CollectShooter extends SubsystemBase{
                 */
 
                 // when the EJECT button is pressed - go to EJECT_NOTE
-                // else statement to check for the EJECT button goes here
-                // when true - transition to a new state
-                currentState = State_CS.EJECT_NOTE;
+                /**
+                 if (false) {        // Eject Button Pressed     
+                    currentState = State_CS.EJECT_NOTE;
+                    break;
+                }
+                */
 
                 break;
 
             case State_CS.PREPARE_TO_SHOOT:
-
+                // DO NOT shoot until the wheels are at speed
                 // spin the wheels for the shooter and get them up to speed
 
                 // when the motors are finally up to speed, it is time to shoot

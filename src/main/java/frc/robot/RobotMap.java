@@ -222,4 +222,10 @@ public interface RobotMap {
         public static final int NOTE_DETECTED = 8;  
     }
 
+    //** Types for Collector - Shooter */
+    public static final class CS {
+        public static final int kTargetNone = 0;
+        public static final int kTargetAmp = 2;
+        public static final int kTargetSpeaker = 2;
+    }
 }
