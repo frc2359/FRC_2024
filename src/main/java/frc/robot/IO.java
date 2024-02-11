@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.OIConstants;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+
 import static frc.robot.RobotMap.*;
 import java.util.HashMap;
 import com.kauailabs.navx.frc.AHRS;
@@ -37,6 +39,37 @@ public class IO {
     private static PowerDistribution pdh = new PowerDistribution();
     // sets up network access to access limelight
     private static final NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+
+    
+
+    /** Note Sensor Class*/
+    public static class Sensor {
+        
+        private static final int numSensors = 2;
+
+        private static DigitalInput[] sensorNote = new DigitalInput[] 
+            {new DigitalInput(5), new DigitalInput(6), new DigitalInput(7),
+            new DigitalInput(8),new DigitalInput(9)};
+
+        public static boolean isNoteDetected() {
+            boolean flag = false;
+            for (int i=0; i >= numSensors; i++) {
+                if (getNoteSensor(i)) flag = true;
+            }
+            SmartDashboard.putBoolean("Note Det.", flag);
+            //return flag;
+            
+             return getNoteSensor(0);
+        }
+
+        public static boolean getNoteSensor(int sns) {
+            if (sns < 0 || sns >= numSensors) {
+                return false;
+            } else {
+                return !sensorNote[sns].get();
+            }
+        }
+    }
 
     /** Functions that modify values to filter or normalize them */
     public static class Modifiers {
