@@ -30,6 +30,18 @@ public interface RobotMap {
         public static final double kPDriving = 0.5;
     }
 
+    /** Constants for the Shooter */
+    public static final class CollectShooterConstants {
+        public static final double kP = 6e-5; 
+        public static final double kI = 0;
+        public static final double kD = 0; 
+        public static final double kIz = 0; 
+        public static final double kFF = 0.000015; 
+        public static final double kMaxOutput = 1; 
+        public static final double kMinOutput = -1;
+        public static final double maxRPM = 5700;
+    }
+
     /** Constants for the Teleop and Drivetrain (needs restructuring to separate TeleOp consts and Drivetrain consts) */
     public static final class DriveConstants {
         public static final boolean INI_BRAKE_MODE_DRIVE = true;
@@ -195,7 +207,6 @@ public interface RobotMap {
     /** Configuration constants for LEDs */
     public static final class LEDConstants {
         public static final int PWM_LEDS = 0;
-
         public static final int STATE_LEDS_OFF = 0;
         public static final int STATE_LEDS_INIT = 1;
         public static final int STATE_LEDS_STATUS = 2;
@@ -209,8 +220,9 @@ public interface RobotMap {
         public static final int PIECE_TYPE_CONE = 2;
     }
 
-    //** States for Collector - Shooter */
+    /** States for Collector - Shooter */
     public static final class State_CS {
+        /** This is the unkown state for the collector shooter */
         public static final int UNKNOWN = 0;
         public static final int OFF = 1;
         public static final int COLLECTOR_INTAKE = 2;

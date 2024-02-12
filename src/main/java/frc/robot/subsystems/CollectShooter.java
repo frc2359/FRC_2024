@@ -2,16 +2,19 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkPIDController.AccelStrategy;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.IO.Modifiers;
 import frc.robot.IO.OI.OperatorXbox;
-import frc.robot.RobotMap.State_CS;
 import frc.robot.RobotMap.CS;
+import frc.robot.RobotMap.CollectShooterConstants;
+import frc.robot.RobotMap.State_CS;
 
 public class CollectShooter extends SubsystemBase{
 
@@ -26,14 +29,10 @@ public class CollectShooter extends SubsystemBase{
     private final int kCANTop = 2;    
     private final int kCANBot = 3;
 
-
-    /** Collector CAN Spark Flex Motor */
-    private CANSparkFlex collector = new CANSparkFlex(kCANCollector, MotorType.kBrushless);
-
     // COLLECTORSPARK - use if we move to a CAN Spark Max and NEO instead of a SparkFlex. 
     // Comment out every instance of "collector" and uncomment instances of "collectorSpark" to use.
 
-    // private CANSparkMax collectorSpark = new CANSparkMax(kCANCollector, MotorType.kBrushless);
+    private CANSparkMax collector = new CANSparkMax(kCANCollector, MotorType.kBrushless);
     
     /** Upper shooter CAN Spark Flex Motor */
     private CANSparkFlex shootTop = new CANSparkFlex(kCANTop, MotorType.kBrushless);
@@ -41,23 +40,45 @@ public class CollectShooter extends SubsystemBase{
     /** Lower shooter CAN Spark Flex Motor */
     private CANSparkFlex shootBottom = new CANSparkFlex(kCANBot, MotorType.kBrushless);
 
+    private SparkPIDController shootTopPID;
+    private SparkPIDController shootBottomPID;
+
     /** Initialize systems to set constants and defaults */
     public void init() {
         currentState = State_CS.OFF;
 
-        collector.restoreFactoryDefaults();
-        // collectorSpark.restoreFactoryDefaults();   
+        collector.restoreFactoryDefaults();   
 
         shootTop.restoreFactoryDefaults();
         shootBottom.restoreFactoryDefaults();
         collector.clearFaults();
         shootTop.clearFaults();
         shootBottom.clearFaults();
-        
-        collector.getPIDController();
-        // collectorSpark.getPIDController();   
 
-        // collector.();
+        shootBottom.setInverted(true);
+        
+        shootTopPID = shootTop.getPIDController();     
+        shootBottomPID = shootBottom.getPIDController();   
+
+        // set PID coefficients
+        shootTopPID.setSmartMotionMaxVelocity(6000, 0);
+        shootTopPID.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
+        shootTopPID.setP(CollectShooterConstants.kP);
+        shootTopPID.setI(CollectShooterConstants.kI);
+        shootTopPID.setD(CollectShooterConstants.kD);
+        shootTopPID.setIZone(CollectShooterConstants.kIz);
+        shootTopPID.setFF(CollectShooterConstants.kFF);
+        shootTopPID.setOutputRange(CollectShooterConstants.kMinOutput, CollectShooterConstants.kMaxOutput);
+
+        shootBottomPID.setSmartMotionMaxVelocity(6000, 0);
+        shootBottomPID.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
+        shootBottomPID.setP(CollectShooterConstants.kP);
+        shootBottomPID.setI(CollectShooterConstants.kI);
+        shootBottomPID.setD(CollectShooterConstants.kD);
+        shootBottomPID.setIZone(CollectShooterConstants.kIz);
+        shootBottomPID.setFF(CollectShooterConstants.kFF);
+        shootBottomPID.setOutputRange(CollectShooterConstants.kMinOutput, CollectShooterConstants.kMaxOutput);
+
     }
 
     /** Set percent power for the collector motor */
@@ -66,8 +87,10 @@ public class CollectShooter extends SubsystemBase{
         // collectorSpark.set(percent);
     }
 
-    public void setCollectorVelocity(double velocity) {
-        // collector.set`
+    public void setShooterVelocity(double velocity) {
+        shootTopPID.setReference(velocity, CANSparkBase.ControlType.kVelocity);
+        shootBottomPID.setReference(velocity, CANSparkBase.ControlType.kVelocity);
+
     }
 
     /** Set percent power for the shooter motors */
@@ -82,14 +105,6 @@ public class CollectShooter extends SubsystemBase{
         collector.set(Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1));
         shootTop.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));        
         shootBottom.set(-Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
-        
-        /* - Robot Build Practice - Older code, likely obsolete
-        double val1 = (Math.abs(OperatorXbox.getLeftX()) < 0.1 ? 0 : OperatorXbox.getLeftX());
-        double val2 = (Math.abs(OperatorXbox.getRightX()) < 0.1 ? 0 : OperatorXbox.getRightX());
-        collector.set(val1);
-        shootTop.set(val2);        
-        shootBottom.set(-val2);
-         */
     }
 
     private void setCollectorSpeed(double spdNew) {
