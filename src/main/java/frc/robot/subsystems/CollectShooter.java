@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.IO.Modifiers;
 import frc.robot.IO.OI.OperatorXbox;
@@ -22,7 +21,6 @@ import frc.robot.RobotMap.State_CS;
 import frc.robot.RobotMap.ButtonBOX;
 import frc.robot.RobotMap.CS;
 import frc.robot.RobotMap.CollectShooterConstants;
-import frc.robot.RobotMap.State_CS;
 
 public class CollectShooter extends SubsystemBase{
 
