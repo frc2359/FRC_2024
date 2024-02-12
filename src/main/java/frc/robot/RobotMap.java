@@ -232,12 +232,24 @@ public interface RobotMap {
         public static final int SHOOT = 6;
         public static final int EJECT_NOTE = 7;
         public static final int NOTE_DETECTED = 8;  
+        public static final int MANUAL = 99;
     }
 
     //** Types for Collector - Shooter */
     public static final class CS {
         public static final int kTargetNone = 0;
-        public static final int kTargetAmp = 2;
+        public static final int kTargetAmp = 1;
         public static final int kTargetSpeaker = 2;
+    }
+
+
+    //** Button Box Buttons */
+    public static final class ButtonBOX {
+        public static final int INTAKE_COLLECTOR = 5;
+        public static final int INTAKE_SHOOTER = 10;
+        public static final int INTAKE_OFF = 6;
+        public static final int SHOOT_AMP = 9;
+        public static final int SHOOT_SPEAKER = 12;
+        public static final int INTAKE_EJECT = 7;
     }
 }

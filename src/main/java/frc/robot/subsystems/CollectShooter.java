@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import frc.robot.IO;
+
+
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -7,11 +10,16 @@ import com.revrobotics.SparkPIDController.AccelStrategy;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.IO.Modifiers;
 import frc.robot.IO.OI.OperatorXbox;
+import frc.robot.RobotMap.State_CS;
+import frc.robot.RobotMap.ButtonBOX;
 import frc.robot.RobotMap.CS;
 import frc.robot.RobotMap.CollectShooterConstants;
 import frc.robot.RobotMap.State_CS;
@@ -19,19 +27,24 @@ import frc.robot.RobotMap.State_CS;
 public class CollectShooter extends SubsystemBase{
 
     /** Class Variables */
-    private int currentState = State_CS.UNKNOWN;    // Collector/Shooter State
+    private int stateCurrent = State_CS.UNKNOWN;    // Collector/Shooter Current State
+    private int stateNext = State_CS.UNKNOWN;       // Next state
     private double speedCollector = 0;
     private double speedShooter = 0;
     private int csTarget = CS.kTargetNone;
+    private double joyCollector = 0;
+    private double joyShooter = 0;
+    private int countLoop = 0; 
+
+    
     
     /** CAN IDs -- MOVE TO ROBOTMAP */
     private final int kCANCollector = 10;
     private final int kCANTop = 2;    
     private final int kCANBot = 3;
 
-    // COLLECTORSPARK - use if we move to a CAN Spark Max and NEO instead of a SparkFlex. 
-    // Comment out every instance of "collector" and uncomment instances of "collectorSpark" to use.
 
+    /** Collector CAN Spark Flex Motor */
     private CANSparkMax collector = new CANSparkMax(kCANCollector, MotorType.kBrushless);
     
     /** Upper shooter CAN Spark Flex Motor */
@@ -45,7 +58,7 @@ public class CollectShooter extends SubsystemBase{
 
     /** Initialize systems to set constants and defaults */
     public void init() {
-        currentState = State_CS.OFF;
+        stateCurrent = State_CS.OFF;
 
         collector.restoreFactoryDefaults();   
 
@@ -109,7 +122,7 @@ public class CollectShooter extends SubsystemBase{
 
     private void setCollectorSpeed(double spdNew) {
         speedCollector = spdNew;
-        collector.set(speedCollector);
+        collector.set(-speedCollector);
     }
 
     private void setShooterSpeed(double spdNew) {
@@ -124,24 +137,47 @@ public class CollectShooter extends SubsystemBase{
         });
     }
 
-    private void setCurrentState(int newState) {
-        currentState = newState;
+    private void setState(int newState) {
+        stateCurrent = newState;
+        countLoop = 0;
     }
 
     // Process the current state of the shooter
     // Execute code relevant to the state, and transition to a new state (if needed)
     // Return the value of the state machine after all code has executed
-    public int collecterShooterStateMachine() {
+    public int stateMachine() {
 
-        SmartDashboard.putNumber("Current State", currentState);
+        SmartDashboard.putNumber("Current State", stateCurrent);
 
-        switch (currentState) {
+        joyCollector = -1 * Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1);
+        joyShooter =Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1);   
+        if (joyCollector != 0 || joyShooter != 0) {
+            setState(State_CS.MANUAL);
+        }
+
+        countLoop ++;
+        if (countLoop > 1000) {countLoop = 0;}
+        SmartDashboard.putNumber("cnt Loop", countLoop);
+
+        /** if joystick1`<>0 or joystick2 <>0 then currentState = State_CD.MANUAL */
+
+        switch (stateCurrent) {
             case State_CS.UNKNOWN:
 
                 // init the robot
 
                 // transition to a new state
                 //currentState = State_CS.OFF;
+                break;
+
+            case State_CS.MANUAL:
+                setCollectorSpeed(joyCollector);
+                setShooterSpeed(joyShooter);
+
+                if (joyCollector == 0 && joyShooter == 0) {
+                    setState(State_CS.OFF);
+                    break;
+                }
                 break;
 
             case State_CS.OFF:
@@ -152,49 +188,74 @@ public class CollectShooter extends SubsystemBase{
                 // shooter motor to zero power
                 setShooterSpeed(0);
 
-                // when the INTAKE button is pressed - go to COLLECTOR_INTAKE
-                // if statement to check for the INTAKE button goes here
-                // if true - transition to a new state
-                currentState = State_CS.COLLECTOR_INTAKE;
-
-                // when the COLLECT FROM SHOOTER button is pressed - go to EJECT_NOTE
-                // else statement to check for the button goes here
-                // when true - transition to a new state
-                currentState = State_CS.SHOOTER_INTAKE;
-
-                // if the note is detected after the robot is turned on
-                // (when pre-loading the note for autonomous)
-                // transition to a new state
-                currentState = State_CS.NOTE_DETECTED;
+                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_COLLECTOR)) {        // Shoot Speaker Button Pressed
+                    csTarget = CS.kTargetSpeaker;
+                    setState(State_CS.COLLECTOR_INTAKE);
+                    break;
+                }
+                
+                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_SHOOTER)) {        // Shoot Speaker Button Pressed
+                    csTarget = CS.kTargetSpeaker;
+                    setState(State_CS.SHOOTER_INTAKE);
+                    break;
+                }
+                
+                if(IO.Sensor.isNoteDetected()) {
+                    setState(State_CS.NOTE_DETECTED);
+                }
 
                 break;
 
             case State_CS.COLLECTOR_INTAKE:
  
                 // code to run the intake motors until the note is detected goes here
-
+                setCollectorSpeed(.8);
+                
                 // if statement for sensors or limit switches goes here
                 // if true - transition to a new state
-                currentState = State_CS.NOTE_READY;
-                
+                if (IO.Sensor.isNoteDetected()) {
+                    setState(State_CS.NOTE_DETECTED);
+                    break;
+                }
+
+                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {        // Shoot Speaker Button Pressed
+                    csTarget = CS.kTargetSpeaker;
+                    setState(State_CS.OFF);
+                    break;
+                }
+                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
+                    setState(State_CS.EJECT_NOTE);
+                    break;
+                }
+
                 break;
 
             case State_CS.SHOOTER_INTAKE:
 
                 // collect a note from the source
                 // code to run the shooter motors in reverse (slowly maybe)
+                setShooterSpeed(-.3);
 
                 // if statement for sensors or limit switches goes here
                 // if true - transition to a new state
-                currentState = State_CS.NOTE_DETECTED;
+                if (IO.Sensor.isNoteDetected()) {
+                    setState(State_CS.NOTE_DETECTED);
+                }
 
+                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {        // Shoot Speaker Button Pressed
+                    csTarget = CS.kTargetSpeaker;
+                    setState(State_CS.OFF);
+                    break;
+                }
 
                 break;
 
             case State_CS.NOTE_DETECTED:
 
                 // if the note is in the correct position in the chute, it is ready to be processed
-                currentState = State_CS.NOTE_READY;
+                if (IO.Sensor.getNoteSensor(0)) {
+                    setState(State_CS.NOTE_READY);
+                }
 
                 break;
 
@@ -206,21 +267,18 @@ public class CollectShooter extends SubsystemBase{
                 // stop the shooter motor (in case you were collecting from the source)
                 setShooterSpeed(0);
 
-                // when the SHOOT button is pressed - go to PREPARE_TO_SHOOT
-                // if statement to check for the SHOOT button goes here
-                // if true - transition to a new state
-                /**
-                if (false) {        // Shoot Speaker Button Pressed
+                if (IO.OI.OperatorHID.getButton(ButtonBOX.SHOOT_SPEAKER)) {        // Shoot Speaker Button Pressed
                     csTarget = CS.kTargetSpeaker;
-                    currentState = State_CS.PREPARE_TO_SHOOT;
+                    setState(State_CS.PREPARE_TO_SHOOT);
                     break;
                 }
-                if (false) {        // Shoot Amp Button Pressed     
+                
+                if (IO.OI.OperatorHID.getButton(ButtonBOX.SHOOT_AMP)) {        // Shoot Amp Button Pressed     
                     csTarget = CS.kTargetAmp;
-                    currentState = State_CS.PREPARE_TO_SHOOT;
+                    setState(State_CS.PREPARE_TO_SHOOT);
                     break;
                 }
-                */
+                
                 /* TODO
                 Do we want two different buttons for two different speeds, SPEAKER and AMP
                 or will one button do both?
@@ -229,14 +287,11 @@ public class CollectShooter extends SubsystemBase{
                 This will optimize the states, we won't need different states for SPEAKER vs AMP
                 */
 
-                // when the EJECT button is pressed - go to EJECT_NOTE
-                /**
-                 if (false) {        // Eject Button Pressed     
-                    currentState = State_CS.EJECT_NOTE;
+                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
+                    setState(State_CS.EJECT_NOTE);
                     break;
                 }
-                */
-
+                
                 break;
 
             case State_CS.PREPARE_TO_SHOOT:
@@ -245,34 +300,50 @@ public class CollectShooter extends SubsystemBase{
 
                 // when the motors are finally up to speed, it is time to shoot
                 // when true - transition to a new state
-                currentState = State_CS.SHOOT;
+                if (csTarget == CS.kTargetSpeaker) {
+                    setShooterSpeed(1);
+                } else {
+                    setShooterSpeed(.8);
+                }
+
+                // wait a period of time for the robot to eject the note
+                if (countLoop > 50) {
+                // after the wait - transition back to the stop state
+                    setState(State_CS.SHOOT);
+                }
+
                 break;
 
             case State_CS.SHOOT:
 
                 // start the collection motor, to move the note forward
+                setCollectorSpeed(.5);
 
                 // wait a period of time for the robot to shoot the note
-
+                if (countLoop > 100) {
                 // after the wait - transition back to the stop state
-                currentState = State_CS.OFF;
+                    setState(State_CS.OFF);
+                }
+                // after the wait - transition back to the stop state
+                setState(State_CS.OFF);
 
                 break;
 
             case State_CS.EJECT_NOTE:
 
                 // code to run the collector motors in reverse
-
+                setCollectorSpeed(-.5);
                 // wait a period of time for the robot to eject the note
-
+                if (countLoop > 100) {
                 // after the wait - transition back to the stop state
-                currentState = State_CS.OFF;
+                    setState(State_CS.OFF);
+                }
 
                 break;
         }
 
-        SmartDashboard.putNumber("Current State", currentState);
-        return currentState; 
+        SmartDashboard.putNumber("Current State", stateCurrent);
+        return stateCurrent; 
     }
 
 }
