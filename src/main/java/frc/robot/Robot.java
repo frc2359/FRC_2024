@@ -24,7 +24,7 @@ public class Robot extends TimedRobot {
 
         collectShooter.init();
 
-        m_robotContainer.getSwerveSubsystem().hardResetEncoders(); //run once and comment out when done
+        //m_robotContainer.getSwerveSubsystem().hardResetEncoders(); //run once and comment out when done
     }
 
     /**
