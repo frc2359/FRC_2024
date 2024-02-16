@@ -151,6 +151,13 @@ public class SwerveSubsystem extends SubsystemBase {
         return isBrakeMode;
     }
 
+    public void hardResetEncoders() {
+        frontRight.hardResetEncoders();
+        frontLeft.hardResetEncoders();
+        backRight.hardResetEncoders();
+        backLeft.hardResetEncoders();
+    }
+
     /**Show swerve data */
     public void showData() {
         SmartDashboard.putNumber("Robot Fused Heading", Gyro.getFusedHeading());

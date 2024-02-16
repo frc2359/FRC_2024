@@ -1,7 +1,5 @@
 package frc.robot;
 
-import javax.swing.text.StyleContext.SmallAttributeSet;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -25,6 +23,8 @@ public class Robot extends TimedRobot {
         m_robotContainer.getSwerveSubsystem().setDriveMode(true);
 
         collectShooter.init();
+
+        m_robotContainer.getSwerveSubsystem().hardResetEncoders(); //run once and comment out when done
     }
 
     /**

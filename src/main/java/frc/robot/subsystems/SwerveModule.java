@@ -128,6 +128,11 @@ public class SwerveModule {
         turningEncoder.setPosition(getAbsoluteEncoderRad());
     }
 
+    public void hardResetEncoders() {
+        driveMotor.setPosition(0);
+        turningEncoder.setPosition(0);
+    }
+
     public SwerveModuleState getState() {
         return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
     }
