@@ -91,10 +91,10 @@ public interface RobotMap {
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(179);
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(0);
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(0);
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(0);
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(0);
         
         // SPEED CONSTANTS ---------------------------------------------------------
         public static final double kPhysicalMaxSpeedMetersPerSecond = 8;  // 13.5?
