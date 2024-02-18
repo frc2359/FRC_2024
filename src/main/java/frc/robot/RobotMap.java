@@ -104,10 +104,10 @@ public interface RobotMap {
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
 
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(179);
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(90);
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(270);
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(270);
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(90);
 
         /* Thursday night, 2/15 testing
         public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(-90);
@@ -238,7 +238,7 @@ public interface RobotMap {
         public static final int PREPARE_TO_SHOOT = 5;
         public static final int SHOOT = 6;
         public static final int EJECT_NOTE = 7;
-        public static final int NOTE_DETECTED = 8;  
+        public static final int ALIGN_NOTE = 8;  
         public static final int MANUAL = 99;
     }
 
@@ -247,16 +247,19 @@ public interface RobotMap {
         public static final int kTargetNone = 0;
         public static final int kTargetAmp = 1;
         public static final int kTargetSpeaker = 2;
+        public static final double kEjectSlow = -.25;
+        public static final double kEjectFast = -.75;
     }
 
 
     //** Button Box Buttons */
     public static final class ButtonBOX {
         public static final int INTAKE_COLLECTOR = 5;
-        public static final int INTAKE_SHOOTER = 10;
+        public static final int INTAKE_SHOOTER = 4;
         public static final int INTAKE_OFF = 6;
         public static final int SHOOT_AMP = 9;
         public static final int SHOOT_SPEAKER = 12;
         public static final int INTAKE_EJECT = 7;
+        public static final int INTAKE_EJECT_FAST = 8;
     }
 }

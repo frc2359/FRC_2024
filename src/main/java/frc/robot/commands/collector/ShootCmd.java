@@ -17,13 +17,13 @@ public class ShootCmd extends Command {
     /** Ramps shooter to velocity 1000 to prepare for shoot */
     public Command rampShooters() {
         return collectShooter.runOnce(() -> {
-            collectShooter.setShooterVelocity(1000);
+            //collectShooter.setShooterVelocity(1000);
         });
     }
 
     public Command shoot() {
         Command shoot = collectShooter.runOnce(() -> {
-            collectShooter.setCollectorPctPower(1);
+            //collectShooter.setCollectorPctPower(1);
         });
         return shoot;
     }
@@ -32,7 +32,7 @@ public class ShootCmd extends Command {
     @Override
     public void execute() {
         
-        collectShooter.setCollectorPctPower(0.6);
+        //collectShooter.setCollectorPctPower(0.6);
     }
 
     /** This determines the "finished" condition. When this returns true, the command is taken off the scheduler, and stops running. */

@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-        CommandScheduler.getInstance().run();
+        //CommandScheduler.getInstance().run();
     }
 
     @Override
@@ -70,7 +70,9 @@ public class Robot extends TimedRobot {
         // collectShooter.runShooter();
         csState = collectShooter.stateMachine();
         SmartDashboard.putNumber("cs State", csState);
-        SmartDashboard.putBoolean("Sens 1",IO.Sensor.getNoteSensor(0));
+        SmartDashboard.putBoolean("Sens 1",IO.Sensor.getNoteSensor(1));
+        SmartDashboard.putBoolean("Sens 3",IO.Sensor.getNoteSensor(3));
+        SmartDashboard.putBoolean("Sens 5",IO.Sensor.getNoteSensor(5));
         SmartDashboard.putBoolean("Note Det.", IO.Sensor.isNoteDetected());
     }
 

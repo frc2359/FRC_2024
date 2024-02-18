@@ -45,7 +45,7 @@ public class IO {
     /** Note Sensor Class*/
     public static class Sensor {
         
-        private static final int numSensors = 2;
+        private static final int numSensors = 5;
 
         private static DigitalInput[] sensorNote = new DigitalInput[] 
             {new DigitalInput(5), new DigitalInput(6), new DigitalInput(7),
@@ -53,20 +53,20 @@ public class IO {
 
         public static boolean isNoteDetected() {
             boolean flag = false;
-            for (int i=0; i >= numSensors; i++) {
+            for (int i=1; i <= numSensors; i++) {
                 if (getNoteSensor(i)) flag = true;
             }
             SmartDashboard.putBoolean("Note Det.", flag);
-            //return flag;
+            return flag;
             
-             return getNoteSensor(0);
+            // return getNoteSensor(0);
         }
 
         public static boolean getNoteSensor(int sns) {
-            if (sns < 0 || sns >= numSensors) {
+            if (sns < 1 || sns > numSensors) {
                 return false;
             } else {
-                return !sensorNote[sns].get();
+                return !sensorNote[sns-1].get();
             }
         }
     }
