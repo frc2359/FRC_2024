@@ -3,11 +3,14 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.RobotMap.LEDConstants;
 import frc.robot.subsystems.CollectShooter;
+import frc.robot.subsystems.LEDs;
 
 public class Robot extends TimedRobot {
     private RobotContainer m_robotContainer;
     private CollectShooter collectShooter = new CollectShooter();
+    private LEDs leds = new LEDs();
 
     private int csState;
 
@@ -23,6 +26,9 @@ public class Robot extends TimedRobot {
         m_robotContainer.getSwerveSubsystem().setDriveMode(true);
 
         collectShooter.init();
+
+        leds.init();
+        leds.initLEDs();
 
         //m_robotContainer.getSwerveSubsystem().hardResetEncoders(); //run once and comment out when done
     }
@@ -41,10 +47,15 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         //CommandScheduler.getInstance().run();
+        leds.runLEDs();
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        //leds.setCol(192,192,0,true);
+        //leds.setCol(255,95,21,true);
+        leds.setCol(255,95,0,true);
+    }
 
 
     @Override
@@ -62,6 +73,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         m_robotContainer.getSwerveSubsystem().setDriveMode(true);
+        leds.setCol(9,255,0,false);
     }
 
     /** This function is called periodically during operator control. */

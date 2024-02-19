@@ -10,7 +10,7 @@ import com.revrobotics.SparkPIDController.AccelStrategy;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+//import edu.wpi.first.wpilibj.DigitalInput;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -63,7 +63,7 @@ public class CollectShooter extends SubsystemBase{
         shootTop.clearFaults();
         shootBottom.clearFaults();
 
-        shootBottom.setInverted(true);
+        //shootBottom.setInverted(true);
         
         shootTopPID = shootTop.getPIDController();     
         shootBottomPID = shootBottom.getPIDController();   
@@ -104,7 +104,7 @@ public class CollectShooter extends SubsystemBase{
     /** Set percent power for the shooter motors */
     public void setShooterPctPower(double percent) {
         shootTop.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));        
-        shootBottom.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
+        shootBottom.set(-Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
   }
 
     /** Basic run function for the shooter */
@@ -112,7 +112,7 @@ public class CollectShooter extends SubsystemBase{
         // collectorSpark.set(Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1));
         collector.set(Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1));
         shootTop.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));        
-        shootBottom.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
+        shootBottom.set(-Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
 
     }
 
@@ -124,7 +124,7 @@ public class CollectShooter extends SubsystemBase{
     private void setShooterSpeed(double spdNew) {
         speedShooter = spdNew;
         shootTop.set(speedShooter);
-        shootBottom.set(speedShooter);
+        shootBottom.set(-speedShooter);
     }
 
     public Command collect() {
@@ -206,7 +206,7 @@ public class CollectShooter extends SubsystemBase{
  
                 // code to run the intake motors until the note is detected goes here
                 setCollectorSpeed(.8);
-                setCollectorSpeed(.5);
+                //setCollectorSpeed(.5);   // temp slow down - while testing sensors
                 
                 // if statement for sensors or limit switches goes here
                 // if true - transition to a new state
@@ -235,7 +235,7 @@ public class CollectShooter extends SubsystemBase{
 
                 // collect a note from the source
                 // code to run the shooter motors in reverse (slowly maybe)
-                setShooterSpeed(-.3);
+                setShooterSpeed(-.25);
 
                 // if statement for sensors or limit switches goes here
                 // if true - transition to a new state
@@ -243,8 +243,7 @@ public class CollectShooter extends SubsystemBase{
                     setState(State_CS.ALIGN_NOTE);
                 }
 
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {        // Shoot Speaker Button Pressed
-                    csTarget = CS.kTargetSpeaker;
+                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {        // Off Button Pressed
                     setState(State_CS.OFF);
                     break;
                 }
@@ -343,13 +342,13 @@ public class CollectShooter extends SubsystemBase{
                 // when the motors are finally up to speed, it is time to shoot
                 // when true - transition to a new state
                 if (csTarget == CS.kTargetSpeaker) {
-                    setShooterSpeed(1);
-                } else {
                     setShooterSpeed(.8);
+                } else {
+                    setShooterSpeed(.18);
                 }
 
                 // wait a period of time for the robot to eject the note
-                if (countLoop > 50) {
+                if (countLoop > 35) {
                 // after the wait - transition back to the stop state
                     setState(State_CS.SHOOT);
                 }
@@ -359,16 +358,14 @@ public class CollectShooter extends SubsystemBase{
             case State_CS.SHOOT:
 
                 // start the collection motor, to move the note forward
-                setCollectorSpeed(.5);
+                setCollectorSpeed(.8);
 
                 // wait a period of time for the robot to shoot the note
-                if (countLoop > 100) {
+                if (countLoop > 70) {
                 // after the wait - transition back to the stop state
                     setState(State_CS.OFF);
                 }
-                // after the wait - transition back to the stop state
-                setState(State_CS.OFF);
-
+                                
                 break;
 
             case State_CS.EJECT_NOTE:

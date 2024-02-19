@@ -55,6 +55,7 @@ public interface RobotMap {
         public static final class Physical {
             /** Distance between left and right wheels */
             public static final double kTrackWidth = Units.inchesToMeters(30);
+            // CHECK THIS -- Center of Wheels are 2.75" from edgle, so TrackWidth and WheekBase should be 30-5.5 or 24.5 inches        
             
             /** Distance between front and back wheels */
             public static final double kWheelBase = Units.inchesToMeters(30);

@@ -9,7 +9,7 @@ import static frc.robot.RobotMap.LEDConstants.*;
 
 // Code from Mr. R to control LEDs attached to the Robot. Can be used for system checks, etc
 
-public class LEDSubsystem extends SubsystemBase {
+public class LEDs extends SubsystemBase {
 
     private int stateLEDs = STATE_LEDS_OFF;
 
@@ -25,6 +25,9 @@ public class LEDSubsystem extends SubsystemBase {
     private long startTime = 0;
     private long elapsedTime = 0;
     private double timeLeft = 120;
+
+    private boolean flagBlink = false;
+    private int countBlink = 0;
 
      private void waitMSecs(long delay) {
         startTime = System.currentTimeMillis();
@@ -94,6 +97,30 @@ public class LEDSubsystem extends SubsystemBase {
             case STATE_LEDS_OFF:
                 setColor(1, 61, 0, 0, 0);
                 break;
+
+            case STATE_LEDS_COLOR:
+                if (colBlink) {
+                    countBlink++;
+                    if (countBlink > 50) {
+                        flagBlink = !flagBlink;
+                        countBlink = 0;
+                    }
+                } else {
+                    flagBlink = false;
+                    countBlink = 0;
+                }
+                if(!flagBlink) {
+                    for (int i = 0; i < 61; i++) {
+                        ledBuffer.setRGB(i, colR, colG, colB);
+                    }
+                } else {
+                    for (int i=0; i < 61; i++) {
+                        ledBuffer.setRGB(i, 0, 0, 0);
+                    }
+                }
+
+                break;
+
             case STATE_LEDS_INIT:
                 setColor(1, 61, 0, 0, 0);
                 for (int i = 1; i<=61 ; i++) {
