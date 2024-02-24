@@ -3,6 +3,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.IO.OI;
+import frc.robot.IO.OI.RobotControls;
 import frc.robot.RobotMap.LEDConstants;
 import frc.robot.subsystems.CollectShooter;
 import frc.robot.subsystems.LEDs;
@@ -55,6 +57,16 @@ public class Robot extends TimedRobot {
         //leds.setCol(192,192,0,true);
         //leds.setCol(255,95,21,true);
         leds.setCol(255,95,0,true);
+        
+        /* ------------------------------ ROBOT BUTTONS ----------------------------- */
+        if(RobotControls.getDIO(RobotMap.RobotSettings.kWhite)) {
+            leds.setState(LEDConstants.STATE_LEDS_STATUS);
+        } else if (RobotControls.getDIO(RobotMap.RobotSettings.kRed)) {
+            m_robotContainer.getSwerveSubsystem().setDriveMode(false);
+        } else if (RobotControls.getDIO(RobotMap.RobotSettings.kYellow)) {
+            SmartDashboard.putBoolean("DIO_W", RobotControls.getDIO(RobotMap.RobotSettings.kWhite));
+            IO.Gyro.zeroHeading();
+        }
     }
 
 

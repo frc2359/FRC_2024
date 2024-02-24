@@ -267,4 +267,10 @@ public interface RobotMap {
         public static final int INTAKE_EJECT = 7;
         public static final int INTAKE_EJECT_FAST = 8;
     }
+
+    public static final class RobotSettings {
+        public static final int kWhite = 0;
+        public static final int kYellow = 1;
+        public static final int kRed = 2;
+    }
 }

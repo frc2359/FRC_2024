@@ -62,7 +62,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private final SwerveModule[] modules = new SwerveModule[]{frontRight, frontLeft, backRight, backLeft};
 
-    // private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+    private SwerveModulePosition frPositionCache;    
+    private SwerveModulePosition flPositionCache;
+    private SwerveModulePosition brPositionCache;
+    private SwerveModulePosition blPositionCache;
+
+
 
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(
                     DriveConstants.Physical.kDriveKinematics,
@@ -100,6 +105,22 @@ public class SwerveSubsystem extends SubsystemBase {
             } catch (Exception e) {
             }
         }).start();
+
+        new Thread(() -> {
+            while (!Thread.interrupted()) {
+                flPositionCache = frontLeft.getPosition();
+                frPositionCache = frontRight.getPosition();
+                blPositionCache = backLeft.getPosition();
+                brPositionCache = backRight.getPosition();
+                try {
+                    Thread.sleep(10); // Adjust the sleep time as needed
+                } catch (InterruptedException e) {
+                    break; // Exit the loop if the thread is interrupted
+                }
+            }
+        }).start();
+        // Rest of your constructor code
+        
     }
 
     public double getCalculatedHeading() {
@@ -134,10 +155,10 @@ public class SwerveSubsystem extends SubsystemBase {
         backLeft.invertDrive(true);
         odometer.update(getRotation2d(),
                         new SwerveModulePosition[] {
-                            frontRight.getPosition(),
-                            frontLeft.getPosition(),
-                            backRight.getPosition(),
-                            backLeft.getPosition()});
+                            frPositionCache,
+                            flPositionCache,
+                            brPositionCache,
+                            blPositionCache});
         if(DevMode.isTelemetryEnabled) {
             showData();
         }

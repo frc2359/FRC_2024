@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.OIConstants;
 import frc.robot.RobotMap.DevMode;
+import frc.robot.RobotMap.RobotSettings;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
@@ -40,6 +41,9 @@ public class IO {
     // sets up network access to access limelight
     private static final NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
 
+    private static DigitalInput white = new DigitalInput(RobotSettings.kWhite);
+    private static DigitalInput yellow = new DigitalInput(RobotSettings.kYellow);
+    private static DigitalInput red = new DigitalInput(RobotSettings.kRed);
     
 
     /** Note Sensor Class*/
@@ -243,6 +247,22 @@ public class IO {
 
     /** Helper functions for the Operator Input */
     public static class OI {
+        public static class RobotControls {
+            public static boolean getDIO(int port) {
+                if (port == RobotSettings.kRed || port == RobotSettings.kWhite || port == RobotSettings.kYellow) {
+                    switch(port) {
+                        case RobotSettings.kWhite:
+                            return !white.get();
+                        case RobotSettings.kRed:
+                            return !red.get();
+                        case RobotSettings.kYellow:
+                            return !yellow.get();
+                    }
+                }
+                return false;
+                    
+            }
+        }
 
         /** The driver Joystick - currently configured for a 4-axis flight-sim like joystick */
         public static class Driver {
