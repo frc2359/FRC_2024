@@ -36,14 +36,72 @@ public interface RobotMap {
 
     /** Constants for the Shooter */
     public static final class CollectShooterConstants {
-        public static final double kP = 6e-5; 
-        public static final double kI = 0;
-        public static final double kD = 0; 
-        public static final double kIz = 0; 
-        public static final double kFF = 0.000015; 
-        public static final double kMaxOutput = 1; 
-        public static final double kMinOutput = -1;
-        public static final double maxRPM = 5700;
+        public static final class CANID {
+            public static final int kCANCollector = 10;
+            public static final int kCANTop = 2;    
+            public static final int kCANBot = 3;
+        }
+        public static final class PIDConstants {
+            public static final double kP = 6e-5; 
+            public static final double kI = 0;
+            public static final double kD = 0; 
+            public static final double kIz = 0; 
+            public static final double kFF = 0.000015; 
+            public static final double kMaxOutput = 1; 
+            public static final double kMinOutput = -1;
+            public static final double maxRPM = 5700;
+        }
+    
+
+        /** States for Collector - Shooter */
+        public static final class State_CS {
+            /** This is the unkown state for the collector shooter */
+            public static final int UNKNOWN = 0;
+            public static final int OFF = 1;
+            public static final int COLLECTOR_INTAKE = 2;
+            public static final int SHOOTER_INTAKE = 3;
+            public static final int NOTE_READY = 4;
+            public static final int PREPARE_TO_SHOOT = 5;
+            public static final int SHOOT = 6;
+            public static final int EJECT_NOTE = 7;
+            public static final int ALIGN_NOTE = 8;  
+            public static final int MANUAL = 99;
+        }
+
+        //** Types for Collector - Shooter */
+        public static final class CS {
+            public static final int kTargetNone = 0;
+            public static final int kTargetAmp = 1;
+            public static final int kTargetSpeaker = 2;
+            public static final double kEjectSlow = -.25;
+            public static final double kEjectFast = -.75;
+        }
+    }
+
+    public static final class LifterConstants {
+        public static final class CANID {
+            public static final int kLeft = 11;
+            public static final int kRight = 12;
+        }
+
+        public static final class PIDConstants {
+            public static final double kP = 6e-5; 
+            public static final double kI = 0;
+            public static final double kD = 0; 
+            public static final double kIz = 0; 
+            public static final double kFF = 0.000015; 
+            public static final double kMaxOutput = 1; 
+            public static final double kMinOutput = -1;
+            public static final double maxRPM = 5700;
+        }
+
+        public static final class LifterStates {
+            public static final int UNKNOWN = 0;
+            public static final int OFF = 1;
+            public static final int LIFT_LINEAR = 2;
+            public static final int LIFT_BALANCE = 3;
+            public static final int MANUAL = 99;
+        }
     }
 
     /** Constants for the Teleop and Drivetrain (needs restructuring to separate TeleOp consts and Drivetrain consts) */
@@ -231,31 +289,6 @@ public interface RobotMap {
         public static final int PIECE_TYPE_CUBE = 1;
         public static final int PIECE_TYPE_CONE = 2;
     }
-
-    /** States for Collector - Shooter */
-    public static final class State_CS {
-        /** This is the unkown state for the collector shooter */
-        public static final int UNKNOWN = 0;
-        public static final int OFF = 1;
-        public static final int COLLECTOR_INTAKE = 2;
-        public static final int SHOOTER_INTAKE = 3;
-        public static final int NOTE_READY = 4;
-        public static final int PREPARE_TO_SHOOT = 5;
-        public static final int SHOOT = 6;
-        public static final int EJECT_NOTE = 7;
-        public static final int ALIGN_NOTE = 8;  
-        public static final int MANUAL = 99;
-    }
-
-    //** Types for Collector - Shooter */
-    public static final class CS {
-        public static final int kTargetNone = 0;
-        public static final int kTargetAmp = 1;
-        public static final int kTargetSpeaker = 2;
-        public static final double kEjectSlow = -.25;
-        public static final double kEjectFast = -.75;
-    }
-
 
     //** Button Box Buttons */
     public static final class ButtonBOX {

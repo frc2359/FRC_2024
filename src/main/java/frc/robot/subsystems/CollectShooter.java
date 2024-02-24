@@ -17,10 +17,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.IO.Modifiers;
 import frc.robot.IO.OI.OperatorXbox;
-import frc.robot.RobotMap.State_CS;
+import frc.robot.RobotMap.CollectShooterConstants.State_CS;
 import frc.robot.RobotMap.ButtonBOX;
-import frc.robot.RobotMap.CS;
-import frc.robot.RobotMap.CollectShooterConstants;
+import frc.robot.RobotMap.CollectShooterConstants.CS;
+import frc.robot.RobotMap.CollectShooterConstants.PIDConstants;
+import frc.robot.RobotMap.CollectShooterConstants.CANID;
+
 
 public class CollectShooter extends SubsystemBase{
 
@@ -32,21 +34,16 @@ public class CollectShooter extends SubsystemBase{
     private double joyCollector = 0;
     private double joyShooter = 0;
     private int countLoop = 0; 
-   
-    /** CAN IDs -- MOVE TO ROBOTMAP */
-    private final int kCANCollector = 10;
-    private final int kCANTop = 2;    
-    private final int kCANBot = 3;
 
 
     /** Collector CAN Spark Flex Motor */
-    private CANSparkMax collector = new CANSparkMax(kCANCollector, MotorType.kBrushless);
+    private CANSparkMax collector = new CANSparkMax(CANID.kCANCollector, MotorType.kBrushless);
     
     /** Upper shooter CAN Spark Flex Motor */
-    private CANSparkFlex shootTop = new CANSparkFlex(kCANTop, MotorType.kBrushless);
+    private CANSparkFlex shootTop = new CANSparkFlex(CANID.kCANTop, MotorType.kBrushless);
     
     /** Lower shooter CAN Spark Flex Motor */
-    private CANSparkFlex shootBottom = new CANSparkFlex(kCANBot, MotorType.kBrushless);
+    private CANSparkFlex shootBottom = new CANSparkFlex(CANID.kCANBot, MotorType.kBrushless);
 
     private SparkPIDController shootTopPID;
     private SparkPIDController shootBottomPID;
@@ -71,21 +68,21 @@ public class CollectShooter extends SubsystemBase{
         // set PID coefficients
         shootTopPID.setSmartMotionMaxVelocity(6000, 0);
         shootTopPID.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
-        shootTopPID.setP(CollectShooterConstants.kP);
-        shootTopPID.setI(CollectShooterConstants.kI);
-        shootTopPID.setD(CollectShooterConstants.kD);
-        shootTopPID.setIZone(CollectShooterConstants.kIz);
-        shootTopPID.setFF(CollectShooterConstants.kFF);
-        shootTopPID.setOutputRange(CollectShooterConstants.kMinOutput, CollectShooterConstants.kMaxOutput);
+        shootTopPID.setP(PIDConstants.kP);
+        shootTopPID.setI(PIDConstants.kI);
+        shootTopPID.setD(PIDConstants.kD);
+        shootTopPID.setIZone(PIDConstants.kIz);
+        shootTopPID.setFF(PIDConstants.kFF);
+        shootTopPID.setOutputRange(PIDConstants.kMinOutput, PIDConstants.kMaxOutput);
 
         shootBottomPID.setSmartMotionMaxVelocity(6000, 0);
         shootBottomPID.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
-        shootBottomPID.setP(CollectShooterConstants.kP);
-        shootBottomPID.setI(CollectShooterConstants.kI);
-        shootBottomPID.setD(CollectShooterConstants.kD);
-        shootBottomPID.setIZone(CollectShooterConstants.kIz);
-        shootBottomPID.setFF(CollectShooterConstants.kFF);
-        shootBottomPID.setOutputRange(CollectShooterConstants.kMinOutput, CollectShooterConstants.kMaxOutput);
+        shootBottomPID.setP(PIDConstants.kP);
+        shootBottomPID.setI(PIDConstants.kI);
+        shootBottomPID.setD(PIDConstants.kD);
+        shootBottomPID.setIZone(PIDConstants.kIz);
+        shootBottomPID.setFF(PIDConstants.kFF);
+        shootBottomPID.setOutputRange(PIDConstants.kMinOutput, PIDConstants.kMaxOutput);
 
     }
 
