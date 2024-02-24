@@ -9,6 +9,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public interface RobotMap {
+    public static final class DevMode {
+        public static final boolean isTelemetryEnabled = false;
+    }
+
     /** Configuration constants for Limelight */
     public static final class LimelightConsants {
         public static final int kPipelineLedSettings = 0;

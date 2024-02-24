@@ -17,6 +17,7 @@ import frc.robot.IO.Gyro;
 import frc.robot.IO.OI;
 import frc.robot.IO.Gyro.GyroType;
 import frc.robot.RobotMap.AutoConstants;
+import frc.robot.RobotMap.DevMode;
 import frc.robot.RobotMap.DriveConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -137,7 +138,9 @@ public class SwerveSubsystem extends SubsystemBase {
                             frontLeft.getPosition(),
                             backRight.getPosition(),
                             backLeft.getPosition()});
-        showData();
+        if(DevMode.isTelemetryEnabled) {
+            showData();
+        }
     }
 
     /**Set drive mode between brake and coast */

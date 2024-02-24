@@ -12,10 +12,10 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.OIConstants;
+import frc.robot.RobotMap.DevMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
-import static frc.robot.RobotMap.*;
 import java.util.HashMap;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -121,9 +121,13 @@ public class IO {
             m.put("botpose", limelightTable.getEntry("botpose").getDoubleArray(new double[6]));
             m.put("target_camera", limelightTable.getEntry("targetpose_cameraspace").getDoubleArray(new double[6]));
             m.put("target_robot", limelightTable.getEntry("targetpose_robotspace").getDoubleArray(new double[6]));
-            SmartDashboard.putNumberArray("botpose", m.get("botpose"));
-            SmartDashboard.putNumberArray("t_c", m.get("target_camera"));
-            SmartDashboard.putNumberArray("t_r", m.get("target_robot"));
+            
+            if(DevMode.isTelemetryEnabled) {
+                SmartDashboard.putNumberArray("botpose", m.get("botpose"));
+                SmartDashboard.putNumberArray("t_c", m.get("target_camera"));
+                SmartDashboard.putNumberArray("t_r", m.get("target_robot"));
+            }
+            
             return m;
         }
 
@@ -287,7 +291,9 @@ public class IO {
 
             /** Checks stick twist <b>FOR THE DRIVE CONTROLLER</b> */
             public static double getDriveTwist() {
-                SmartDashboard.putNumber("Twist", driver.getTwist());
+                if(DevMode.isTelemetryEnabled) {
+                    SmartDashboard.putNumber("Twist", driver.getTwist());
+                }
                 return Math.abs(driver.getTwist()) > 0.5 ? driver.getTwist() * 0.5 : 0;
             }
 

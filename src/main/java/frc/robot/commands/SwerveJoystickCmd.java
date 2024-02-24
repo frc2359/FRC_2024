@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.DevMode;
 import frc.robot.RobotMap.DriveConstants;
 
 import java.util.function.Supplier;
@@ -49,10 +50,12 @@ public class SwerveJoystickCmd extends Command {
         xSpeed = Math.abs(xSpeed) > RobotMap.OIConstants.kDriverDeadband ? xSpeed : 0.0;
         ySpeed = Math.abs(ySpeed) > RobotMap.OIConstants.kDriverDeadband ? ySpeed : 0.0;
         turningSpeed = Math.abs(turningSpeed) > RobotMap.OIConstants.kDriverDeadband ? turningSpeed : 0.0;
-
-        SmartDashboard.putNumber("xSpeed = ", xSpeed);
-        SmartDashboard.putNumber("ySpeed = ", ySpeed);
-        SmartDashboard.putNumber("Turning Speed = ", turningSpeed);
+        
+        if(DevMode.isTelemetryEnabled) {
+            SmartDashboard.putNumber("xSpeed = ", xSpeed);
+            SmartDashboard.putNumber("ySpeed = ", ySpeed);
+            SmartDashboard.putNumber("Turning Speed = ", turningSpeed);
+        }
 
         // 3. Make the driving smoother
         xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
