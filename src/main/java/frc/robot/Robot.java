@@ -88,4 +88,8 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("Note Det.", IO.Sensor.isNoteDetected());
     }
 
+    @Override
+    public void testPeriodic() {
+        m_robotContainer.getSwerveSubsystem().showData();
+    }
 }

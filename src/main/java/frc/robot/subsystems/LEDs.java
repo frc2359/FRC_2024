@@ -2,10 +2,14 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.IO;
+import frc.robot.RobotMap.LEDConstants;
 
 import static frc.robot.RobotMap.LEDConstants.*;
+
+import java.util.OptionalInt;
 
 // Code from Mr. R to control LEDs attached to the Robot. Can be used for system checks, etc
 
@@ -147,7 +151,123 @@ public class LEDs extends SubsystemBase {
                     }
                 }
                 break;        
-        }
+            case STATE_LEDS_STATUS:
+
+                int rdyLvl = 0;
+
+                for (int i=0; i<61; i++) {
+                    ledBuffer.setRGB(i, 0, 0, 0);
+                }
+                double batVal = IO.Status.getBattVoltage();
+                 
+                if (batVal > 12.5) {
+                    setPair(4, 0, 255, 0);
+                    setPair(5, 0, 0, 255);
+                    rdyLvl = Math.max(rdyLvl, 1);
+                }
+                if (batVal >= 12.0 && batVal <12.5 ) {
+                    setPair(4, 0, 255, 0);
+                    setPair(5, 0, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 1);
+                }
+                if (batVal >= 11.5 && batVal <12.0 ) {
+                    setPair(4, 0, 255, 0);
+                    setPair(5, 255, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 2);
+                }
+                if (batVal >= 11.0 && batVal <11.5 ) {
+                    setPair(4, 255, 255, 0);
+                    setPair(5, 255, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 2);
+                }
+                if (batVal <11.0 ) {
+                    setPair(4, 255, 0, 0);
+                    setPair(5, 255, 0, 0);
+                    rdyLvl = Math.max(rdyLvl, 3);
+                }
+
+                // Status Info
+
+                if (DriverStation.isEnabled()) {
+                    setPair(7, 0,255, 0);
+                    if (DriverStation.isAutonomous()) {
+                        setPair(8, 255, 255, 0);
+                    }
+                    if (DriverStation.isTeleop()) {
+                        setPair(8, 0, 255, 0);
+                    }
+                    if (DriverStation.isTest()) {
+                        setPair(8, 255, 255, 255);
+                    }
+                    setPair(9, 0,255, 0); 
+                }
+                if (DriverStation.isDisabled()) {
+                    setPair(7, 128,128, 0);
+                    setPair(8, 128,128, 0);
+                    setPair(9, 128,128, 0); 
+                }
+                if (DriverStation.isEStopped()) {
+                    setPair(7, 255,0, 0);
+                    setPair(8, 255,0, 0);
+                    setPair(9, 255,0, 0); 
+                    rdyLvl = Math.max(rdyLvl, 3);
+                }
+
+                // Alliance Info
+                int stn = DriverStation.getLocation().getAsInt();
+                for (int i = 0; i<stn; i++) {
+                    if(IO.Status.isTeamRed()) {
+                        setPair(11+i,255,0,0);
+                    }
+                    else {
+                        setPair(11+i,0,0,255);
+                    }
+                }
+                for (int i=stn; i<3; i++) {
+                    setPair(11+i, 128, 128, 128);
+                }
+                
+                if (DriverStation.isFMSAttached()) {
+                    setPair(15, 0, 255, 0);
+                } else {
+                    setPair(15, 255, 0, 0);
+                }
+
+                if (DriverStation.isDSAttached()) {
+                    setPair(17, 0, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 1);
+                } else {
+                    setPair(17, 255, 0, 0);
+                    rdyLvl = Math.max(rdyLvl, 2);
+                }
+
+                if (IO.Gyro.isNavXAvail()) {
+                    setPair(19, 0, 255, 0);
+                    rdyLvl = Math.max(rdyLvl, 1);
+                } else {
+                    setPair(19, 255, 0, 0);
+                    rdyLvl = Math.max(rdyLvl, 3);
+                }
+                // Show Readiness Level
+                switch (rdyLvl) {
+                    case 0:
+                        setColor(29, 33, 128, 128, 128);
+                        break;
+                    case 1:
+                        setColor(29, 33, 0, 255, 0);
+                        break;
+                    case 2:
+                        setColor(29, 33, 128, 128, 0);
+                        break;
+                    case 3:
+                        setColor(29, 33, 255, 0, 0);
+                        break;
+                }
+
+                break;
+            case STATE_LEDS_AUTO:
+                break;
+            }
        leds.setData(ledBuffer);
     }
 }
