@@ -15,29 +15,53 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.RobotMap.AutoConstants;
 import frc.robot.RobotMap.DriveConstants;
+import frc.robot.RobotMap.OIConstants;
+import frc.robot.Navigation.NavigationSubsystem;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.IO.OI;
+import frc.robot.SwerveDrive.SwerveDriveSubsystem;
+import frc.robot.SwerveDrive.SwerveDriveCmd;
+import frc.robot.IO.IO_Subsystem;
+import frc.robot.IO2.OI;
+import frc.robot.RobotMap;
+import edu.wpi.first.wpilibj.Joystick;
+
 
 public class RobotContainer {
 
-    private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+    //private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
 
     public RobotContainer() {
+        // Subsystems
+        SwerveDriveSubsystem driveSubsystem = new SwerveDriveSubsystem();
+        IO_Subsystem ioSubsystem = new IO_Subsystem();
+        //IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+        NavigationSubsystem navigationSubsystem = new NavigationSubsystem(driveSubsystem::getPositions);
+
+        // Controllers
+        //Joystick driverJoy = new Joystick(OIConstants.DRIVE_PORT);
+
+
+        /**
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                 swerveSubsystem,
-                () -> -OI.Driver.getDriveY() * swerveSubsystem.convToSpeedMult(),
+                () -> OI.Driver.getDriveY() * swerveSubsystem.convToSpeedMult(),
                 () -> -OI.Driver.getDriveX() * swerveSubsystem.convToSpeedMult(),
-                () -> -OI.Driver.getDriveTwist() * swerveSubsystem.convToSpeedMult(),
+                () -> OI.Driver.getDriveTwist() * swerveSubsystem.convToSpeedMult(),
                 () -> !OI.Driver.getTrigger()));
-    }
+        */
+        driveSubsystem.setDefaultCommand(new SwerveDriveCmd(
+                driveSubsystem,
+                ioSubsystem,
+                navigationSubsystem));
+
 
     /**Returns the current instance of the swerve subsystem */
-    public SwerveSubsystem getSwerveSubsystem() {
-        return swerveSubsystem;
-    }
+    //final public SwerveDriveSubsystem getSwerveSubsystem() {
+    //    return driveSubsystem;
+    //}
     
-
+/**
     public Command getAutonomousCommand() {
         // 1. Create trajectory settings
         TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
@@ -78,4 +102,6 @@ public class RobotContainer {
                 swerveControllerCommand,
                 new InstantCommand(() -> swerveSubsystem.stopModules()));
     }
+    */
+}
 }

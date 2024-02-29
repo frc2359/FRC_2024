@@ -29,9 +29,9 @@ import com.kauailabs.navx.frc.AHRS;
  * </p>
  */
 
-public class IO {
+public class IO2 {
     // Joystick (4axis tilt) at port DRIVE_PORT (def @ RobotMap)
-    private static Joystick driver = new Joystick(OIConstants.DRIVE_PORT);
+    //private static Joystick driver = new Joystick(OIConstants.DRIVE_PORT);
     // Xbox Controller at port LIFT_PORT (def @ RobotMap)
     private static XboxController liftCont = new XboxController(OIConstants.LIFT_PORT);
     // Generic HID (collections of buttons at port BOX_PORT
@@ -261,81 +261,6 @@ public class IO {
                 }
                 return false;
                     
-            }
-        }
-
-        /** The driver Joystick - currently configured for a 4-axis flight-sim like joystick */
-        public static class Driver {
-            /**
-             * Checks Button
-             * 
-             * @param btn is the targeted button
-             */
-            public static boolean getButton(int btn) {
-                return driver.getRawButtonPressed(btn);
-            }
-
-            /**
-             * Get selected axis
-             * 
-             * @param ax is the axis you selected
-             */
-            public static double getRawAxis(int ax) {
-                return driver.getRawAxis(ax);
-            }
-
-            /** Get the lower dial, values from -1 to 1 */
-            public static double getSpeedDial() {
-                return driver.getRawAxis(3);
-            }
-
-            /** Checks X Axis <b>FOR THE DRIVE CONTROLLER</b> */
-            public static double getDriveX() {
-                return Math.abs(driver.getX()) > 0.1 ? driver.getX() : 0;
-            }
-
-            /** Checks Y Axis <b>FOR THE DRIVE CONTROLLER</b> */
-            public static double getDriveY() {
-                return Math.abs(driver.getY()) > 0.1 ? driver.getY() : 0;
-            }
-
-            /** Checks stick angle <b>FOR THE DRIVE CONTROLLER</b> */
-            public static double getDriveDirection() {
-                return driver.getDirectionRadians();
-            }
-
-            /** Checks stick magnitude <b>FOR THE DRIVE CONTROLLER</b> */
-            public static double getDriveMagnitude() {
-                return driver.getMagnitude();
-            }
-
-            /** Checks stick twist <b>FOR THE DRIVE CONTROLLER</b> */
-            public static double getDriveTwist() {
-                if(DevMode.isTelemetryEnabled) {
-                    SmartDashboard.putNumber("Twist", driver.getTwist());
-                }
-                return Math.abs(driver.getTwist()) > 0.5 ? driver.getTwist() * 0.5 : 0;
-            }
-
-            /** Checks Trigger <b>FOR THE DRIVE CONTROLLER</b> */
-            public static boolean getTrigger() {
-                return driver.getTrigger();
-            }
-
-            /** Checks POV (little hat guy on top) <b>FOR THE DRIVE CONTROLLER</b> */
-            public static double getPOV() {
-                // return liftCont.getLeftTriggerAxis() - liftCont.getRightTriggerAxis();
-                return driver.getPOV();
-            }
-
-            /**
-             * Checks if POV (little hat guy on top) is rotated to an angle <b>FOR THE DRIVE
-             * CONTROLLER</b>
-             * 
-             * @param angle is the desired angle to check for
-             */
-            public static boolean isPOVToAngle(double angle) {
-                return driver.getPOV() == angle;
             }
         }
 

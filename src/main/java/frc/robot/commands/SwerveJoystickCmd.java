@@ -8,6 +8,8 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -18,6 +20,8 @@ public class SwerveJoystickCmd extends Command {
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
     private final Supplier<Boolean> fieldOrientedFunction;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+
+    private final StructArrayPublisher<SwerveModuleState> publisher;
 
     /** Command that is run during TeleOp that allows for controls from the Driver Joystick */
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
@@ -32,6 +36,8 @@ public class SwerveJoystickCmd extends Command {
         this.yLimiter = new SlewRateLimiter(RobotMap.DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.turningLimiter = new SlewRateLimiter(RobotMap.DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
         addRequirements(swerveSubsystem);
+
+        publisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
     }
 
     @Override
@@ -79,6 +85,9 @@ public class SwerveJoystickCmd extends Command {
 
         // 6. Output each module states to wheels
         swerveSubsystem.setModuleStates(moduleStates);
+
+        // 7. Send visualization to AdvantageScope
+        publisher.set(moduleStates);
     }
 
     @Override

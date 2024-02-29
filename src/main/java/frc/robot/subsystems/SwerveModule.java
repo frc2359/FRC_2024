@@ -34,13 +34,13 @@ public class SwerveModule {
 
     private final CANcoder absoluteEncoder; // Use CANCoder for absolute position
     private final boolean absoluteEncoderReversed;
-    private final double absoluteEncoderOffsetRad;
+    private final double absoluteEncoderOffset;
 
     /** Represents a single swerve module that contains two motors (drive and spin) and a wheel */
     public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
             int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
 
-        this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
+        this.absoluteEncoderOffset = absoluteEncoderOffset;
         this.absoluteEncoderReversed = absoluteEncoderReversed;
         absoluteEncoder = new CANcoder(absoluteEncoderId);
 
@@ -114,12 +114,12 @@ public class SwerveModule {
         return turningEncoder.getVelocity();
     }
 
-    public double getAbsoluteEncoderDeg() {
+    public double getAbsoluteEncoder() {  // -.5 to +.5
         return absoluteEncoder.getAbsolutePosition().getValueAsDouble(); // No offset
     }
 
     public double getAbsoluteEncoderRad() {
-        double angle = Math.toRadians(getAbsoluteEncoderDeg()) - absoluteEncoderOffsetRad;
+        double angle = Math.PI*2*(getAbsoluteEncoder() - absoluteEncoderOffset);
         return angle * (absoluteEncoderReversed ? -1.0 : 1.0);
     }
 

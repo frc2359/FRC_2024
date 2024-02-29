@@ -8,9 +8,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 public interface RobotMap {
     public static final class DevMode {
-        public static final boolean isTelemetryEnabled = false;
+        public static final boolean isTelemetryEnabled = true;
     }
 
     /** Configuration constants for Limelight */
@@ -55,8 +57,7 @@ public interface RobotMap {
 
         /** States for Collector - Shooter */
         public static final class State_CS {
-            /** This is the unkown state for the collector shooter */
-            public static final int UNKNOWN = 0;
+            public static final int UNKNOWN = 0;            // This is the unkown state for the collector shooter
             public static final int OFF = 1;
             public static final int COLLECTOR_INTAKE = 2;
             public static final int SHOOTER_INTAKE = 3;
@@ -125,11 +126,18 @@ public interface RobotMap {
             public static final double kBaseRadius = Math.sqrt(Math.pow((kTrackWidth / 2), 2) * Math.pow((kWheelBase / 2), 2));
             
             /** Kinematics configured with the location of each module in relation to the center */
+            /**
             public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
                 new Translation2d(kWheelBase / 2, kTrackWidth / 2),    // front right
                 new Translation2d(kWheelBase / 2, -kTrackWidth / 2),     // front left
                 new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // rear right
                 new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));   // rear left
+            */
+             public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+                new Translation2d(kWheelBase / 2, -kTrackWidth / 2),    // front right
+                new Translation2d(kWheelBase / 2, kTrackWidth / 2),     // front left
+                new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),   // rear right
+                new Translation2d(-kWheelBase / 2, kTrackWidth / 2));   // rear left
         }
 
         // MOTOR CONSTANTS ----------------------------------------------------------
@@ -138,17 +146,17 @@ public interface RobotMap {
         public static final int kFrontRightDriveMotorPort = 3;
         public static final int kBackRightDriveMotorPort = 1;
 
-        
+        public static final MotorType motorType = MotorType.kBrushless;
         public static final int kFrontLeftTurningMotorPort = 8;
         public static final int kBackLeftTurningMotorPort = 6;
         public static final int kFrontRightTurningMotorPort = 7;
         public static final int kBackRightTurningMotorPort = 5;
 
 
-        public static final boolean kFrontLeftTurningEncoderReversed = true;
-        public static final boolean kBackLeftTurningEncoderReversed = true;
-        public static final boolean kFrontRightTurningEncoderReversed = true;
-        public static final boolean kBackRightTurningEncoderReversed = true;
+        public static final boolean kFrontLeftTurningEncoderReversed = false; //true;
+        public static final boolean kBackLeftTurningEncoderReversed = false;  //true;
+        public static final boolean kFrontRightTurningEncoderReversed = false;  //true;
+        public static final boolean kBackRightTurningEncoderReversed = false;  //true;
 
         public static final boolean kFrontLeftDriveEncoderReversed = true;
         public static final boolean kBackLeftDriveEncoderReversed = true;
@@ -167,10 +175,15 @@ public interface RobotMap {
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
 
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(90);
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(270);
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(270);
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(90);
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0; // -0.082; //Math.toRadians(90);
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 0; //-0.192; //Math.toRadians(270);
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -0.262; // .234; // Math.toRadians(270);
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 0; //-.247; //Math.toRadians(90);
+
+        public static final double kFrontLeftDriveAbsoluteEncoderOffset = -0.094; // -0.082; //Math.toRadians(90);
+        public static final double kBackLeftDriveAbsoluteEncoderOffset = 0; //-0.192; //Math.toRadians(270);
+        public static final double kFrontRightDriveAbsoluteEncoderOffset = -0.262; // .234; // Math.toRadians(270);
+        public static final double kBackRightDriveAbsoluteEncoderOffset = 0; //-.247; //Math.toRadians(90);
 
         /* Thursday night, 2/15 testing
         public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(-90);

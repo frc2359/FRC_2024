@@ -3,8 +3,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.IO.OI;
-import frc.robot.IO.OI.RobotControls;
+import frc.robot.IO2;
+import frc.robot.IO2.OI;
+import frc.robot.IO2.OI.RobotControls;
 import frc.robot.RobotMap.LEDConstants;
 import frc.robot.subsystems.CollectShooter;
 import frc.robot.subsystems.LEDs;
@@ -25,7 +26,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         m_robotContainer = new RobotContainer();
 
-        m_robotContainer.getSwerveSubsystem().setDriveMode(true);
+       // m_robotContainer.getSwerveSubsystem().setDriveMode(true);
 
         collectShooter.init();
 
@@ -48,7 +49,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-        //CommandScheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
         leds.runLEDs();
     }
 
@@ -62,10 +63,10 @@ public class Robot extends TimedRobot {
         if(RobotControls.getDIO(RobotMap.RobotSettings.kWhite)) {
             leds.setState(LEDConstants.STATE_LEDS_STATUS);
         } else if (RobotControls.getDIO(RobotMap.RobotSettings.kRed)) {
-            m_robotContainer.getSwerveSubsystem().setDriveMode(false);
+           // m_robotContainer.getSwerveSubsystem().setDriveMode(false);
         } else if (RobotControls.getDIO(RobotMap.RobotSettings.kYellow)) {
             SmartDashboard.putBoolean("DIO_W", RobotControls.getDIO(RobotMap.RobotSettings.kWhite));
-            IO.Gyro.zeroHeading();
+            IO2.Gyro.zeroHeading();
         }
     }
 
@@ -84,7 +85,7 @@ public class Robot extends TimedRobot {
     /** This function is called one time before operator takes control. */
     @Override
     public void teleopInit() {
-        m_robotContainer.getSwerveSubsystem().setDriveMode(true);
+        //m_robotContainer.getSwerveSubsystem().setDriveMode(true);
         leds.setCol(9,255,0,false);
     }
 
@@ -94,14 +95,14 @@ public class Robot extends TimedRobot {
         // collectShooter.runShooter();
         csState = collectShooter.stateMachine();
         SmartDashboard.putNumber("cs State", csState);
-        SmartDashboard.putBoolean("Sens 1",IO.Sensor.getNoteSensor(1));
-        SmartDashboard.putBoolean("Sens 3",IO.Sensor.getNoteSensor(3));
-        SmartDashboard.putBoolean("Sens 5",IO.Sensor.getNoteSensor(5));
-        SmartDashboard.putBoolean("Note Det.", IO.Sensor.isNoteDetected());
+        SmartDashboard.putBoolean("Sens 1",IO2.Sensor.getNoteSensor(1));
+        SmartDashboard.putBoolean("Sens 3",IO2.Sensor.getNoteSensor(3));
+        SmartDashboard.putBoolean("Sens 5",IO2.Sensor.getNoteSensor(5));
+        SmartDashboard.putBoolean("Note Det.", IO2.Sensor.isNoteDetected());
     }
 
     @Override
     public void testPeriodic() {
-        m_robotContainer.getSwerveSubsystem().showData();
+        //m_robotContainer.getSwerveSubsystem().showData();
     }
 }

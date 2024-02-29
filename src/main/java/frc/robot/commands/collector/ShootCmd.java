@@ -2,7 +2,7 @@ package frc.robot.commands.collector;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.IO.OI.OperatorXbox;
+import frc.robot.IO2.OI;
 import frc.robot.subsystems.CollectShooter;
 
 public class ShootCmd extends Command {
@@ -39,7 +39,7 @@ public class ShootCmd extends Command {
     @Override
     public boolean isFinished() {
         collectShooter.setShooterPctPower(-.1);
-        return (OperatorXbox.isAPressed() || false); // 2nd part to be transferred to the DIO sensor
+        return (OI.OperatorXbox.isAPressed() || false); // 2nd part to be transferred to the DIO sensor
     }
 
     /** This is run after isFinished returns true, and is where you would place things you would like to represent a "deactivated" state. */

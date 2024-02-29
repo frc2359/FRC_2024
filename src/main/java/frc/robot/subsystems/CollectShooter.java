@@ -1,8 +1,5 @@
 package frc.robot.subsystems;
 
-import frc.robot.IO;
-
-
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -15,9 +12,10 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.IO.Modifiers;
-import frc.robot.IO.OI.OperatorXbox;
 import frc.robot.RobotMap.CollectShooterConstants.State_CS;
+import frc.robot.IO2;
+import frc.robot.IO2.OI;
+import frc.robot.IO2.Modifiers;
 import frc.robot.RobotMap.ButtonBOX;
 import frc.robot.RobotMap.CollectShooterConstants.CS;
 import frc.robot.RobotMap.CollectShooterConstants.PIDConstants;
@@ -100,16 +98,16 @@ public class CollectShooter extends SubsystemBase{
 
     /** Set percent power for the shooter motors */
     public void setShooterPctPower(double percent) {
-        shootTop.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));        
-        shootBottom.set(-Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
+        shootTop.set(Modifiers.withDeadband(OI.OperatorXbox.getRightX(), 0.1));        
+        shootBottom.set(-Modifiers.withDeadband(OI.OperatorXbox.getRightX(), 0.1));
   }
 
     /** Basic run function for the shooter */
     public void runShooter() {
         // collectorSpark.set(Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1));
-        collector.set(Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1));
-        shootTop.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));        
-        shootBottom.set(-Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
+        collector.set(Modifiers.withDeadband(OI.OperatorXbox.getLeftX(), 0.1));
+        shootTop.set(Modifiers.withDeadband(OI.OperatorXbox.getRightX(), 0.1));        
+        shootBottom.set(-Modifiers.withDeadband(OI.OperatorXbox.getRightX(), 0.1));
 
     }
 
@@ -142,8 +140,8 @@ public class CollectShooter extends SubsystemBase{
 
         SmartDashboard.putNumber("Current State", stateCurrent);
 
-        joyCollector = -1 * Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1);
-        joyShooter =Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1);   
+        joyCollector = -1 * Modifiers.withDeadband(OI.OperatorXbox.getLeftX(), 0.1);
+        joyShooter = Modifiers.withDeadband(OI.OperatorXbox.getRightX(), 0.1);   
         if (joyCollector != 0 || joyShooter != 0) {
             setState(State_CS.MANUAL);
         }
@@ -181,19 +179,19 @@ public class CollectShooter extends SubsystemBase{
                 // shooter motor to zero power
                 setShooterSpeed(0);
 
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_COLLECTOR)) {        // Shoot Speaker Button Pressed
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_COLLECTOR)) {        // Shoot Speaker Button Pressed
                     csTarget = CS.kTargetSpeaker;
                     setState(State_CS.COLLECTOR_INTAKE);
                     break;
                 }
                 
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_SHOOTER)) {        // Shoot Speaker Button Pressed
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_SHOOTER)) {        // Shoot Speaker Button Pressed
                     csTarget = CS.kTargetSpeaker;
                     setState(State_CS.SHOOTER_INTAKE);
                     break;
                 }
                 
-                if(IO.Sensor.isNoteDetected()) {
+                if(IO2.Sensor.isNoteDetected()) {
                     setState(State_CS.ALIGN_NOTE);
                 }
 
@@ -207,21 +205,21 @@ public class CollectShooter extends SubsystemBase{
                 
                 // if statement for sensors or limit switches goes here
                 // if true - transition to a new state
-                if (IO.Sensor.isNoteDetected()) {
+                if (IO2.Sensor.isNoteDetected()) {
                     setState(State_CS.ALIGN_NOTE);
                     break;
                 }
 
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {        // Shoot Speaker Button Pressed
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {        // Shoot Speaker Button Pressed
                     csTarget = CS.kTargetSpeaker;
                     setState(State_CS.OFF);
                     break;
                 }
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
                     setState(State_CS.EJECT_NOTE);
                     break;
                 }
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT_FAST)) {        // Eject Button Pressed     
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT_FAST)) {        // Eject Button Pressed     
                     setState(State_CS.EJECT_NOTE);
                     break;
                 }
@@ -236,11 +234,11 @@ public class CollectShooter extends SubsystemBase{
 
                 // if statement for sensors or limit switches goes here
                 // if true - transition to a new state
-                if (IO.Sensor.isNoteDetected()) {
+                if (IO2.Sensor.isNoteDetected()) {
                     setState(State_CS.ALIGN_NOTE);
                 }
 
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {        // Off Button Pressed
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {        // Off Button Pressed
                     setState(State_CS.OFF);
                     break;
                 }
@@ -249,36 +247,36 @@ public class CollectShooter extends SubsystemBase{
 
             case State_CS.ALIGN_NOTE:
                 // if the note is no longer detected move to OFF state
-                if (!IO.Sensor.isNoteDetected()) {
+                if (!IO2.Sensor.isNoteDetected()) {
                     setState(State_CS.OFF);
                     break;
                 }
 
                 // if the note is in the correct position in the chute, it is ready to be processed
-                if (IO.Sensor.isNoteDetected() && !IO.Sensor.getNoteSensor(1) && !IO.Sensor.getNoteSensor(5)) {
+                if (IO2.Sensor.isNoteDetected() && !IO2.Sensor.getNoteSensor(1) && !IO2.Sensor.getNoteSensor(5)) {
                     setState(State_CS.NOTE_READY);
                     break;
                 }
 
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
                     setCollectorSpeed(CS.kEjectSlow);
                     setState(State_CS.EJECT_NOTE);
                     break;
                 }
  
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT_FAST)) {        // Eject Button Pressed     
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT_FAST)) {        // Eject Button Pressed     
                     setCollectorSpeed(CS.kEjectFast);
                     setState(State_CS.EJECT_NOTE);
                     break;
                 }
 
                 // if the note is not all the way in, then move it up slowly
-                 if (IO.Sensor.getNoteSensor(1) && !IO.Sensor.getNoteSensor(5)) {
+                 if (IO2.Sensor.getNoteSensor(1) && !IO2.Sensor.getNoteSensor(5)) {
                     setCollectorSpeed(.25);;
                  }   
 
                 // if the note is too far in, then move it down slowly
-                 if (!IO.Sensor.getNoteSensor(1) && IO.Sensor.getNoteSensor(5)) {
+                 if (!IO2.Sensor.getNoteSensor(1) && IO2.Sensor.getNoteSensor(5)) {
                     setCollectorSpeed(-.25);;
                  }  
 
@@ -293,18 +291,18 @@ public class CollectShooter extends SubsystemBase{
                 setShooterSpeed(0);
 
                 // if the note is no longer detected move to OFF state
-                if (!IO.Sensor.isNoteDetected() || IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {
+                if (!IO2.Sensor.isNoteDetected() || IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {
                     setState(State_CS.OFF);
                     break;
                 }
 
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.SHOOT_SPEAKER)) {        // Shoot Speaker Button Pressed
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.SHOOT_SPEAKER)) {        // Shoot Speaker Button Pressed
                     csTarget = CS.kTargetSpeaker;
                     setState(State_CS.PREPARE_TO_SHOOT);
                     break;
                 }
                 
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.SHOOT_AMP)) {        // Shoot Amp Button Pressed     
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.SHOOT_AMP)) {        // Shoot Amp Button Pressed     
                     csTarget = CS.kTargetAmp;
                     setState(State_CS.PREPARE_TO_SHOOT);
                     break;
@@ -318,13 +316,13 @@ public class CollectShooter extends SubsystemBase{
                 This will optimize the states, we won't need different states for SPEAKER vs AMP
                 */
 
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
                     setCollectorSpeed(CS.kEjectSlow);
                     setState(State_CS.EJECT_NOTE);
                     break;
                 }
  
-                if (IO.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT_FAST)) {        // Eject Button Pressed     
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT_FAST)) {        // Eject Button Pressed     
                     setCollectorSpeed(CS.kEjectFast);
                     setState(State_CS.EJECT_NOTE);
                     break;

@@ -13,9 +13,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.IO.Gyro;
-import frc.robot.IO.OI;
-import frc.robot.IO.Gyro.GyroType;
+import frc.robot.IO2;
+import frc.robot.IO2.Modifiers;
+import frc.robot.IO2.Gyro;
 import frc.robot.RobotMap.AutoConstants;
 import frc.robot.RobotMap.DevMode;
 import frc.robot.RobotMap.DriveConstants;
@@ -30,7 +30,7 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kFrontLeftDriveEncoderReversed,
             DriveConstants.kFrontLeftTurningEncoderReversed,
             DriveConstants.kFrontLeftDriveAbsoluteEncoderPort,
-            DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad,
+            DriveConstants.kFrontLeftDriveAbsoluteEncoderOffset,
             DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
 
     private final SwerveModule frontRight = new SwerveModule(
@@ -39,7 +39,7 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kFrontRightDriveEncoderReversed,
             DriveConstants.kFrontRightTurningEncoderReversed,
             DriveConstants.kFrontRightDriveAbsoluteEncoderPort,
-            DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad,
+            DriveConstants.kFrontRightDriveAbsoluteEncoderOffset,
             DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
 
     private final SwerveModule backLeft = new SwerveModule(
@@ -48,7 +48,7 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kBackLeftDriveEncoderReversed,
             DriveConstants.kBackLeftTurningEncoderReversed,
             DriveConstants.kBackLeftDriveAbsoluteEncoderPort,
-            DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad,
+            DriveConstants.kBackLeftDriveAbsoluteEncoderOffset,
             DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
 
     private final SwerveModule backRight = new SwerveModule(
@@ -57,7 +57,7 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kBackRightDriveEncoderReversed,
             DriveConstants.kBackRightTurningEncoderReversed,
             DriveConstants.kBackRightDriveAbsoluteEncoderPort,
-            DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad,
+            DriveConstants.kBackRightDriveAbsoluteEncoderOffset,
             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
     private final SwerveModule[] modules = new SwerveModule[]{frontRight, frontLeft, backRight, backLeft};
@@ -124,7 +124,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double getCalculatedHeading() {
-        return -1 * Math.IEEEremainder(Gyro.getAngle(GyroType.kNAVX), 360);
+        return -1; //* Math.IEEEremainder(Gyro.getAngle(GyroType.kNAVX), 360);
     }
 
     public Rotation2d getRotation2d() {
@@ -152,7 +152,7 @@ public class SwerveSubsystem extends SubsystemBase {
     /** Periodically runs */
     @Override
     public void periodic() {
-        backLeft.invertDrive(true);
+        //backLeft.invertDrive(true);
         odometer.update(getRotation2d(),
                         new SwerveModulePosition[] {
                             frPositionCache,
@@ -187,10 +187,10 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Robot Fused Heading", Gyro.getFusedHeading());
         SmartDashboard.putNumber("Robot Heading", getCalculatedHeading());
         SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
-        SmartDashboard.putNumber("FL Abs", frontLeft.getAbsoluteEncoderDeg());
-        SmartDashboard.putNumber("FR Abs", frontRight.getAbsoluteEncoderDeg());
-        SmartDashboard.putNumber("BL Abs", backLeft.getAbsoluteEncoderDeg());
-        SmartDashboard.putNumber("BR Abs", backRight.getAbsoluteEncoderDeg());
+        SmartDashboard.putNumber("FL Abs", frontLeft.getAbsoluteEncoder());
+        SmartDashboard.putNumber("FR Abs", frontRight.getAbsoluteEncoder());
+        SmartDashboard.putNumber("BL Abs", backLeft.getAbsoluteEncoder());
+        SmartDashboard.putNumber("BR Abs", backRight.getAbsoluteEncoder());
         SmartDashboard.putNumber("FL Rad", frontLeft.getAbsoluteEncoderRad());
         SmartDashboard.putNumber("FR Rad", frontRight.getAbsoluteEncoderRad());
         SmartDashboard.putNumber("BL Rad", backLeft.getAbsoluteEncoderRad());
@@ -250,7 +250,7 @@ public class SwerveSubsystem extends SubsystemBase {
     */
     
     public double convToSpeedMult() {
-        double spdMultiplier = ((OI.Driver.getSpeedDial() + 1) * 0.25) + 0.5;
+        double spdMultiplier = 1; //((OI.Driver.getSpeedDial() + 1) * 0.25) + 0.5;
         SmartDashboard.putNumber("SpeedDriveMult", spdMultiplier);
         return spdMultiplier;
     }
