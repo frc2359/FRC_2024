@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Navigation;
+package frc.robot.subsystems.swerve.navigation;
 
 import frc.robot.IO;
 import frc.robot.RobotMap.DriveConstants;
@@ -97,7 +97,7 @@ public class NavigationSubsystem extends SubsystemBase {
     });
 
      odometry = new SwerveDriveOdometry(
-      m_kinematics, gyro.getRotation2d(), modulePositions.get(), new Pose2d(0.0, 0.0, new Rotation2d()));
+      m_kinematics, IO.Gyro.getRotation2D(), modulePositions.get(), new Pose2d(0.0, 0.0, new Rotation2d()));
   }
 
   public double angle() {

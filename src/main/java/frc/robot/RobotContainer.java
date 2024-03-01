@@ -16,11 +16,10 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.RobotMap.AutoConstants;
 import frc.robot.RobotMap.DriveConstants;
 import frc.robot.RobotMap.OIConstants;
-import frc.robot.Navigation.NavigationSubsystem;
-import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.SwerveDrive.SwerveDriveSubsystem;
-import frc.robot.SwerveDrive.SwerveDriveCmd;
+import frc.robot.commands.SwerveDriveCmd;
+import frc.robot.subsystems.swerve.SwerveDriveSubsystem;
+import frc.robot.subsystems.swerve.navigation.NavigationSubsystem;
+
 import static frc.robot.IO.OI;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.Joystick;

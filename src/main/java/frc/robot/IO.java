@@ -221,7 +221,6 @@ public class IO {
 
         public static double getAngle() {
             return navx.getAngle();
-            // return (gyroType == GyroType.kNAVX ? navx : adx).getAngle();
         }
 
         public static float getDisplacementX() {
@@ -237,11 +236,7 @@ public class IO {
         }
 
         public static double getYaw(boolean gyroType) {
-            // if (gyroType == GyroType.kNAVX) {
             return navx.getYaw();
-            // } else {
-            // return (adx.getAngle() % 360) - 180;
-            // }
         }
 
         /** @return true if the NavX is available */
@@ -249,7 +244,7 @@ public class IO {
             return navx.isConnected();
         }
 
-        public static Rotation2d getRotation2D(boolean gyroType) {
+        public static Rotation2d getRotation2D() {
             return navx.getRotation2d();
             // return (gyroType == GyroType.kNAVX ? navx : adx).getRotation2d();
         }
