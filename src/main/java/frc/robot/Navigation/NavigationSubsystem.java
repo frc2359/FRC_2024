@@ -4,6 +4,7 @@
 
 package frc.robot.Navigation;
 
+import frc.robot.IO;
 import frc.robot.RobotMap.DriveConstants;
 
 import java.util.function.Supplier;
@@ -22,7 +23,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 public class NavigationSubsystem extends SubsystemBase {
-  public AHRS gyro = new AHRS(SPI.Port.kMXP);
+  public AHRS gyro = IO.Gyro.getNavX();
 
   public double angle;
   // Locations for the swerve drive modules relative to the robot center.
@@ -120,12 +121,12 @@ public class NavigationSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    angle = gyro.getAngle();     // NavX reads degrees CW (convert to unit circle)
-    pitch = gyro.getPitch();
+    angle = IO.Gyro.getAngle();     // NavX reads degrees CW (convert to unit circle)
+    pitch = IO.Gyro.getPitch();
     // pose = odometry.update(gyro.getRotation2d(), modulePositions);
-    x = gyro.getDisplacementX();
-    y = gyro.getDisplacementY();
-    z = gyro.getDisplacementZ();
+    x = IO.Gyro.getDisplacementX();
+    y = IO.Gyro.getDisplacementY();
+    z = IO.Gyro.getDisplacementZ();
 
     SwerveModulePosition[] positions = modulePositions.get();
 

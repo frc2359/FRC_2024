@@ -2,7 +2,7 @@ package frc.robot.commands.collector;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.IO2.OI;
+import frc.robot.IO.OI;
 import frc.robot.subsystems.CollectShooter;
 
 public class ShootCmd extends Command {

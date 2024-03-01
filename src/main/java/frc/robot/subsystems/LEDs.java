@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.IO2;
+import frc.robot.IO;
 import frc.robot.RobotMap.LEDConstants;
 
 import static frc.robot.RobotMap.LEDConstants.*;
@@ -158,7 +158,7 @@ public class LEDs extends SubsystemBase {
                 for (int i=0; i<61; i++) {
                     ledBuffer.setRGB(i, 0, 0, 0);
                 }
-                double batVal = IO2.Status.getBattVoltage();
+                double batVal = IO.Status.getBattVoltage();
                  
                 if (batVal > 12.5) {
                     setPair(4, 0, 255, 0);
@@ -216,7 +216,7 @@ public class LEDs extends SubsystemBase {
                 // Alliance Info
                 int stn = DriverStation.getLocation().getAsInt();
                 for (int i = 0; i<stn; i++) {
-                    if(IO2.Status.isTeamRed()) {
+                    if(IO.Status.isTeamRed()) {
                         setPair(11+i,255,0,0);
                     }
                     else {
@@ -241,7 +241,7 @@ public class LEDs extends SubsystemBase {
                     rdyLvl = Math.max(rdyLvl, 2);
                 }
 
-                if (IO2.Gyro.isNavXAvail()) {
+                if (IO.Gyro.isNavXAvail()) {
                     setPair(19, 0, 255, 0);
                     rdyLvl = Math.max(rdyLvl, 1);
                 } else {

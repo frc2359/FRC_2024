@@ -29,9 +29,9 @@ import com.kauailabs.navx.frc.AHRS;
  * </p>
  */
 
-public class IO2 {
+public class IO {
     // Joystick (4axis tilt) at port DRIVE_PORT (def @ RobotMap)
-    //private static Joystick driver = new Joystick(OIConstants.DRIVE_PORT);
+    private static Joystick driver = new Joystick(OIConstants.DRIVE_PORT);
     // Xbox Controller at port LIFT_PORT (def @ RobotMap)
     private static XboxController liftCont = new XboxController(OIConstants.LIFT_PORT);
     // Generic HID (collections of buttons at port BOX_PORT
@@ -159,6 +159,9 @@ public class IO2 {
     public static class Gyro {
         private static final AHRS navx = new AHRS(SPI.Port.kMXP);
 
+        public static AHRS getNavX() {
+            return navx;
+        }
         /**
          * The type of Gyro, NavX or ADX(attached to robot)
          * <p>
@@ -216,9 +219,21 @@ public class IO2 {
             return navx.getRoll();
         }
 
-        public static double getAngle(boolean gyroType) {
+        public static double getAngle() {
             return navx.getAngle();
             // return (gyroType == GyroType.kNAVX ? navx : adx).getAngle();
+        }
+
+        public static float getDisplacementX() {
+            return navx.getDisplacementX();
+        }
+
+        public static float getDisplacementY() {
+            return navx.getDisplacementY();
+        }
+
+        public static float getDisplacementZ() {
+             return navx.getDisplacementZ();
         }
 
         public static double getYaw(boolean gyroType) {
@@ -263,6 +278,81 @@ public class IO2 {
                     
             }
         }
+
+  
+    public static class Driver {
+            /**
+             * Checks Button
+             * 
+             * @param btn is the targeted button
+             */
+            public static boolean getButton(int btn) {
+                return driver.getRawButtonPressed(btn);
+            }
+
+            /**
+             * Get selected axis
+             * 
+             * @param ax is the axis you selected
+             */
+            public static double getRawAxis(int ax) {
+                return driver.getRawAxis(ax);
+            }
+
+            /** Get the lower dial, values from -1 to 1 */
+            public static double getSpeedDial() {
+                return driver.getRawAxis(3);
+            }
+
+            /** Checks X Axis <b>FOR THE DRIVE CONTROLLER</b> */
+            public static double getDriveX() {
+                return Math.abs(driver.getX()) > 0.1 ? driver.getX() : 0;
+            }
+
+            /** Checks Y Axis <b>FOR THE DRIVE CONTROLLER</b> */
+            public static double getDriveY() {
+                return Math.abs(driver.getY()) > 0.1 ? driver.getY() : 0;
+            }
+
+            /** Checks stick angle <b>FOR THE DRIVE CONTROLLER</b> */
+            public static double getDriveDirection() {
+                return driver.getDirectionRadians();
+            }
+
+            /** Checks stick magnitude <b>FOR THE DRIVE CONTROLLER</b> */
+            public static double getDriveMagnitude() {
+                return driver.getMagnitude();
+            }
+
+            /** Checks stick twist <b>FOR THE DRIVE CONTROLLER</b> */
+            public static double getDriveTwist() {
+                if(DevMode.isTelemetryEnabled) {
+                    SmartDashboard.putNumber("Twist", driver.getTwist());
+                }
+                return Math.abs(driver.getTwist()) > 0.5 ? driver.getTwist() * 0.5 : 0;
+            }
+
+            /** Checks Trigger <b>FOR THE DRIVE CONTROLLER</b> */
+            public static boolean getTrigger() {
+                return driver.getTrigger();
+            }
+
+            /** Checks POV (little hat guy on top) <b>FOR THE DRIVE CONTROLLER</b> */
+            public static double getPOV() {
+                // return liftCont.getLeftTriggerAxis() - liftCont.getRightTriggerAxis();
+                return driver.getPOV();
+            }
+
+            /**
+             * Checks if POV (little hat guy on top) is rotated to an angle <b>FOR THE DRIVE
+             * CONTROLLER</b>
+             * 
+             * @param angle is the desired angle to check for
+             */
+            public static boolean isPOVToAngle(double angle) {
+                return driver.getPOV() == angle;
+            }
+       }
 
         /** The Operator HID - currently configured for a button box that is used by an operator */
         public static class OperatorHID {

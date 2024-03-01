@@ -21,8 +21,7 @@ import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.SwerveDrive.SwerveDriveSubsystem;
 import frc.robot.SwerveDrive.SwerveDriveCmd;
-import frc.robot.IO.IO_Subsystem;
-import frc.robot.IO2.OI;
+import static frc.robot.IO.OI;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -34,25 +33,14 @@ public class RobotContainer {
     public RobotContainer() {
         // Subsystems
         SwerveDriveSubsystem driveSubsystem = new SwerveDriveSubsystem();
-        IO_Subsystem ioSubsystem = new IO_Subsystem();
         //IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
         NavigationSubsystem navigationSubsystem = new NavigationSubsystem(driveSubsystem::getPositions);
-
-        // Controllers
-        //Joystick driverJoy = new Joystick(OIConstants.DRIVE_PORT);
-
-
-        /**
-        swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
-                swerveSubsystem,
-                () -> OI.Driver.getDriveY() * swerveSubsystem.convToSpeedMult(),
-                () -> -OI.Driver.getDriveX() * swerveSubsystem.convToSpeedMult(),
-                () -> OI.Driver.getDriveTwist() * swerveSubsystem.convToSpeedMult(),
-                () -> !OI.Driver.getTrigger()));
-        */
         driveSubsystem.setDefaultCommand(new SwerveDriveCmd(
                 driveSubsystem,
-                ioSubsystem,
+                () -> OI.Driver.getDriveY(),
+                () -> -OI.Driver.getDriveX(),
+                () -> OI.Driver.getDriveTwist(),
+                () -> !OI.Driver.getTrigger(),
                 navigationSubsystem));
 
 

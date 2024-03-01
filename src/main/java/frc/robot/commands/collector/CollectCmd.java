@@ -2,8 +2,8 @@ package frc.robot.commands.collector;
 
 import com.revrobotics.CANSparkFlex;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.IO2.Modifiers;
-import frc.robot.IO2.OI.OperatorXbox;
+import frc.robot.IO.Modifiers;
+import frc.robot.IO.OI.OperatorXbox;
 import frc.robot.subsystems.CollectShooter;
 
 public class CollectCmd extends Command{

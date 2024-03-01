@@ -3,9 +3,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.IO2;
-import frc.robot.IO2.OI;
-import frc.robot.IO2.OI.RobotControls;
+import frc.robot.IO;
+import frc.robot.IO.OI;
+import frc.robot.IO.OI.RobotControls;
 import frc.robot.RobotMap.LEDConstants;
 import frc.robot.subsystems.CollectShooter;
 import frc.robot.subsystems.LEDs;
@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
            // m_robotContainer.getSwerveSubsystem().setDriveMode(false);
         } else if (RobotControls.getDIO(RobotMap.RobotSettings.kYellow)) {
             SmartDashboard.putBoolean("DIO_W", RobotControls.getDIO(RobotMap.RobotSettings.kWhite));
-            IO2.Gyro.zeroHeading();
+            IO.Gyro.zeroHeading();
         }
     }
 
@@ -95,10 +95,10 @@ public class Robot extends TimedRobot {
         // collectShooter.runShooter();
         csState = collectShooter.stateMachine();
         SmartDashboard.putNumber("cs State", csState);
-        SmartDashboard.putBoolean("Sens 1",IO2.Sensor.getNoteSensor(1));
-        SmartDashboard.putBoolean("Sens 3",IO2.Sensor.getNoteSensor(3));
-        SmartDashboard.putBoolean("Sens 5",IO2.Sensor.getNoteSensor(5));
-        SmartDashboard.putBoolean("Note Det.", IO2.Sensor.isNoteDetected());
+        SmartDashboard.putBoolean("Sens 1",IO.Sensor.getNoteSensor(1));
+        SmartDashboard.putBoolean("Sens 3",IO.Sensor.getNoteSensor(3));
+        SmartDashboard.putBoolean("Sens 5",IO.Sensor.getNoteSensor(5));
+        SmartDashboard.putBoolean("Note Det.", IO.Sensor.isNoteDetected());
     }
 
     @Override
