@@ -44,25 +44,25 @@ public class IO {
     private static DigitalInput white = new DigitalInput(RobotSettings.kWhite);
     private static DigitalInput yellow = new DigitalInput(RobotSettings.kYellow);
     private static DigitalInput red = new DigitalInput(RobotSettings.kRed);
-    
 
-    /** Note Sensor Class*/
+    /** Note Sensor Class */
     public static class Sensor {
-        
+
         private static final int numSensors = 5;
 
-        private static DigitalInput[] sensorNote = new DigitalInput[] 
-            {new DigitalInput(5), new DigitalInput(6), new DigitalInput(7),
-            new DigitalInput(8),new DigitalInput(9)};
+        private static DigitalInput[] sensorNote = new DigitalInput[] { new DigitalInput(5), new DigitalInput(6),
+                new DigitalInput(7),
+                new DigitalInput(8), new DigitalInput(9) };
 
         public static boolean isNoteDetected() {
             boolean flag = false;
-            for (int i=1; i <= numSensors; i++) {
-                if (getNoteSensor(i)) flag = true;
+            for (int i = 1; i <= numSensors; i++) {
+                if (getNoteSensor(i))
+                    flag = true;
             }
             SmartDashboard.putBoolean("Note Det.", flag);
             return flag;
-            
+
             // return getNoteSensor(0);
         }
 
@@ -70,22 +70,24 @@ public class IO {
             if (sns < 1 || sns > numSensors) {
                 return false;
             } else {
-                return !sensorNote[sns-1].get();
+                return !sensorNote[sns - 1].get();
             }
         }
     }
 
     /** Functions that modify values to filter or normalize them */
     public static class Modifiers {
-        /** Adds a deadband to functions
-         * @param value value to apply a deadband to
-         * @param deadband the distance from 0 (both positive and negative) that still returns 0
+        /**
+         * Adds a deadband to functions
+         * 
+         * @param value    value to apply a deadband to
+         * @param deadband the distance from 0 (both positive and negative) that still
+         *                 returns 0
          */
         public static double withDeadband(double value, double deadband) {
             return (Math.abs(value) < deadband ? 0 : value);
         }
     }
-    
 
     /**
      * Provides information for the Robot Status, such as PDP stats, DS stats,
@@ -125,13 +127,13 @@ public class IO {
             m.put("botpose", limelightTable.getEntry("botpose").getDoubleArray(new double[6]));
             m.put("target_camera", limelightTable.getEntry("targetpose_cameraspace").getDoubleArray(new double[6]));
             m.put("target_robot", limelightTable.getEntry("targetpose_robotspace").getDoubleArray(new double[6]));
-            
-            if(DevMode.isTelemetryEnabled) {
+
+            if (DevMode.isTelemetryEnabled) {
                 SmartDashboard.putNumberArray("botpose", m.get("botpose"));
                 SmartDashboard.putNumberArray("t_c", m.get("target_camera"));
                 SmartDashboard.putNumberArray("t_r", m.get("target_robot"));
             }
-            
+
             return m;
         }
 
@@ -162,6 +164,7 @@ public class IO {
         public static AHRS getNavX() {
             return navx;
         }
+
         /**
          * The type of Gyro, NavX or ADX(attached to robot)
          * <p>
@@ -223,16 +226,58 @@ public class IO {
             return navx.getAngle();
         }
 
+        /**
+         * Returns the displacement (in meters) of the X axis since resetDisplacement()
+         * was last invoked [Experimental].
+         * 
+         * NOTE: This feature is experimental. Displacement measures rely on
+         * double-integration
+         * of acceleration values from MEMS accelerometers which yield "noisy" values.
+         * The
+         * resulting displacement are not known to be very accurate, and the amount of
+         * error
+         * increases quickly as time progresses.
+         * 
+         * @return Displacement since last reset (in meters).
+         */
         public static float getDisplacementX() {
             return navx.getDisplacementX();
         }
 
+        /**
+         * Returns the displacement (in meters) of the Y axis since resetDisplacement()
+         * was last invoked [Experimental].
+         * 
+         * NOTE: This feature is experimental. Displacement measures rely on
+         * double-integration
+         * of acceleration values from MEMS accelerometers which yield "noisy" values.
+         * The
+         * resulting displacement are not known to be very accurate, and the amount of
+         * error
+         * increases quickly as time progresses.
+         * 
+         * @return Displacement since last reset (in meters).
+         */
         public static float getDisplacementY() {
             return navx.getDisplacementY();
         }
 
+        /**
+         * Returns the displacement (in meters) of the Z axis since resetDisplacement()
+         * was last invoked [Experimental].
+         * 
+         * NOTE: This feature is experimental. Displacement measures rely on
+         * double-integration
+         * of acceleration values from MEMS accelerometers which yield "noisy" values.
+         * The
+         * resulting displacement are not known to be very accurate, and the amount of
+         * error
+         * increases quickly as time progresses.
+         * 
+         * @return Displacement since last reset (in meters).
+         */
         public static float getDisplacementZ() {
-             return navx.getDisplacementZ();
+            return navx.getDisplacementZ();
         }
 
         public static double getYaw(boolean gyroType) {
@@ -260,7 +305,7 @@ public class IO {
         public static class RobotControls {
             public static boolean getDIO(int port) {
                 if (port == RobotSettings.kRed || port == RobotSettings.kWhite || port == RobotSettings.kYellow) {
-                    switch(port) {
+                    switch (port) {
                         case RobotSettings.kWhite:
                             return !white.get();
                         case RobotSettings.kRed:
@@ -270,12 +315,11 @@ public class IO {
                     }
                 }
                 return false;
-                    
+
             }
         }
 
-  
-    public static class Driver {
+        public static class Driver {
             /**
              * Checks Button
              * 
@@ -297,6 +341,12 @@ public class IO {
             /** Get the lower dial, values from -1 to 1 */
             public static double getSpeedDial() {
                 return driver.getRawAxis(3);
+            }
+
+            public static double convToSpeedMult() {
+                double spdMultiplier = ((getSpeedDial() + 1) * 0.25) + 0.5;
+                SmartDashboard.putNumber("SpeedDriveMult", spdMultiplier);
+                return spdMultiplier;
             }
 
             /** Checks X Axis <b>FOR THE DRIVE CONTROLLER</b> */
@@ -321,7 +371,7 @@ public class IO {
 
             /** Checks stick twist <b>FOR THE DRIVE CONTROLLER</b> */
             public static double getDriveTwist() {
-                if(DevMode.isTelemetryEnabled) {
+                if (DevMode.isTelemetryEnabled) {
                     SmartDashboard.putNumber("Twist", driver.getTwist());
                 }
                 return Math.abs(driver.getTwist()) > 0.5 ? driver.getTwist() * 0.5 : 0;
@@ -347,9 +397,12 @@ public class IO {
             public static boolean isPOVToAngle(double angle) {
                 return driver.getPOV() == angle;
             }
-       }
+        }
 
-        /** The Operator HID - currently configured for a button box that is used by an operator */
+        /**
+         * The Operator HID - currently configured for a button box that is used by an
+         * operator
+         */
         public static class OperatorHID {
             /**
              * Checks Button <b>FOR THE BUTTON BOX</b>
@@ -361,7 +414,9 @@ public class IO {
             }
         }
 
-        /** The Operator Xbox Controller - currently configured for an Xbox Controller */
+        /**
+         * The Operator Xbox Controller - currently configured for an Xbox Controller
+         */
         public static class OperatorXbox {
             /** Checks Left Y Axis */
             public static double getLeftY() {

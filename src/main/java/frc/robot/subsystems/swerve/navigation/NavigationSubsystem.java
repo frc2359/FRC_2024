@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,34 +28,38 @@ public class NavigationSubsystem extends SubsystemBase {
 
   public double angle;
   // Locations for the swerve drive modules relative to the robot center.
-  Translation2d m_frontLeftLoc = new Translation2d(DriveConstants.Physical.kWheelBase / 2, DriveConstants.Physical.kTrackWidth / 2);
-  Translation2d m_frontRightLoc = new Translation2d(DriveConstants.Physical.kWheelBase / 2, -DriveConstants.Physical.kTrackWidth / 2);
-  Translation2d m_backLeftLoc = new Translation2d(-DriveConstants.Physical.kWheelBase / 2, DriveConstants.Physical.kTrackWidth / 2);
-  Translation2d m_backRightLoc = new Translation2d(-DriveConstants.Physical.kWheelBase / 2, -DriveConstants.Physical.kTrackWidth / 2);
+  static Translation2d m_frontLeftLoc = new Translation2d(DriveConstants.Physical.kWheelBase / 2,
+      DriveConstants.Physical.kTrackWidth / 2);
+  static Translation2d m_frontRightLoc = new Translation2d(DriveConstants.Physical.kWheelBase / 2,
+      -DriveConstants.Physical.kTrackWidth / 2);
+  static Translation2d m_backLeftLoc = new Translation2d(-DriveConstants.Physical.kWheelBase / 2,
+      DriveConstants.Physical.kTrackWidth / 2);
+  static Translation2d m_backRightLoc = new Translation2d(-DriveConstants.Physical.kWheelBase / 2,
+      -DriveConstants.Physical.kTrackWidth / 2);
 
   // Creating my kinematics object using the module locations
-  SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
+  public static final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
       m_frontLeftLoc, m_frontRightLoc, m_backLeftLoc, m_backRightLoc);
 
   double pitch;
-  private Supplier<SwerveModulePosition[]> modulePositions;
-  
+  private static Supplier<SwerveModulePosition[]> modulePositions;
+
   public double x;
   public double y;
   public double z;
   public double flx;
   public double fly;
-  double[] fl = {flx, fly};
+  double[] fl = { flx, fly };
   public double frx;
   public double fry;
-  double[] fr = {frx, fry};
+  double[] fr = { frx, fry };
   public double blx;
   public double bly;
-  double[] bl = {blx, bly};
+  double[] bl = { blx, bly };
   public double brx;
   public double bry;
-  double[] br = {brx, bry};
-  
+  double[] br = { brx, bry };
+
   double sflx;
   double sfly;
   double sfrx;
@@ -69,35 +74,37 @@ public class NavigationSubsystem extends SubsystemBase {
   public double bla;
   public double bra;
 
+  private static SwerveDriveOdometry odometry;
+  private static Pose2d pose;
 
-  private SwerveDriveOdometry odometry;
-  private Pose2d pose;
   /** Creates a new NavigationSubsystem. */
   public NavigationSubsystem(Supplier<SwerveModulePosition[]> modulePositions) {
     this.modulePositions = modulePositions;
     Shuffleboard.getTab("Navigation").add(gyro);
 
-   /*  Shuffleboard.getTab("Navigation").addDoubleArray("position", () -> {
-      return new double[] {pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
-    });
-   */
+    /*
+     * Shuffleboard.getTab("Navigation").addDoubleArray("position", () -> {
+     * return new double[] {pose.getX(), pose.getY(),
+     * pose.getRotation().getDegrees()};
+     * });
+     */
     Shuffleboard.getTab("Swerve Coordinates");
 
     Shuffleboard.getTab("Swerve Coordinates").addDoubleArray("Front Left", () -> {
-      return new double[] {sflx, sfly};
+      return new double[] { sflx, sfly };
     });
     Shuffleboard.getTab("Swerve Coordinates").addDoubleArray("Front Right", () -> {
-      return new double[] {sfrx, sfry};
+      return new double[] { sfrx, sfry };
     });
     Shuffleboard.getTab("Swerve Coordinates").addDoubleArray("Back Left", () -> {
-      return new double[] {sblx, sbly};
+      return new double[] { sblx, sbly };
     });
     Shuffleboard.getTab("Swerve Coordinates").addDoubleArray("Back Right", () -> {
-      return new double[] {sbrx, sbry};
+      return new double[] { sbrx, sbry };
     });
 
-     odometry = new SwerveDriveOdometry(
-      m_kinematics, IO.Gyro.getRotation2D(), modulePositions.get(), new Pose2d(0.0, 0.0, new Rotation2d()));
+    odometry = new SwerveDriveOdometry(
+        m_kinematics, IO.Gyro.getRotation2D(), modulePositions.get(), new Pose2d(0.0, 0.0, new Rotation2d()));
   }
 
   public double angle() {
@@ -106,13 +113,22 @@ public class NavigationSubsystem extends SubsystemBase {
 
   public double angleRad() {
     double angleRad = this.angle;
-    if (angleRad > 180) {angleRad = 360 - angleRad;}
-    if (angleRad < -180) {angleRad = 360 + angleRad;}
+    if (angleRad > 180) {
+      angleRad = 360 - angleRad;
+    }
+    if (angleRad < -180) {
+      angleRad = 360 + angleRad;
+    }
     return -1 * this.angle / 180 * Math.PI;
   }
 
-  public Pose2d pose() {
+  public static Pose2d getPose() {
     return pose;
+  }
+
+  public static void resetPose(Pose2d pose) {
+    pose = new Pose2d(0.0, 0.0, new Rotation2d());
+    odometry.resetPosition(IO.Gyro.getRotation2D(), modulePositions.get(), pose);
   }
 
   public void resetOrientation() {
@@ -121,12 +137,12 @@ public class NavigationSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    angle = IO.Gyro.getAngle();     // NavX reads degrees CW (convert to unit circle)
+    angle = -IO.Gyro.getAngle(); // NavX reads degrees CW (convert to unit circle)
     pitch = IO.Gyro.getPitch();
     // pose = odometry.update(gyro.getRotation2d(), modulePositions);
-    x = IO.Gyro.getDisplacementX();
-    y = IO.Gyro.getDisplacementY();
-    z = IO.Gyro.getDisplacementZ();
+    // x = IO.Gyro.getDisplacementX();
+    // y = IO.Gyro.getDisplacementY();
+    // z = IO.Gyro.getDisplacementZ();
 
     SwerveModulePosition[] positions = modulePositions.get();
 
@@ -163,16 +179,18 @@ public class NavigationSubsystem extends SubsystemBase {
   }
 
   public Double[][] getCoordinates() {
-    //Returns 4 1D arrays, each representing the x and y of a module. Index 0, 1, 2, 3 represent
-    //the front left, front right, back left, and back right modules respectively.
+    // Returns 4 1D arrays, each representing the x and y of a module. Index 0, 1,
+    // 2, 3 represent
+    // the front left, front right, back left, and back right modules respectively.
     Double[][] coordinates = {
-      {sflx, sfly}, 
-      {sfrx, sfry}, 
-      {sblx, sbly}, 
-      {sbrx, sbry}
+        { sflx, sfly },
+        { sfrx, sfry },
+        { sblx, sbly },
+        { sbrx, sbry }
     };
     return coordinates;
   }
 
+  
 
 }
