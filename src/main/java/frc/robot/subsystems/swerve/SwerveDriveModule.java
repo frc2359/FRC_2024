@@ -4,8 +4,12 @@
 
 package frc.robot.subsystems.swerve;
 
+import com.ctre.phoenix.sensors.CANCoderConfiguration;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
@@ -45,6 +49,17 @@ public class SwerveDriveModule {
     this.alpha = alpha;
     this.pidRotate = new PIDController(0.63, 0, 0);
 
+    // encoder.getConfigurator();
+
+    CANcoderConfigurator c = encoder.getConfigurator();
+
+    var cc = new CANcoderConfiguration();
+    cc.MagnetSensor.MagnetOffset = 5; //rotations
+
+    cc.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+
+    c.apply(cc);
+    
     rotateMotor.setInverted(false);
   }
 
