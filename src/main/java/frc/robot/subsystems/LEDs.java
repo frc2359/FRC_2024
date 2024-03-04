@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.IO2;
+import frc.robot.RobotMap.CollectShooterConstants.State_CS;
 import frc.robot.RobotMap.LEDConstants;
 
 import static frc.robot.RobotMap.LEDConstants.*;
@@ -32,6 +33,10 @@ public class LEDs extends SubsystemBase {
 
     private boolean flagBlink = false;
     private int countBlink = 0;
+
+    private int csState = 0;
+    private int moveCount = 0;
+    private int movePos = 0;
 
      private void waitMSecs(long delay) {
         startTime = System.currentTimeMillis();
@@ -85,6 +90,11 @@ public class LEDs extends SubsystemBase {
 
     public void setState (int st) {
         stateLEDs = st;
+    }
+
+    public void setState (int st, int cs) {
+        stateLEDs = st;
+        csState = cs;
     }
 
     public void setPair(int iP, int cR, int cG, int cB) {
@@ -265,6 +275,85 @@ public class LEDs extends SubsystemBase {
                 }
 
                 break;
+
+            case STATE_LEDS_COLLECT_SHOOT:
+                for (int i=0; i<61; i++) {
+                    ledBuffer.setRGB(i, 0, 0, 0);
+                }
+                switch(csState) {
+                    case State_CS.OFF:
+                        setColor(10, 45, 255, 255, 255);
+                        break;
+                    
+                    case State_CS.COLLECTOR_INTAKE:
+                        setColor(57, 61, 255, 95, 0);
+                        moveCount++;
+                        if (moveCount > 5) {
+                            moveCount = 0;
+                            movePos++;
+                            if (movePos > 10) {
+                                movePos = 0;
+                            }
+                        }
+                        setColor(51 - movePos, 55 - movePos, 255, 95, 0);
+                        break;
+ 
+                    case State_CS.EJECT_NOTE:
+                        //setColor(57, 61, 255, 95, 0);
+                        moveCount++;
+                        if (moveCount > 5) {
+                            moveCount = 0;
+                            movePos++;
+                            if (movePos > 15) {
+                                movePos = 0;
+                            }
+                        }
+                        setColor(41 + movePos, 45 + movePos, 255, 95, 0);
+                        break;
+
+                    case State_CS.SHOOTER_INTAKE:
+                        setColor(30, 35, 255, 95, 0);
+                        moveCount++;
+                        if (moveCount > 5) {
+                            moveCount = 0;
+                            movePos++;
+                            if (movePos > 10) {
+                                movePos = 0;
+                            }
+                        }
+                        setColor(37 +  movePos, 41 + movePos, 255, 95, 0);
+                        break;
+
+                    case State_CS.ALIGN_NOTE:
+                        setColor(41, 55, 255, 95, 0);
+                        setColor(15, 55, 255, 95, 0);
+
+                       
+                        break;
+
+                    case State_CS.NOTE_READY:
+                        setColor(10, 55, 0, 255, 0);
+                        //setColor(15,25,0,255,0);
+                        break;
+
+                    case State_CS.PREPARE_TO_SHOOT:
+                    case State_CS.SHOOT:
+                        setColor(55, 61, 0, 255, 0);
+                        moveCount++;
+                        if (moveCount > 1) {
+                            moveCount = 0;
+                            movePos++;
+                            if (movePos > 20) {
+                                movePos = 0;
+                            }
+                        }
+                        setColor(31 - movePos, 35 - movePos, 255, 95, 0);
+                        break;
+
+                }
+
+                break;    
+
             case STATE_LEDS_AUTO:
                 break;
             }

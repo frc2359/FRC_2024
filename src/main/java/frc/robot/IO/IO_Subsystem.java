@@ -35,8 +35,14 @@ public class IO_Subsystem extends SubsystemBase {
             }
 
             /** Get the lower dial, values from -1 to 1 */
-            public double getSpeedDial() {
+            public static double getSpeedDial() {
                 return driver.getRawAxis(3);
+            }
+
+            public static double convToSpeedMult() {
+                double spdMultiplier = ((getSpeedDial() + 1) * 0.25) + 0.5;
+                SmartDashboard.putNumber("Spd Drive Multpilier", spdMultiplier);
+                return spdMultiplier;
             }
 
             /** Checks X Axis <b>FOR THE DRIVE CONTROLLER</b> */

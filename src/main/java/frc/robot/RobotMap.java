@@ -174,16 +174,10 @@ public interface RobotMap {
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
-
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0; // -0.082; //Math.toRadians(90);
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 0; //-0.192; //Math.toRadians(270);
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -0.262; // .234; // Math.toRadians(270);
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 0; //-.247; //Math.toRadians(90);
-
-        public static final double kFrontLeftDriveAbsoluteEncoderOffset = -0.094; // -0.082; //Math.toRadians(90);
-        public static final double kBackLeftDriveAbsoluteEncoderOffset = 0; //-0.192; //Math.toRadians(270);
-        public static final double kFrontRightDriveAbsoluteEncoderOffset = -0.262; // .234; // Math.toRadians(270);
-        public static final double kBackRightDriveAbsoluteEncoderOffset = 0; //-.247; //Math.toRadians(90);
+        public static final double kFrontLeftDriveAbsoluteEncoderOffset = 0.408;
+        public static final double kBackLeftDriveAbsoluteEncoderOffset = 0.432;
+        public static final double kFrontRightDriveAbsoluteEncoderOffset = -0.267; // 0.233;
+        public static final double kBackRightDriveAbsoluteEncoderOffset = 0.252;;
 
         /* Thursday night, 2/15 testing
         public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(-90);
@@ -297,6 +291,7 @@ public interface RobotMap {
         public static final int STATE_LEDS_PIECE = 4;
         public static final int STATE_LEDS_AUTO = 5;
         public static final int STATE_LEDS_COUNTDOWN = 6;
+        public static final int STATE_LEDS_COLLECT_SHOOT = 7;
 
         public static final int PIECE_TYPE_UNKNOWN = 0;
         public static final int PIECE_TYPE_CUBE = 1;
@@ -314,9 +309,11 @@ public interface RobotMap {
         public static final int INTAKE_EJECT_FAST = 8;
     }
 
-    public static final class RobotSettings {
+    public static final class RobotButtons {
         public static final int kWhite = 0;
         public static final int kYellow = 1;
         public static final int kRed = 2;
+        public static final int kGreen = 3;
+        public static final int kBlue = 4;
     }
 }

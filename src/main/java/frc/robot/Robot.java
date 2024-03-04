@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.IO2;
 import frc.robot.IO2.OI;
 import frc.robot.IO2.OI.RobotControls;
+import frc.robot.RobotMap.CollectShooterConstants.State_CS;
 import frc.robot.RobotMap.LEDConstants;
 import frc.robot.subsystems.CollectShooter;
 import frc.robot.subsystems.LEDs;
@@ -57,26 +58,34 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
         //leds.setCol(192,192,0,true);
         //leds.setCol(255,95,21,true);
-        leds.setCol(255,95,0,true);
-        
-        /* ------------------------------ ROBOT BUTTONS ----------------------------- */
-        if(RobotControls.getDIO(RobotMap.RobotSettings.kWhite)) {
-            leds.setState(LEDConstants.STATE_LEDS_STATUS);
-        } else if (RobotControls.getDIO(RobotMap.RobotSettings.kRed)) {
-           // m_robotContainer.getSwerveSubsystem().setDriveMode(false);
-        } else if (RobotControls.getDIO(RobotMap.RobotSettings.kYellow)) {
-            SmartDashboard.putBoolean("DIO_W", RobotControls.getDIO(RobotMap.RobotSettings.kWhite));
-            IO2.Gyro.zeroHeading();
-        }
+        leds.setCol(255,95,0,true);    
     }
 
 
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+         /* ------------------------------ ROBOT BUTTONS ----------------------------- */
+        if(RobotControls.getDIO(RobotMap.RobotButtons.kWhite)) {
+            leds.setState(LEDConstants.STATE_LEDS_STATUS);
+        }
+        if (RobotControls.getDIO(RobotMap.RobotButtons.kYellow)) {
+            SmartDashboard.putBoolean("DIO_W", RobotControls.getDIO(RobotMap.RobotButtons.kWhite));
+            IO2.Gyro.zeroHeading();
+        }
+        if (RobotControls.getDIO(RobotMap.RobotButtons.kRed)) {
+           // m_robotContainer.getSwerveSubsystem().setDriveMode(false);
+        }
+        
+    }
 
     /** This function is called one time before autonomousPeriodic is run. */
     @Override
-    public void autonomousInit() {}
+    public void autonomousInit() {
+        System.out.println(Math.atan2(1,1));
+        System.out.println(Math.atan2(-1,1));
+        System.out.println(Math.atan2(-1,-1));
+        System.out.println(Math.atan2(1,-1));
+    }
 
     /** This function is called periodically during autonomous. */
     @Override
@@ -94,6 +103,9 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         // collectShooter.runShooter();
         csState = collectShooter.stateMachine();
+        //if (csState != State_CS.OFF) {
+            leds.setState(LEDConstants.STATE_LEDS_COLLECT_SHOOT,csState);
+        //}
         SmartDashboard.putNumber("cs State", csState);
         SmartDashboard.putBoolean("Sens 1",IO2.Sensor.getNoteSensor(1));
         SmartDashboard.putBoolean("Sens 3",IO2.Sensor.getNoteSensor(3));

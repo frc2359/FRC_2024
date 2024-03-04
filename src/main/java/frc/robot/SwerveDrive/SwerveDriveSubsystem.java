@@ -4,18 +4,45 @@
 
 package frc.robot.SwerveDrive;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-//import frc.robot.IO2;
+import frc.robot.IO2.Gyro;
 import frc.robot.RobotMap.DriveConstants;
 
 public class SwerveDriveSubsystem extends SubsystemBase {
-  SwerveDriveModule sdmBL = new SwerveDriveModule(DriveConstants.kBackLeftDriveMotorPort, DriveConstants.kBackLeftTurningMotorPort, DriveConstants.kBackLeftDriveAbsoluteEncoderPort, 0.099);
-  SwerveDriveModule sdmBR = new SwerveDriveModule(DriveConstants.kBackRightDriveMotorPort, DriveConstants.kBackRightTurningMotorPort, DriveConstants.kBackRightDriveAbsoluteEncoderPort, -0.251);
-  SwerveDriveModule sdmFR = new SwerveDriveModule(DriveConstants.kFrontRightDriveMotorPort, DriveConstants.kFrontRightTurningMotorPort, DriveConstants.kFrontRightDriveAbsoluteEncoderPort, -0.013);
-  SwerveDriveModule sdmFL = new SwerveDriveModule(DriveConstants.kFrontLeftDriveMotorPort, DriveConstants.kFrontLeftTurningMotorPort, DriveConstants.kFrontLeftDriveAbsoluteEncoderPort, 0.486);
+  public static final double kMaxSpeed = 3.0; // 3 meters per second
+  public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
+
+  private final Translation2d locFL = new Translation2d(0.381, 0.381);
+  private final Translation2d locFR = new Translation2d(0.381, -0.381);
+  private final Translation2d locBL = new Translation2d(-0.381, 0.381);
+  private final Translation2d locBR = new Translation2d(-0.381, -0.381);
+
+  SwerveModule sdmBL = new SwerveModule(DriveConstants.kBackLeftDriveMotorPort,
+          DriveConstants.kBackLeftTurningMotorPort,
+          DriveConstants.kBackLeftDriveAbsoluteEncoderPort,
+          DriveConstants.kFrontLeftDriveAbsoluteEncoderOffset);
+  SwerveModule sdmBR = new SwerveModule(DriveConstants.kBackRightDriveMotorPort,
+          DriveConstants.kBackRightTurningMotorPort,
+          DriveConstants.kBackRightDriveAbsoluteEncoderPort,
+          DriveConstants.kBackRightDriveAbsoluteEncoderOffset);
+  SwerveModule sdmFR = new SwerveModule(DriveConstants.kFrontRightDriveMotorPort,
+          DriveConstants.kFrontRightTurningMotorPort,
+          DriveConstants.kFrontRightDriveAbsoluteEncoderPort,
+          DriveConstants.kFrontRightDriveAbsoluteEncoderOffset);
+  SwerveModule sdmFL = new SwerveModule(DriveConstants.kFrontLeftDriveMotorPort,
+          DriveConstants.kFrontLeftTurningMotorPort,
+          DriveConstants.kFrontLeftDriveAbsoluteEncoderPort,
+          DriveConstants.kFrontLeftDriveAbsoluteEncoderOffset);
   
+  private final SwerveDriveKinematics m_kinematics =
+      new SwerveDriveKinematics(
+          locFL, locFR, locBL, locBR);
+
   public SwerveModulePosition[] getPositions()
   {
     return new SwerveModulePosition[] {
@@ -44,6 +71,18 @@ public class SwerveDriveSubsystem extends SubsystemBase {
     sdmFL.drive(speed, rotate);
   }
 
+
+  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
+    var swerveModuleStates = m_kinematics.toSwerveModuleStates(ChassisSpeeds.discretize(
+                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Gyro.getRaw().getRotation2d())
+                    : new ChassisSpeeds(xSpeed, ySpeed, rot), periodSeconds));
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
+    sdmFL.setDesiredState(swerveModuleStates[0]);
+    sdmFR.setDesiredState(swerveModuleStates[1]);
+    sdmBL.setDesiredState(swerveModuleStates[2]);
+    sdmBR.setDesiredState(swerveModuleStates[3]);
+  }
+
   public void directionalDrive(double speed, double angle) {
     sdmBL.directionalDrive(speed, angle);
     sdmBR.directionalDrive(speed, angle);
@@ -70,6 +109,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
   }
 
   public void directionalDrive(double speed, double angle, double rotation) {
+    //rotation = 0; //temp
    // Vec bl = new Vec(speed, angle).add(new Vec(rotation, -3 * Math.PI / 4));
    // Vec br = new Vec(speed, angle).add(new Vec(rotation, 3 * Math.PI / 4));
    // Vec fr = new Vec(speed, angle).add(new Vec(rotation, Math.PI / 4));
@@ -78,6 +118,10 @@ public class SwerveDriveSubsystem extends SubsystemBase {
     Vec br = new Vec(speed, angle).add(new Vec(rotation, 1 * Math.PI / 4));
     Vec fr = new Vec(speed, angle).add(new Vec(rotation, -1 * Math.PI / 4));
     Vec fl = new Vec(speed, angle).add(new Vec(rotation, -3 * Math.PI / 4));
+   // Vec bl = new Vec(speed, angle).add(new Vec(rotation, 1 * Math.PI / 4));
+   // Vec br = new Vec(speed, angle).add(new Vec(rotation, 3 * Math.PI / 4));
+   // Vec fr = new Vec(speed, angle).add(new Vec(rotation, -3 * Math.PI / 4));
+   // Vec fl = new Vec(speed, angle).add(new Vec(rotation, -1 * Math.PI / 4));
     sdmBL.directionalDrive(bl.r, bl.phi);
     sdmBR.directionalDrive(br.r, br.phi);
     sdmFR.directionalDrive(fr.r, fr.phi);
@@ -154,17 +198,26 @@ public class SwerveDriveSubsystem extends SubsystemBase {
       //SmartDashboard.putNumber("Robot Fused Heading", Gyro.getFusedHeading());
       //SmartDashboard.putNumber("Robot Heading", getCalculatedHeading());
       //SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
-      SmartDashboard.putNumber("FL Abs", sdmFL.getAbsoluteEncoder());
-      SmartDashboard.putNumber("FR Abs", sdmFR.getAbsoluteEncoder());
-      SmartDashboard.putNumber("BL Abs", sdmBL.getAbsoluteEncoder());
-      SmartDashboard.putNumber("BR Abs", sdmBR.getAbsoluteEncoder());
-      SmartDashboard.putNumber("FL Rad", sdmFL.getAbsoluteEncoder() * 2 * Math.PI);
-      SmartDashboard.putNumber("FR Rad", sdmFR.getAbsoluteEncoder() * 2 * Math.PI);
+      SmartDashboard.putNumber("FL Abs", rndNum(sdmFL.getAbsoluteEncoder(),3));
+      SmartDashboard.putNumber("FR Abs", rndNum(sdmFR.getAbsoluteEncoder(), 3));
+      SmartDashboard.putNumber("BL Abs", rndNum(sdmBL.getAbsoluteEncoder(),3));
+      SmartDashboard.putNumber("BR Abs", rndNum(sdmBR.getAbsoluteEncoder(),3));
+      SmartDashboard.putNumber("FL Rad", rndNum(sdmFL.getAbsoluteEncoder(),3));
+      SmartDashboard.putNumber("FR Rad", rndNum(sdmFR.getAbsoluteEncoder(),3));
+      SmartDashboard.putNumber("FR Deg", rndNum(sdmFR.getAbsoluteEncoder(),3));
       SmartDashboard.putNumber("FL turn", sdmFL.getTurningPosition());
       SmartDashboard.putNumber("FR turn", sdmFR.getTurningPosition());
       SmartDashboard.putNumber("BL turn", sdmBL.getTurningPosition());
       SmartDashboard.putNumber("BR turn", sdmBR.getTurningPosition());
       //SmartDashboard.putNumber("FL Sensor Pos", sdmFL.getDrivePosition());
       //SmartDashboard.putNumber("FL Sensor Vel", sdmFL.getDriveVelocity());
+  }
+
+  private double rndNum (double inNum, int place) {
+    double mult = 1;
+    for (int i=0; i<place; i++) {
+      mult *= 10;
+    }
+    return Math.round((inNum * mult )) / mult;
   }
 }

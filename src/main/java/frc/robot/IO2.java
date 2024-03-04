@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.OIConstants;
 import frc.robot.RobotMap.DevMode;
-import frc.robot.RobotMap.RobotSettings;
+import frc.robot.RobotMap.RobotButtons;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
@@ -41,9 +41,9 @@ public class IO2 {
     // sets up network access to access limelight
     private static final NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
 
-    private static DigitalInput white = new DigitalInput(RobotSettings.kWhite);
-    private static DigitalInput yellow = new DigitalInput(RobotSettings.kYellow);
-    private static DigitalInput red = new DigitalInput(RobotSettings.kRed);
+    private static DigitalInput white = new DigitalInput(RobotButtons.kWhite);
+    private static DigitalInput yellow = new DigitalInput(RobotButtons.kYellow);
+    private static DigitalInput red = new DigitalInput(RobotButtons.kRed);
     
 
     /** Note Sensor Class*/
@@ -196,7 +196,7 @@ public class IO2 {
         /** Zeroes heading for robot */
         public static void zeroHeading() {
             navx.reset();
-            navx.setAngleAdjustment(180);
+            //navx.setAngleAdjustment(180);
             // adx.reset();
         }
 
@@ -216,12 +216,19 @@ public class IO2 {
             return navx.getRoll();
         }
 
-        public static double getAngle(boolean gyroType) {
+        public static double getAngle() {
             return navx.getAngle();
             // return (gyroType == GyroType.kNAVX ? navx : adx).getAngle();
         }
 
-        public static double getYaw(boolean gyroType) {
+        public double angleRad() {
+            double angle = navx.getAngle();
+            if (angle > 180) {angle = 360 - angle;}
+            if (angle < -180) {angle = 360 + angle;}
+            return -1 * angle / 180 * Math.PI;
+          }
+
+        public static double getYaw() {
             // if (gyroType == GyroType.kNAVX) {
             return navx.getYaw();
             // } else {
@@ -234,7 +241,7 @@ public class IO2 {
             return navx.isConnected();
         }
 
-        public static Rotation2d getRotation2D(boolean gyroType) {
+        public static Rotation2d getRotation2D() {
             return navx.getRotation2d();
             // return (gyroType == GyroType.kNAVX ? navx : adx).getRotation2d();
         }
@@ -243,19 +250,24 @@ public class IO2 {
         public static double getAccelerationMetersPerSecond() {
             return navx.getRawAccelX();
         }
+
+        /** get raw object */
+        public static AHRS getRaw() {
+            return navx;
+        }
     }
 
     /** Helper functions for the Operator Input */
     public static class OI {
         public static class RobotControls {
             public static boolean getDIO(int port) {
-                if (port == RobotSettings.kRed || port == RobotSettings.kWhite || port == RobotSettings.kYellow) {
+                if (port == RobotButtons.kRed || port == RobotButtons.kWhite || port == RobotButtons.kYellow) {
                     switch(port) {
-                        case RobotSettings.kWhite:
+                        case RobotButtons.kWhite:
                             return !white.get();
-                        case RobotSettings.kRed:
+                        case RobotButtons.kRed:
                             return !red.get();
-                        case RobotSettings.kYellow:
+                        case RobotButtons.kYellow:
                             return !yellow.get();
                     }
                 }

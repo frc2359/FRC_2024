@@ -21,8 +21,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
+import frc.robot.IO2.Gyro;
+
 public class NavigationSubsystem extends SubsystemBase {
-  public AHRS gyro = new AHRS(SPI.Port.kMXP);
+  //public AHRS gyro = new AHRS(SPI.Port.kMXP);
 
   public double angle;
   // Locations for the swerve drive modules relative to the robot center.
@@ -74,7 +76,7 @@ public class NavigationSubsystem extends SubsystemBase {
   /** Creates a new NavigationSubsystem. */
   public NavigationSubsystem(Supplier<SwerveModulePosition[]> modulePositions) {
     this.modulePositions = modulePositions;
-    Shuffleboard.getTab("Navigation").add(gyro);
+    Shuffleboard.getTab("Navigation").add(Gyro.getRaw());
 
    /*  Shuffleboard.getTab("Navigation").addDoubleArray("position", () -> {
       return new double[] {pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
@@ -96,18 +98,27 @@ public class NavigationSubsystem extends SubsystemBase {
     });
 
      odometry = new SwerveDriveOdometry(
-      m_kinematics, gyro.getRotation2d(), modulePositions.get(), new Pose2d(0.0, 0.0, new Rotation2d()));
+      m_kinematics, Gyro.getRotation2D(), modulePositions.get(), new Pose2d(0.0, 0.0, new Rotation2d()));
   }
 
   public double angle() {
-    return this.angle;
+    double angle = Gyro.getAngle();
+    while (angle >= 360) {
+      angle = angle - 360;
+    }
+    while (angle < 0) {
+      angle = angle + 360;
+    }
+    return angle;
   }
 
   public double angleRad() {
-    double angleRad = this.angle;
-    if (angleRad > 180) {angleRad = 360 - angleRad;}
-    if (angleRad < -180) {angleRad = 360 + angleRad;}
-    return -1 * this.angle / 180 * Math.PI;
+    double angle = angle();
+    if (angle <= 180) {
+      return -1 * angle / 180 * Math.PI;
+    } else {
+      return (360 - angle) / 180 * Math.PI;
+    }
   }
 
   public Pose2d pose() {
@@ -115,17 +126,17 @@ public class NavigationSubsystem extends SubsystemBase {
   }
 
   public void resetOrientation() {
-    gyro.reset();
+    Gyro.zeroHeading();
   }
 
   @Override
   public void periodic() {
-    angle = gyro.getAngle();     // NavX reads degrees CW (convert to unit circle)
-    pitch = gyro.getPitch();
+    angle = Gyro.getAngle();     // NavX reads degrees CW (convert to unit circle)
+    pitch = Gyro.getPitch();
     // pose = odometry.update(gyro.getRotation2d(), modulePositions);
-    x = gyro.getDisplacementX();
-    y = gyro.getDisplacementY();
-    z = gyro.getDisplacementZ();
+    //x = Gyro.getDisplacementX();
+    //y = Gyro.getDisplacementY();
+    //z = Gyro.getDisplacementZ();
 
     SwerveModulePosition[] positions = modulePositions.get();
 

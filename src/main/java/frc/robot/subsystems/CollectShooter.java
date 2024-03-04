@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.CollectShooterConstants.State_CS;
+import frc.robot.RobotMap.LEDConstants;
 import frc.robot.IO2;
 import frc.robot.IO2.OI;
 import frc.robot.IO2.Modifiers;
@@ -20,6 +21,7 @@ import frc.robot.RobotMap.ButtonBOX;
 import frc.robot.RobotMap.CollectShooterConstants.CS;
 import frc.robot.RobotMap.CollectShooterConstants.PIDConstants;
 import frc.robot.RobotMap.CollectShooterConstants.CANID;
+
 
 
 public class CollectShooter extends SubsystemBase{
@@ -230,7 +232,7 @@ public class CollectShooter extends SubsystemBase{
 
                 // collect a note from the source
                 // code to run the shooter motors in reverse (slowly maybe)
-                setShooterSpeed(-.25);
+                setShooterSpeed(-.2);
 
                 // if statement for sensors or limit switches goes here
                 // if true - transition to a new state
@@ -272,12 +274,12 @@ public class CollectShooter extends SubsystemBase{
 
                 // if the note is not all the way in, then move it up slowly
                  if (IO2.Sensor.getNoteSensor(1) && !IO2.Sensor.getNoteSensor(5)) {
-                    setCollectorSpeed(.25);;
+                    setCollectorSpeed(.2);;
                  }   
 
                 // if the note is too far in, then move it down slowly
                  if (!IO2.Sensor.getNoteSensor(1) && IO2.Sensor.getNoteSensor(5)) {
-                    setCollectorSpeed(-.25);;
+                    setCollectorSpeed(-.2);;
                  }  
 
                 break;
