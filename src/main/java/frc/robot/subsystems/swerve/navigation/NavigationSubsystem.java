@@ -79,7 +79,7 @@ public class NavigationSubsystem extends SubsystemBase {
 
   /** Creates a new NavigationSubsystem. */
   public NavigationSubsystem(Supplier<SwerveModulePosition[]> modulePositions) {
-    this.modulePositions = modulePositions;
+    NavigationSubsystem.modulePositions = modulePositions;
     Shuffleboard.getTab("Navigation").add(gyro);
 
     /*
@@ -111,15 +111,15 @@ public class NavigationSubsystem extends SubsystemBase {
     return this.angle;
   }
 
-  public double angleRad() {
-    double angleRad = this.angle;
+  public double angleRad() { // navx reads clockwise as positive, in degrees, continuous from 0 to 360
+    double angleRad = -IO.Gyro.getAngle();
     if (angleRad > 180) {
-      angleRad = 360 - angleRad;
+      angleRad -= 360;
     }
     if (angleRad < -180) {
-      angleRad = 360 + angleRad;
+      angleRad += 360;
     }
-    return -1 * this.angle / 180 * Math.PI;
+    return angleRad / 180 * Math.PI;
   }
 
   public static Pose2d getPose() {
@@ -137,7 +137,7 @@ public class NavigationSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    angle = -IO.Gyro.getAngle(); // NavX reads degrees CW (convert to unit circle)
+    angle = angleRad(); 
     pitch = IO.Gyro.getPitch();
     // pose = odometry.update(gyro.getRotation2d(), modulePositions);
     // x = IO.Gyro.getDisplacementX();

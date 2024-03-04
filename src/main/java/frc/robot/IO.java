@@ -226,6 +226,10 @@ public class IO {
             return navx.getAngle();
         }
 
+        public static double getAngleRad() {
+            return navx.getAngle() * (Math.PI / 180);
+        }
+
         /**
          * Returns the displacement (in meters) of the X axis since resetDisplacement()
          * was last invoked [Experimental].

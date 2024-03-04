@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.RobotMap.AutoConstants;
 import frc.robot.RobotMap.DriveConstants;
 import frc.robot.RobotMap.OIConstants;
-import frc.robot.commands.SwerveDriveCmd;
+import frc.robot.commands.swerve.SwerveDriveCmd;
 import frc.robot.subsystems.swerve.SwerveDriveSubsystem;
 import frc.robot.subsystems.swerve.navigation.NavigationSubsystem;
 
