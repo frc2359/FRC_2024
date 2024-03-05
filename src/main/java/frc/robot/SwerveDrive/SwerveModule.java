@@ -68,8 +68,8 @@ public class SwerveModule {
     var defaultAbsEncoderConfig = new CANcoderConfiguration();
     defaultAbsEncoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     defaultAbsEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive; // Clockwise_Positive;
-    this.offset = absEncoderOffset;  // may not need to save
     defaultAbsEncoderConfig.MagnetSensor.MagnetOffset = absEncoderOffset; // in rotations
+    this.offset = absEncoderOffset;  // may not need to save
     configurator.apply(defaultAbsEncoderConfig);
 
     // Setup Rotation Encoder
@@ -145,15 +145,17 @@ public class SwerveModule {
   
   public void directionalDrive(double speed, double angle) {
     pidRotate.setSetpoint(0);
-    double pos = angle - position();
+    double pos = position() - angle;
     while (pos < -Math.PI)
       pos += 2 * Math.PI;
     while (pos >= Math.PI)
       pos -= 2 * Math.PI;
     // -PI =< pos < PI
 
+    
     double direction = 1.0;
-    if (pos < -Math.PI / 2) {
+    
+     if (pos < -Math.PI / 2) {
       direction = -1.0;
       pos += Math.PI;
     }
@@ -161,6 +163,8 @@ public class SwerveModule {
       direction = -1.0;
       pos -= Math.PI;
     }
+    
+
     double speedOfRotation = pidRotate.calculate(pos);
     speedOfRotation = MathUtil.clamp(speedOfRotation, -ROTATION_LIMIT_SPEED, ROTATION_LIMIT_SPEED);
     rotateMotor.set(speedOfRotation);
@@ -175,7 +179,7 @@ public class SwerveModule {
       value += 1.0;
     if (value >= 0.5)
       value -= 1.0;
-    return  -1 * value * 2 * Math.PI;
+    return -1 *  value * 2 * Math.PI;
   }
 
   public double rawPosition() {

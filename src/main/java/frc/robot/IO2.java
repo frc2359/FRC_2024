@@ -44,6 +44,8 @@ public class IO2 {
     private static DigitalInput white = new DigitalInput(RobotButtons.kWhite);
     private static DigitalInput yellow = new DigitalInput(RobotButtons.kYellow);
     private static DigitalInput red = new DigitalInput(RobotButtons.kRed);
+    private static DigitalInput green = new DigitalInput(RobotButtons.kGreen);
+    private static DigitalInput blue = new DigitalInput(RobotButtons.kBlue);
     
 
     /** Note Sensor Class*/
@@ -261,7 +263,8 @@ public class IO2 {
     public static class OI {
         public static class RobotControls {
             public static boolean getDIO(int port) {
-                if (port == RobotButtons.kRed || port == RobotButtons.kWhite || port == RobotButtons.kYellow) {
+                if (port == RobotButtons.kRed || port == RobotButtons.kWhite || port == RobotButtons.kYellow 
+                        || port == RobotButtons.kGreen || port == RobotButtons.kBlue) {
                     switch(port) {
                         case RobotButtons.kWhite:
                             return !white.get();
@@ -269,6 +272,10 @@ public class IO2 {
                             return !red.get();
                         case RobotButtons.kYellow:
                             return !yellow.get();
+                        case RobotButtons.kGreen:
+                            return !green.get();
+                        case RobotButtons.kBlue:
+                            return !blue.get();
                     }
                 }
                 return false;

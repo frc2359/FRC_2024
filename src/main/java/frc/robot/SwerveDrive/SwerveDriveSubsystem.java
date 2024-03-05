@@ -25,7 +25,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
   SwerveModule sdmBL = new SwerveModule(DriveConstants.kBackLeftDriveMotorPort,
           DriveConstants.kBackLeftTurningMotorPort,
           DriveConstants.kBackLeftDriveAbsoluteEncoderPort,
-          DriveConstants.kFrontLeftDriveAbsoluteEncoderOffset);
+          DriveConstants.kBackLeftDriveAbsoluteEncoderOffset);
   SwerveModule sdmBR = new SwerveModule(DriveConstants.kBackRightDriveMotorPort,
           DriveConstants.kBackRightTurningMotorPort,
           DriveConstants.kBackRightDriveAbsoluteEncoderPort,

@@ -8,15 +8,25 @@ import frc.robot.IO2.OI;
 import frc.robot.IO2.OI.RobotControls;
 import frc.robot.RobotMap.CollectShooterConstants.State_CS;
 import frc.robot.RobotMap.LEDConstants;
+import frc.robot.IO.IO_Subsystem;
+import frc.robot.Navigation.NavigationSubsystem;
+import frc.robot.SwerveDrive.SwerveDriveSubsystem;
+import frc.robot.SwerveDrive.SwerveDriveCmd;
 import frc.robot.subsystems.CollectShooter;
 import frc.robot.subsystems.LEDs;
 
 public class Robot extends TimedRobot {
-    private RobotContainer m_robotContainer;
+    //private RobotContainer m_robotContainer;
+    // Subsystems
+    private SwerveDriveSubsystem driveSubsystem = new SwerveDriveSubsystem();
     private CollectShooter collectShooter = new CollectShooter();
     private LEDs leds = new LEDs();
+    private IO_Subsystem ioSubsystem = new IO_Subsystem();
+    private NavigationSubsystem navigationSubsystem = new NavigationSubsystem(driveSubsystem::getPositions);
 
     private int csState;
+
+    private int countAuto = 0;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -25,7 +35,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        m_robotContainer = new RobotContainer();
+        //m_robotContainer = new RobotContainer();
 
        // m_robotContainer.getSwerveSubsystem().setDriveMode(true);
 
@@ -33,6 +43,8 @@ public class Robot extends TimedRobot {
 
         leds.init();
         leds.initLEDs();
+
+        driveSubsystem.setDefaultCommand(new SwerveDriveCmd(driveSubsystem, ioSubsystem, navigationSubsystem));
 
         //m_robotContainer.getSwerveSubsystem().hardResetEncoders(); //run once and comment out when done
     }
@@ -50,7 +62,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-        CommandScheduler.getInstance().run();
+        //CommandScheduler.getInstance().run();
         leds.runLEDs();
     }
 
@@ -68,13 +80,20 @@ public class Robot extends TimedRobot {
         if(RobotControls.getDIO(RobotMap.RobotButtons.kWhite)) {
             leds.setState(LEDConstants.STATE_LEDS_STATUS);
         }
+        SmartDashboard.putBoolean("DIO_W", RobotControls.getDIO(RobotMap.RobotButtons.kWhite));
         if (RobotControls.getDIO(RobotMap.RobotButtons.kYellow)) {
-            SmartDashboard.putBoolean("DIO_W", RobotControls.getDIO(RobotMap.RobotButtons.kWhite));
             IO2.Gyro.zeroHeading();
         }
         if (RobotControls.getDIO(RobotMap.RobotButtons.kRed)) {
-           // m_robotContainer.getSwerveSubsystem().setDriveMode(false);
+           //m_robotContainer.getSwerveSubsystem().setDriveMode(false);
         }
+        if (RobotControls.getDIO(RobotMap.RobotButtons.kGreen)) {
+            //leds.setState(LEDConstants.STATE_LEDS_ALIGN);
+        }
+        if (RobotControls.getDIO(RobotMap.RobotButtons.kBlue)) {
+            leds.setState(LEDConstants.STATE_LEDS_ALIGN);
+        }
+
         
     }
 
@@ -85,11 +104,28 @@ public class Robot extends TimedRobot {
         System.out.println(Math.atan2(-1,1));
         System.out.println(Math.atan2(-1,-1));
         System.out.println(Math.atan2(1,-1));
+        countAuto = 0;
     }
 
     /** This function is called periodically during autonomous. */
     @Override
-    public void autonomousPeriodic() {}
+    public void autonomousPeriodic() {
+        countAuto++;
+        if (countAuto < 250) {
+            driveSubsystem.directionalDrive(.3, 0, 0);
+            leds.setCol(255,0,0,false);
+        } else if (countAuto < 500) {
+           driveSubsystem.directionalDrive(.3, -1 * Math.PI / 2, 0);
+           leds.setCol(0,255,0,false);
+        } else if (countAuto < 750) {
+           driveSubsystem.directionalDrive(.3, -3 * Math.PI / 4, 0);
+           leds.setCol(0,0,255,false);
+        } else {
+           driveSubsystem.directionalDrive(0, 0, 0);
+           leds.setCol(0,0,0,false);
+        }
+
+    }
 
     /** This function is called one time before operator takes control. */
     @Override
@@ -101,6 +137,7 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
+        CommandScheduler.getInstance().run();
         // collectShooter.runShooter();
         csState = collectShooter.stateMachine();
         //if (csState != State_CS.OFF) {

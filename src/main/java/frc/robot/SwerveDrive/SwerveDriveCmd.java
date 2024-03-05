@@ -4,7 +4,7 @@
 
 package frc.robot.SwerveDrive;
 
-import edu.wpi.first.math.MathUtil;
+//import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.Joystick;
@@ -44,7 +44,7 @@ public class SwerveDriveCmd extends Command {
     final double Deadzone = 0.1;  //Constants.ControllerDeadzone;
 
     double x = xSpeedLimiter.calculate(-ioSubsystem.getDriveY());
-    double y = ySpeedLimiter.calculate(-ioSubsystem.getDriveX());
+    double y = ySpeedLimiter.calculate(ioSubsystem.getDriveX());
     double speed = Math.sqrt(x * x + y * y) * IO_Subsystem.convToSpeedMult(); // Constants.DriveSpeedMultiplier;
     double angle = Math.atan2(y, x);
     double gyroAngle = navigationSubsystem.angleRad();
