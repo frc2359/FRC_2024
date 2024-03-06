@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.swerve;
 
+import java.nio.file.DirectoryNotEmptyException;
 import java.util.HashMap;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -12,6 +13,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 //import frc.robot.IO2;
 import frc.robot.RobotMap.DriveConstants;
+import frc.robot.RobotMap.ModuleConstants;
 import frc.robot.subsystems.swerve.navigation.NavigationSubsystem;
 
 public class SwerveDriveSubsystem extends SubsystemBase {
@@ -48,10 +51,12 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // System.out.println("BL:" + blMotor.rawPosition());
-    // System.out.println("BR:" + brMotor.rawPosition());
-    // System.out.println("FL:" + flMotor.rawPosition());
-    // System.out.println("FR:" + frMotor.rawPosition());
+    HashMap<String, SwerveModulePosition> positions = new HashMap<>();
+    positions.put("front_left", sdmFL.getPosition());
+    positions.put("front_right", sdmFR.getPosition());
+    positions.put("back_left", sdmBL.getPosition());
+    positions.put("back_right", sdmBR.getPosition());
+    NavigationSubsystem.updateOdometry(positions); // may not need, as field orient is applied in the SwerveJoystickCmd
 
   }
 
@@ -109,10 +114,15 @@ public class SwerveDriveSubsystem extends SubsystemBase {
     SwerveModuleState stFr = states.get("front_right");
     SwerveModuleState stBl = states.get("back_left");
     SwerveModuleState stBr = states.get("back_right");
-    sdmFL.setDesiredState(stFl);
-    sdmFR.setDesiredState(stFr);
-    sdmBL.setDesiredState(stBl);
-    sdmBR.setDesiredState(stBr);
+
+    SwerveModuleState[] stateArray = { stFl, stFr, stBl, stBr };
+
+    SwerveDriveKinematics.desaturateWheelSpeeds(stateArray, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+
+    sdmFL.setDesiredState(stateArray[0]);
+    sdmFR.setDesiredState(stateArray[1]);
+    sdmBL.setDesiredState(stateArray[2]);
+    sdmBR.setDesiredState(stateArray[3]);
   }
 
   public void resetMotors() {

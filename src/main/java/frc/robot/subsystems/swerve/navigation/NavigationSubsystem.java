@@ -5,8 +5,10 @@
 package frc.robot.subsystems.swerve.navigation;
 
 import frc.robot.IO;
+import frc.robot.IO.Gyro.GyroType;
 import frc.robot.RobotMap.DriveConstants;
 
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -111,6 +113,15 @@ public class NavigationSubsystem extends SubsystemBase {
     return this.angle;
   }
 
+  public static void updateOdometry(HashMap<String, SwerveModulePosition> positions) {
+    SwerveModulePosition posFl = positions.get("front_left");
+    SwerveModulePosition posFr = positions.get("front_right");
+    SwerveModulePosition posBl = positions.get("back_left");
+    SwerveModulePosition posBr = positions.get("back_right");
+
+    odometry.update(getRotation2d(), new SwerveModulePosition[] {posFl, posFr, posBl, posBr});
+  }
+
   public double angleRad() { // navx reads clockwise as positive, in degrees, continuous from 0 to 360
     double angleRad = -IO.Gyro.getAngle();
     if (angleRad > 180) {
@@ -120,6 +131,13 @@ public class NavigationSubsystem extends SubsystemBase {
       angleRad += 360;
     }
     return angleRad / 180 * Math.PI;
+  }
+
+  /** Gets the rotation of the robot in range (0, 360) and returns as a Rotation2d type so the robot can understand
+   * @return Rotation2d representation of the robot rotation
+   */
+  public static Rotation2d getRotation2d() {
+    return Rotation2d.fromDegrees(Math.IEEEremainder(IO.Gyro.getAngle(), 360));
   }
 
   public static Pose2d getPose() {
@@ -137,7 +155,7 @@ public class NavigationSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    angle = angleRad(); 
+    angle = angleRad();
     pitch = IO.Gyro.getPitch();
     // pose = odometry.update(gyro.getRotation2d(), modulePositions);
     // x = IO.Gyro.getDisplacementX();
@@ -190,7 +208,5 @@ public class NavigationSubsystem extends SubsystemBase {
     };
     return coordinates;
   }
-
-  
 
 }
