@@ -49,6 +49,7 @@ public class SwerveDriveCmd extends Command {
     double angle = Math.atan2(y, x);
     double gyroAngle = navigationSubsystem.angleRad();
     if(ioSubsystem.getTrigger()) {gyroAngle = 0;}
+    gyroAngle = 0;  // Temp override of field orientated
 
     // if (Math.abs(x) < 0.1 && Math.abs(y) < 0.1) {
     //   double rotate = joy.getRightX();
@@ -69,7 +70,7 @@ public class SwerveDriveCmd extends Command {
       driveSubsystem.stop();
     } else {
       SmartDashboard.putNumber("to Angle", angle);
-      driveSubsystem.directionalDrive(speed, angle - gyroAngle, .6 * r);    // Constants.RotateSpeedMultiplier * r
+      driveSubsystem.directionalDrive(speed, angle - gyroAngle, IO_Subsystem.convToSpeedMult() * r);    // Constants.RotateSpeedMultiplier * r
       //driveSubsystem.drive(x, y, r, !ioSubsystem.getTrigger(), .02);
     }
     driveSubsystem.showData();

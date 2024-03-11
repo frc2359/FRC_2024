@@ -41,7 +41,7 @@ public class IO_Subsystem extends SubsystemBase {
 
             public static double convToSpeedMult() {
                 double spdMultiplier = ((getSpeedDial() + 1) * 0.25) + 0.5;
-                SmartDashboard.putNumber("Spd Drive Multpilier", spdMultiplier);
+                SmartDashboard.putNumber("Spd Drive Multipilier", spdMultiplier);
                 return spdMultiplier;
             }
 

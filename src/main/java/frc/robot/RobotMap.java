@@ -74,6 +74,7 @@ public interface RobotMap {
             public static final int kTargetNone = 0;
             public static final int kTargetAmp = 1;
             public static final int kTargetSpeaker = 2;
+            public static final int kTargetMax = 3;
             public static final double kEjectSlow = -.25;
             public static final double kEjectFast = -.75;
         }
@@ -300,8 +301,12 @@ public interface RobotMap {
         public static final int INTAKE_OFF = 6;
         public static final int SHOOT_AMP = 9;
         public static final int SHOOT_SPEAKER = 12;
+        public static final int SHOOT_MAX = 1;
         public static final int INTAKE_EJECT = 7;
         public static final int INTAKE_EJECT_FAST = 8;
+        public static final int LEFT_LIFTER = 10;
+        public static final int RIGHT_LIFTER = 11;
+        public static final int STOP_LIFTER = 2;
     }
 
     public static final class RobotButtons {

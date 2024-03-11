@@ -1,10 +1,11 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkPIDController.AccelStrategy;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.SparkPIDController;
 
 //import edu.wpi.first.wpilibj.DigitalInput;
@@ -35,7 +36,6 @@ public class CollectShooter extends SubsystemBase{
     private double joyShooter = 0;
     private int countLoop = 0; 
 
-
     /** Collector CAN Spark Flex Motor */
     private CANSparkMax collector = new CANSparkMax(CANID.kCANCollector, MotorType.kBrushless);
     
@@ -53,12 +53,16 @@ public class CollectShooter extends SubsystemBase{
         stateCurrent = State_CS.OFF;
 
         collector.restoreFactoryDefaults();   
+        collector.clearFaults();
+        collector.setIdleMode(IdleMode.kBrake);
 
         shootTop.restoreFactoryDefaults();
-        shootBottom.restoreFactoryDefaults();
-        collector.clearFaults();
         shootTop.clearFaults();
+        shootTop.setIdleMode(IdleMode.kBrake);
+
+        shootBottom.restoreFactoryDefaults();
         shootBottom.clearFaults();
+        shootBottom.setIdleMode(IdleMode.kBrake);
 
         //shootBottom.setInverted(true);
         
@@ -83,7 +87,6 @@ public class CollectShooter extends SubsystemBase{
         shootBottomPID.setIZone(PIDConstants.kIz);
         shootBottomPID.setFF(PIDConstants.kFF);
         shootBottomPID.setOutputRange(PIDConstants.kMinOutput, PIDConstants.kMaxOutput);
-
     }
 
     /** Set percent power for the collector motor */
@@ -122,6 +125,29 @@ public class CollectShooter extends SubsystemBase{
         speedShooter = spdNew;
         shootTop.set(speedShooter);
         shootBottom.set(-speedShooter);
+    }
+
+    public void off() {
+        setState(State_CS.OFF);
+    }
+
+    public void intakeCollector () {
+        setState(State_CS.COLLECTOR_INTAKE);
+    }
+
+    public void shoot(int targ) {
+        csTarget = targ;
+        setState(State_CS.PREPARE_TO_SHOOT);
+    }
+
+    public void shootSpeaker() {
+        csTarget = CS.kTargetSpeaker;
+        setState(State_CS.PREPARE_TO_SHOOT);
+    }
+
+    public void shootAmp() {
+        csTarget = CS.kTargetAmp;
+        setState(State_CS.PREPARE_TO_SHOOT);
     }
 
     public Command collect() {
@@ -181,15 +207,13 @@ public class CollectShooter extends SubsystemBase{
                 // shooter motor to zero power
                 setShooterSpeed(0);
 
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_COLLECTOR)) {        // Shoot Speaker Button Pressed
-                    csTarget = CS.kTargetSpeaker;
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_COLLECTOR)) {
                     setState(State_CS.COLLECTOR_INTAKE);
                     break;
                 }
                 
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_SHOOTER)) {        // Shoot Speaker Button Pressed
-                    csTarget = CS.kTargetSpeaker;
-                    setState(State_CS.SHOOTER_INTAKE);
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_SHOOTER)) { 
+                     setState(State_CS.SHOOTER_INTAKE);
                     break;
                 }
                 
@@ -309,6 +333,14 @@ public class CollectShooter extends SubsystemBase{
                     setState(State_CS.PREPARE_TO_SHOOT);
                     break;
                 }
+
+                                
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.SHOOT_MAX)) {        // Shoot Amp Button Pressed     
+                    csTarget = CS.kTargetMax;
+                    setState(State_CS.PREPARE_TO_SHOOT);
+                    break;
+                }
+
                 
                 /* TODO
                 Do we want two different buttons for two different speeds, SPEAKER and AMP
@@ -340,6 +372,8 @@ public class CollectShooter extends SubsystemBase{
                 // when true - transition to a new state
                 if (csTarget == CS.kTargetSpeaker) {
                     setShooterSpeed(.8);
+                } else if (csTarget == CS.kTargetMax) {
+                    setShooterSpeed(1);
                 } else {
                     setShooterSpeed(.18);
                 }

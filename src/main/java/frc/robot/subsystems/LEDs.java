@@ -27,7 +27,7 @@ public class LEDs extends SubsystemBase {
     private AddressableLED leds;
     private AddressableLEDBuffer ledBuffer;
 
-    private boolean flagGRB = true;     // Set to True if Leds are GRB otherwise false if RGB
+    private boolean flagGRB = false;     // Set to True if Leds are GRB otherwise false if RGB
    
     private long startTime = 0;
     private long elapsedTime = 0;
@@ -77,6 +77,20 @@ public class LEDs extends SubsystemBase {
         runLEDs();
     }
 
+    public void testLEDs() {
+        setColor(1,12,128,0,0);
+        setColor(13,24,255,0,0);
+        setColor(25,36,128,128,0);
+        setColor(37,48,255,255,0);
+        setColor(49,60,0,192,0);
+        setColor(61,72,0,255,0);
+        setColor(72,83,0,128,128);
+        setColor(84,95,0,255,255);
+        setColor(96,107,0,0,128);
+        setColor(106,117,0,0,255);
+        leds.setData(ledBuffer);
+    }
+
     public void endGame(double tL) {
         timeLeft = tL;
         stateLEDs = STATE_LEDS_COUNTDOWN;
@@ -99,13 +113,12 @@ public class LEDs extends SubsystemBase {
     }
 
     private void setRGB(int iP, int cR, int cG, int cB) {
-            ledBuffer.setRGB(iP, cG, cR, cB);
-            /** if (flagGRB) {
+            //ledBuffer.setRGB(iP, cG, cR, cB);
+            if (flagGRB) {
                 ledBuffer.setRGB(iP, cG, cR, cB);
             } else {
                 ledBuffer.setRGB(iP, cR, cG, cB);
             }
-            */
     }
 
     public void runLEDs() {
@@ -297,6 +310,7 @@ public class LEDs extends SubsystemBase {
                     
                     case State_CS.COLLECTOR_INTAKE:
                         setColor(130, 144, 255, 255, 0);
+                        setColor(1,9,255,255,0);
                         moveCount++;
                         if (moveCount > 3) {
                             moveCount = 0;
@@ -306,6 +320,7 @@ public class LEDs extends SubsystemBase {
                             }
                         }
                         setColor(110 - movePos, 129 - movePos, 255, 95, 0);
+                        setColor(10, 10+movePos, 255,255,0);
                         break;
  
                     case State_CS.EJECT_NOTE:
@@ -336,11 +351,11 @@ public class LEDs extends SubsystemBase {
 
                     case State_CS.ALIGN_NOTE:
                         //setColor(41, 55, 255, 95, 0);
-                        setColor(35, 105, 255, 95, 0);
+                        setColor(1, 105, 255, 95, 0);
                         break;
 
                     case State_CS.NOTE_READY:
-                        setColor(10, 130, 0, 255, 0);
+                        setColor(1, 144, 0, 255, 0);
                         //setColor(15,25,0,255,0);
                         break;
 

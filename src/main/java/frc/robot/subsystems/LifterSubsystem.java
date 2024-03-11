@@ -2,7 +2,9 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.SparkPIDController.AccelStrategy;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -11,63 +13,49 @@ import frc.robot.RobotMap.LifterConstants.CANID;
 import frc.robot.RobotMap.LifterConstants.LifterStates;
 
 
-public class LifterSybsystem extends SubsystemBase {
+public class LifterSubsystem extends SubsystemBase {
     private double speedLifterLeft = 0;
     private double speedLifterRight = 0;
     
     private int state = 0;
 
     private CANSparkMax left = new CANSparkMax(CANID.kLeft, MotorType.kBrushless);
+    private RelativeEncoder leftEncoder = left.getEncoder();;
     private CANSparkMax right = new CANSparkMax(CANID.kRight, MotorType.kBrushless);
+    private RelativeEncoder rightEncoder = right.getEncoder();
+
     
-    private SparkPIDController leftPID;
-    private SparkPIDController rightPID;
+    //private SparkPIDController leftPID;
+    //private SparkPIDController rightPID;
 
 
     /** Initialize systems to set constants and defaults */
     public void init() {
-        left.restoreFactoryDefaults();   
-        right.restoreFactoryDefaults();
-
+        left.restoreFactoryDefaults();
         left.clearFaults();
+        left.setIdleMode(IdleMode.kBrake);    
+
+        right.restoreFactoryDefaults();
         right.clearFaults();
-        
-
-        //shootBottom.setInverted(true);
-        
-        rightPID = right.getPIDController();
-        leftPID = left.getPIDController();   
-
-        // set PID coefficients
-        leftPID.setSmartMotionMaxVelocity(6000, 0);
-        leftPID.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
-        leftPID.setP(PIDConstants.kP);
-        leftPID.setI(PIDConstants.kI);
-        leftPID.setD(PIDConstants.kD);
-        leftPID.setIZone(PIDConstants.kIz);
-        leftPID.setFF(PIDConstants.kFF);
-        leftPID.setOutputRange(PIDConstants.kMinOutput, PIDConstants.kMaxOutput);
-
-        rightPID.setSmartMotionMaxVelocity(6000, 0);
-        rightPID.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
-        rightPID.setP(PIDConstants.kP);
-        rightPID.setI(PIDConstants.kI);
-        rightPID.setD(PIDConstants.kD);
-        rightPID.setIZone(PIDConstants.kIz);
-        rightPID.setFF(PIDConstants.kFF);
-        rightPID.setOutputRange(PIDConstants.kMinOutput, PIDConstants.kMaxOutput);
-
+        right.setIdleMode(IdleMode.kBrake);
     }
 
-    private void setLifterLeftSpeed(double spdNew) {
+    public Double getLeftPosition() {
+        return leftEncoder.getPosition();
+    }
+
+    public Double getRightPosition() {
+        return rightEncoder.getPosition();
+    }
+
+    public void setLifterLeftSpeed(double spdNew) {
         speedLifterLeft = spdNew;
-        left.set(-speedLifterLeft);
+        left.set(speedLifterLeft);
     }
 
-
-    private void setLifterRightSpeed(double spdNew) {
+    public void setLifterRightSpeed(double spdNew) {
         speedLifterRight = spdNew;
-        left.set(-speedLifterRight);
+        right.set(speedLifterRight);
     }
 
     public int stateMachine( int state ) {

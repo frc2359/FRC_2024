@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.IO2;
 import frc.robot.IO2.OI;
 import frc.robot.IO2.OI.RobotControls;
+import frc.robot.RobotMap.ButtonBOX;
+import frc.robot.RobotMap.CollectShooterConstants.CS;
 import frc.robot.RobotMap.CollectShooterConstants.State_CS;
 import frc.robot.RobotMap.LEDConstants;
 import frc.robot.IO.IO_Subsystem;
@@ -13,6 +15,7 @@ import frc.robot.Navigation.NavigationSubsystem;
 import frc.robot.SwerveDrive.SwerveDriveSubsystem;
 import frc.robot.SwerveDrive.SwerveDriveCmd;
 import frc.robot.subsystems.CollectShooter;
+import frc.robot.subsystems.LifterSubsystem;
 import frc.robot.subsystems.LEDs;
 
 public class Robot extends TimedRobot {
@@ -23,6 +26,7 @@ public class Robot extends TimedRobot {
     private LEDs leds = new LEDs();
     private IO_Subsystem ioSubsystem = new IO_Subsystem();
     private NavigationSubsystem navigationSubsystem = new NavigationSubsystem(driveSubsystem::getPositions);
+    private LifterSubsystem lifter = new LifterSubsystem();
 
     private int csState;
 
@@ -70,7 +74,8 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
         //leds.setCol(192,192,0,true);
         //leds.setCol(255,95,21,true);
-        leds.setCol(255,95,0,true);    
+        //leds.setCol(255,95,0,false);    
+        //leds.testLEDs();
     }
 
 
@@ -93,24 +98,28 @@ public class Robot extends TimedRobot {
         if (RobotControls.getDIO(RobotMap.RobotButtons.kBlue)) {
             leds.setState(LEDConstants.STATE_LEDS_ALIGN);
         }
-
+        //leds.testLEDs();
         
     }
 
     /** This function is called one time before autonomousPeriodic is run. */
     @Override
     public void autonomousInit() {
-        System.out.println(Math.atan2(1,1));
-        System.out.println(Math.atan2(-1,1));
-        System.out.println(Math.atan2(-1,-1));
-        System.out.println(Math.atan2(1,-1));
+        //System.out.println(Math.atan2(1,1));
+        //System.out.println(Math.atan2(-1,1));
+        //System.out.println(Math.atan2(-1,-1));
+        //System.out.println(Math.atan2(1,-1));
         countAuto = 0;
+        collectShooter.off();
     }
 
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
         countAuto++;
+
+        // TEST MOTOR DIRECTION
+        /* 
         if (countAuto < 250) {
             driveSubsystem.directionalDrive(.3, 0, 0);
             leds.setCol(255,0,0,false);
@@ -124,7 +133,94 @@ public class Robot extends TimedRobot {
            driveSubsystem.directionalDrive(0, 0, 0);
            leds.setCol(0,0,0,false);
         }
+        */
+        SmartDashboard.putNumber("AutoC", countAuto);
+        csState = collectShooter.stateMachine();
+        leds.setState(LEDConstants.STATE_LEDS_COLLECT_SHOOT,csState);
 
+        // Delayed Move
+        // Wait 1 Sec; Shoot; Wait to 12 Secs and drive for 2 secs
+        /* 
+        if (countAuto < 50) {
+            leds.setCol(255,95,0,false);
+        } else if (countAuto == 50) {
+           leds.setCol(0,255,0,false);
+           collectShooter.shootSpeaker();
+        } else if (countAuto == 12*50) {
+            driveSubsystem.directionalDrive(.25, -1 * Math.PI / 4, 0);
+        } else if (countAuto > 14*50) {
+           driveSubsystem.directionalDrive(0,0, 0);
+           leds.setCol(0,0,0,false);
+        }
+        // */
+
+        
+        //  SHOOT AND DRIVE BACK (Source side with Turn)
+        /*
+        if (countAuto < 50) {                                   // wait 1 second
+            leds.setCol(255,95,0,false);
+        } else if (countAuto == 50) {                           // Shoot
+           leds.setCol(0,255,0,false);
+           collectShooter.shootSpeaker();
+        } else if (countAuto == 300) {                          // drive back
+           driveSubsystem.directionalDrive(0, 0, 0);
+           leds.setCol(0,255,0,false);
+        } else if (countAuto > 400 && countAuto < 600) {
+           driveSubsystem.directionalDrive(.25, 0, 0);
+           leds.setCol(0,0,255,false);  
+        } else if (countAuto >= 600 ) {
+           driveSubsystem.directionalDrive(.1, Math.PI / 4, 0);
+        } else if (countAuto > 602 & countAuto < 700) {
+           driveSubsystem.directionalDrive(.25, 0, 0);
+           leds.setCol(0,0,0,false);
+         } else if (countAuto > 700) {
+            driveSubsystem.directionalDrive(0, 0, 0);
+           leds.setCol(0,0,0,false);
+         }
+        */
+
+        
+        // TWO PIECE AUTO FROM CENTER
+         if (countAuto < 50) {                                                  // Wait 1 Sec
+            leds.setCol(255,95,0,false);
+        } else if (countAuto == 50) {                                           // Shoot
+           leds.setCol(0,255,0,false);
+           collectShooter.shootSpeaker();
+        } else if (countAuto == 200) {                                          // After shot wait 3 seconds; intake on
+           collectShooter.intakeCollector();
+        } else if (countAuto > 200 && countAuto < 300) {                        // drive backward for 2 seconds
+           driveSubsystem.directionalDrive(.25, 0, 0);
+           leds.setCol(0,0,255,false);  
+        } else if (countAuto > 300 && countAuto < 400) {                        // drive back to speaker             
+            driveSubsystem.directionalDrive(.27, Math.PI, 0);  
+        } else if (countAuto == 400) {                                          // shoot
+           driveSubsystem.directionalDrive(0, 0, 0);
+           leds.setCol(0,255,0,false);
+           collectShooter.shootSpeaker();
+        } else if (countAuto > 500 && countAuto < 530) {                        // drive away from speaker
+           driveSubsystem.directionalDrive(.25, 0, 0);
+           leds.setCol(0,0,255,false);
+        } else if (countAuto > 530 && countAuto < 630) {
+            driveSubsystem.directionalDrive(.25,-Math.PI/2, 0);
+        }
+            if (countAuto == 630) {
+            collectShooter.intakeCollector();
+        }
+        if (countAuto > 630 && countAuto < 700) {
+            driveSubsystem.directionalDrive(.257, 0,0);
+        }
+        if (countAuto >= 700 && countAuto <= 750) {
+            driveSubsystem.directionalDrive(.3, Math.PI/2,0);
+        }
+        if (countAuto >= 750 ) {            // stop motors
+           driveSubsystem.directionalDrive(0, 0, 0);
+           leds.setCol(0,0,0,false);
+        }
+        /*
+        if (countAuto > 550 && countAuto < 600) {
+            
+        }
+        */
     }
 
     /** This function is called one time before operator takes control. */
@@ -148,6 +244,22 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("Sens 3",IO2.Sensor.getNoteSensor(3));
         SmartDashboard.putBoolean("Sens 5",IO2.Sensor.getNoteSensor(5));
         SmartDashboard.putBoolean("Note Det.", IO2.Sensor.isNoteDetected());
+
+
+        final Double spd2 = -1 * IO_Subsystem.getSpeedDial() / 2;
+        SmartDashboard.putNumber("Mult",spd2);
+        SmartDashboard.putNumber("LiftL", lifter.getLeftPosition());
+        SmartDashboard.getNumber("LiftR", lifter.getRightPosition());
+        if (IO2.OI.OperatorHID.getButton(ButtonBOX.LEFT_LIFTER)) {      
+           lifter.setLifterLeftSpeed(spd2);
+        } 
+        if (IO2.OI.OperatorHID.getButton(ButtonBOX.RIGHT_LIFTER)) {   
+            lifter.setLifterRightSpeed(spd2);
+        } 
+         if (IO2.OI.OperatorHID.getButton(ButtonBOX.STOP_LIFTER)) { 
+             lifter.setLifterLeftSpeed(0);
+             lifter.setLifterRightSpeed(0);
+        }
     }
 
     @Override
