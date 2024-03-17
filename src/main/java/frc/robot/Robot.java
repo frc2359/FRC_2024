@@ -32,6 +32,8 @@ public class Robot extends TimedRobot {
 
     private int countAuto = 0;
 
+    private boolean autoSide = false; // goes to robot left during auto
+
     /**
      * This function is run when the robot is first started up and should be used
      * for any
@@ -98,7 +100,7 @@ public class Robot extends TimedRobot {
         if (RobotControls.getDIO(RobotMap.RobotButtons.kBlue)) {
             leds.setState(LEDConstants.STATE_LEDS_ALIGN);
         }
-        //leds.testLEDs();
+        leds.testLEDs();
         
     }
 
@@ -181,7 +183,7 @@ public class Robot extends TimedRobot {
 
         
         // TWO PIECE AUTO FROM CENTER
-         if (countAuto < 50) {                                                  // Wait 1 Sec
+         /*if (countAuto < 50) {                                                  // Wait 1 Sec
             leds.setCol(255,95,0,false);
         } else if (countAuto == 50) {                                           // Shoot
            leds.setCol(0,255,0,false);
@@ -215,7 +217,109 @@ public class Robot extends TimedRobot {
         if (countAuto >= 750 ) {            // stop motors
            driveSubsystem.directionalDrive(0, 0, 0);
            leds.setCol(0,0,0,false);
+        }*/
+
+        /*if (countAuto < 1) {                                                  // Wait 1 Sec
+            leds.setCol(255,95,0,false);
+        } else if (countAuto == 1) {                                           // Shoot
+           leds.setCol(0,255,0,false);
+           collectShooter.shootSpeaker();
+        } else if (countAuto == 150) {                                          // After shot wait 3 seconds; intake on
+           collectShooter.intakeCollector();
+        } else if (countAuto > 150 && countAuto < 250) {                        // drive backward for 2 seconds
+           driveSubsystem.directionalDrive(.25, 0, 0);
+           leds.setCol(0,0,255,false);  
+        } else if (countAuto > 250 && countAuto < 350) {                        // drive back to speaker             
+            driveSubsystem.directionalDrive(.27, Math.PI, 0);  
+        } else if (countAuto == 350) {                                          // shoot
+           driveSubsystem.directionalDrive(0, 0, 0);
+           leds.setCol(0,255,0,false);
+           collectShooter.shootSpeaker();
+        } else if (countAuto > 450 && countAuto < 480) {                        // drive away from speaker
+           driveSubsystem.directionalDrive(.25, 0, 0);
+           leds.setCol(0,0,255,false);
+        } else if (countAuto > 480 && countAuto < 570) {
+            driveSubsystem.directionalDrive(.25,-Math.PI/2, 0);
         }
+            if (countAuto == 570) {
+            collectShooter.intakeCollector();
+        }
+        if (countAuto > 570 && countAuto < 640) {
+            driveSubsystem.directionalDrive(.257, 0,0);
+        }
+        if (countAuto >= 640 && countAuto <= 696) {
+            driveSubsystem.directionalDrive(.35, Math.PI/2,0);
+        }
+        if (countAuto == 696 ) {            // stop motors
+           driveSubsystem.directionalDrive(0, 0, 0);
+           leds.setCol(0,0,0,false);
+        }
+        if (countAuto > 696 && countAuto <= 744){
+            driveSubsystem.directionalDrive(.48, Math.PI, 0);  
+        }
+        if (countAuto >= 744) {
+            driveSubsystem.directionalDrive(0, 0, 0);
+            leds.setCol(0,0,0,false);
+        }*/
+
+        if (countAuto < 1) {                                                  // Wait 1 Sec
+            leds.setCol(255,95,0,false);
+        } else if (countAuto == 1) {                                           // Shoot
+           leds.setCol(0,255,0,false);
+           collectShooter.shootSpeaker();
+        } else if (countAuto == 50) {                                          // After shot wait 1 seconds; intake on
+           collectShooter.intakeCollector();
+        } else if (countAuto > 50 && countAuto < 150) {                        // drive backward for 2 seconds
+           driveSubsystem.directionalDrive(.25, 0, 0);
+           leds.setCol(0,0,255,false);  
+        } else if (countAuto > 150 && countAuto < 250) {                        // drive back to speaker             
+            driveSubsystem.directionalDrive(.25, Math.PI, 0);  
+        } else if (countAuto == 250) {                                          // shoot
+           driveSubsystem.directionalDrive(0, 0, 0);
+           leds.setCol(0,255,0,false);
+           collectShooter.shootSpeaker();
+        } else if (countAuto > 350 && countAuto < 380) {                        // drive away from speaker
+           driveSubsystem.directionalDrive(.25, 0, 0);
+           leds.setCol(0,0,255,false);
+        } else if (countAuto > 380 && countAuto < 470) {                        // drive to robot left
+            if (autoSide) {
+                driveSubsystem.directionalDrive(.237,-Math.PI/2, 0);
+            }
+            else {
+                driveSubsystem.directionalDrive(.237,Math.PI/2, 0);
+            }
+            
+        }
+            if (countAuto == 470) {
+            collectShooter.intakeCollector();
+        }
+        if (countAuto > 470 && countAuto < 540) {                               // drive away from wall to pick up note
+            driveSubsystem.directionalDrive(.257, 0,0);
+        }
+        if (countAuto >= 540 && countAuto <= 596) {                             // drive right to align with speaker
+            if (autoSide) {
+                driveSubsystem.directionalDrive(.345, Math.PI/2,0);
+            }
+            else {
+                driveSubsystem.directionalDrive(.345, -Math.PI/2,0);
+            }
+        }
+        if (countAuto == 596 ) {                                                // stop motors
+           driveSubsystem.directionalDrive(0, 0, 0);
+           leds.setCol(0,0,0,false);
+        }
+        if (countAuto > 596 && countAuto <= 649){                               // drive towards speaker
+            driveSubsystem.directionalDrive(.48, Math.PI, 0);  
+        }
+        if (countAuto >= 649) {                                                 // stop motors
+            driveSubsystem.directionalDrive(0, 0, 0);
+            leds.setCol(0,0,0,false);
+        }
+        if (countAuto == 650) {                                                 // shoot
+            leds.setCol(0,255,0,false);
+           collectShooter.shootSpeaker();
+        }
+
         /*
         if (countAuto > 550 && countAuto < 600) {
             

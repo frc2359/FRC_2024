@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.CollectShooterConstants.State_CS;
-import frc.robot.RobotMap.LEDConstants;
 import frc.robot.IO2;
 import frc.robot.IO2.OI;
 import frc.robot.IO2.Modifiers;
@@ -47,6 +46,9 @@ public class CollectShooter extends SubsystemBase{
 
     private SparkPIDController shootTopPID;
     private SparkPIDController shootBottomPID;
+
+    public final static int kIntakeGround = 1;
+    public final static int kIntakeShooter = 2;
 
     /** Initialize systems to set constants and defaults */
     public void init() {
@@ -135,6 +137,17 @@ public class CollectShooter extends SubsystemBase{
         setState(State_CS.COLLECTOR_INTAKE);
     }
 
+    public void intakeShooter () {
+        setState(State_CS.SHOOTER_INTAKE);
+    }
+
+    public void intake(int intakeSource) {
+        if (intakeSource == kIntakeGround) {
+            intakeCollector();
+        } else if (intakeSource == kIntakeShooter) {
+            intakeShooter();
+        }
+    }
     public void shoot(int targ) {
         csTarget = targ;
         setState(State_CS.PREPARE_TO_SHOOT);

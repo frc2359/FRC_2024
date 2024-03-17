@@ -1,0 +1,37 @@
+package frc.robot.commands;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Subsystems.CollectShooter;
+
+public class Shoot extends Command {
+
+    private long delayTime = 1.5;
+    private long startTime;
+
+    public Shoot (CollectShooter cs, int target) {
+        this.collectorShooter = cs;
+        this.shootTarget = target;
+    }
+
+
+    @Override
+    public void initialize() {
+        startTime = System.currentTimeMillis();
+        cs.shoot(shootTarget);
+    }
+    
+    @Override
+    public void execute() {
+
+    }
+
+    @Override
+    public boolean isFinished() {
+        return (System.currentTimeMillis() - startTime) >= delayTime;
+    }
+
+    @Override
+    public void end(boolean interruped) {
+
+    }
+}

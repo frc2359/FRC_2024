@@ -41,7 +41,7 @@ public class SwerveDriveCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    final double Deadzone = 0.1;  //Constants.ControllerDeadzone;
+    final double Deadzone = 0.2;  //Constants.ControllerDeadzone;
 
     double x = xSpeedLimiter.calculate(-ioSubsystem.getDriveY());
     double y = ySpeedLimiter.calculate(ioSubsystem.getDriveX());
@@ -49,7 +49,7 @@ public class SwerveDriveCmd extends Command {
     double angle = Math.atan2(y, x);
     double gyroAngle = navigationSubsystem.angleRad();
     if(ioSubsystem.getTrigger()) {gyroAngle = 0;}
-    gyroAngle = 0;  // Temp override of field orientated
+    //gyroAngle = 0;  // Temp override of field orientated
 
     // if (Math.abs(x) < 0.1 && Math.abs(y) < 0.1) {
     //   double rotate = joy.getRightX();
@@ -77,6 +77,7 @@ public class SwerveDriveCmd extends Command {
     SmartDashboard.putNumber("Angle", angle);
     SmartDashboard.putNumber("GyroAngle", Math.round(navigationSubsystem.angle()*10)/10);
     SmartDashboard.putNumber("GyroAngleRAD", Math.round(gyroAngle*1000)/1000);
+    
   }
 
   // Called once the command ends or is interrupted.

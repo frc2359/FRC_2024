@@ -303,7 +303,6 @@ public interface RobotMap {
         public static final int SHOOT_SPEAKER = 12;
         public static final int SHOOT_MAX = 1;
         public static final int INTAKE_EJECT = 7;
-        public static final int INTAKE_EJECT_FAST = 8;
         public static final int LEFT_LIFTER = 10;
         public static final int RIGHT_LIFTER = 11;
         public static final int STOP_LIFTER = 2;

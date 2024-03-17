@@ -102,24 +102,30 @@ public class NavigationSubsystem extends SubsystemBase {
   }
 
   public double angle() {
-    double angle = Gyro.getAngle();
-    while (angle >= 360) {
-      angle = angle - 360;
-    }
-    while (angle < 0) {
-      angle = angle + 360;
-    }
-    return angle;
+    // double angle = Gyro.getAngle();
+    // while (angle >= 360) {
+    //   angle = angle - 360;
+    // }
+    // while (angle < 0) {
+    //   angle = angle + 360;
+    // }
+    return Gyro.getAngle() % 360;
   }
 
   public double angleRad() {
     double angle = angle();
-    if (angle <= 180) {
-      return -1 * angle / 180 * Math.PI;
-    } else {
-      return (360 - angle) / 180 * Math.PI;
-    }
+    // if (angle <= 180) {
+    //   return -1 * angle / 180 * Math.PI;
+    // } else {
+    //   return (360 - angle) / 180 * Math.PI;
+    // }
+    return angle * Math.PI / 180;
   }
+
+ 
+  
+
+
 
   public Pose2d pose() {
     return pose;

@@ -78,7 +78,7 @@ public class LEDs extends SubsystemBase {
     }
 
     public void testLEDs() {
-        setColor(1,12,128,0,0);
+        /*setColor(1,12,128,0,0);
         setColor(13,24,255,0,0);
         setColor(25,36,128,128,0);
         setColor(37,48,255,255,0);
@@ -87,7 +87,20 @@ public class LEDs extends SubsystemBase {
         setColor(72,83,0,128,128);
         setColor(84,95,0,255,255);
         setColor(96,107,0,0,128);
-        setColor(106,117,0,0,255);
+        setColor(106,117,0,0,255);*/
+        /*setColor(1,19,255,0,66);
+        setColor(20,40,255,15,0);
+        setColor(41,59,255,146,0);
+        setColor(60,80,0,255,20);
+        setColor(81,99,176,0,225);
+        setColor(100,117,245,205,155);*/
+
+        setColor(1,19,245,75,55);
+        setColor(20,40,156,0,205);
+        setColor(41,59,255,0,46);
+        setColor(60,80,255,15,0);
+        setColor(81,99,255,146,0);
+        setColor(100,117,0,255,20);
         leds.setData(ledBuffer);
     }
 
