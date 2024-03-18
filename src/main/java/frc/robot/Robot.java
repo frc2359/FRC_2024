@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
             leds.setState(LEDConstants.STATE_LEDS_ALIGN);
         }
         leds.testLEDs();
-        
+
     }
 
     /** This function is called one time before autonomousPeriodic is run. */
@@ -350,10 +350,10 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("Note Det.", IO2.Sensor.isNoteDetected());
 
 
-        final Double spd2 = -1 * IO_Subsystem.getSpeedDial() / 2;
-        SmartDashboard.putNumber("Mult",spd2);
-        SmartDashboard.putNumber("LiftL", lifter.getLeftPosition());
-        SmartDashboard.getNumber("LiftR", lifter.getRightPosition());
+        //final Double spd2 = -1 * IO_Subsystem.getSpeedDial() / 2;
+        //SmartDashboard.putNumber("Mult",spd2);
+        lifter.stateMachine(0);
+        /*
         if (IO2.OI.OperatorHID.getButton(ButtonBOX.LEFT_LIFTER)) {      
            lifter.setLifterLeftSpeed(spd2);
         } 
@@ -364,6 +364,7 @@ public class Robot extends TimedRobot {
              lifter.setLifterLeftSpeed(0);
              lifter.setLifterRightSpeed(0);
         }
+        */
     }
 
     @Override

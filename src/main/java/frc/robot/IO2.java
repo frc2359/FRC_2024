@@ -293,7 +293,66 @@ public class IO2 {
             public static boolean getButton(int btn) {
                 return (buttonBox != null ? buttonBox.getRawButtonPressed(btn) : false);
             }
+
+            public static int getJoystickPos() {
+                int x = (int)buttonBox.getRawAxis(0);
+                if (x > -1 && x < 1) {
+                    x = 0;
+                }
+                int y = (int)buttonBox.getRawAxis(1);
+                if (y > -1 && y < 1) {
+                    y = 0;
+                }
+                int pos = 0;
+                switch (x) {
+                    case -1:
+                        switch (y) {
+                            case -1:
+                                pos = 2;
+                                break;
+                            case 0:
+                                pos = 1;
+                                break;
+                            case 1:
+                                pos = 8;
+                                break;
+                        }
+                        break;
+                    case 0:
+                        switch (y) {
+                            case -1:
+                                pos = 3;
+                                break;
+                            case 0:
+                                pos = 0;
+                                break;
+                            case 1:
+                                pos = 7;
+                                break;
+                        }
+                        break;
+                    case 1:
+                        switch (y) {
+                            case -1:
+                                pos = 4;
+                                break;
+                            case 0:
+                                pos = 5;
+                                break;
+                            case 1:
+                                pos = 6;
+                                break;
+                        }
+                        break;
+                }
+                //SmartDashboard.putNumber("bbX",x);
+                //SmartDashboard.putNumber("bbY",y);
+                SmartDashboard.putNumber("pos", pos);
+                return pos;
+            }
         }
+
+
 
         /** The Operator Xbox Controller - currently configured for an Xbox Controller */
         public static class OperatorXbox {

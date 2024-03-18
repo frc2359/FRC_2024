@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Subsystems.CollectShooter;
+import frc.robot.subsystems.CollectShooter;
 
 public class Collect extends Command {
 
@@ -16,7 +16,7 @@ public class Collect extends Command {
 
     @Override
     public void initialize() {
-        cs.intake(intakeSource);
+        collectorShooter.intake(intakeSource);
     }
     
     @Override

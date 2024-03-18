@@ -296,16 +296,21 @@ public interface RobotMap {
 
     //** Button Box Buttons */
     public static final class ButtonBOX {
-        public static final int INTAKE_COLLECTOR = 5;
-        public static final int INTAKE_SHOOTER = 4;
-        public static final int INTAKE_OFF = 6;
-        public static final int SHOOT_AMP = 9;
-        public static final int SHOOT_SPEAKER = 12;
         public static final int SHOOT_MAX = 1;
+        public static final int SHOOT_SPEAKER = 2;
+        public static final int SHOOT_AMP = 3;
+        public static final int INTAKE_SHOOTER = 4;
+        public static final int INTAKE_COLLECTOR = 5;
+        public static final int INTAKE_OFF = 6;
         public static final int INTAKE_EJECT = 7;
-        public static final int LEFT_LIFTER = 10;
+
+        public static final int LIFTER_UP = 8;
+        public static final int LIFTER_STOP = 9;
+        public static final int LIFTER_DOWN = 10;
+
+        public static final int LEFT_LIFTER = 11;
         public static final int RIGHT_LIFTER = 11;
-        public static final int STOP_LIFTER = 2;
+        public static final int STOP_LIFTER = 12;
     }
 
     public static final class RobotButtons {

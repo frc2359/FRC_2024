@@ -258,11 +258,7 @@ public class CollectShooter extends SubsystemBase{
                     setState(State_CS.EJECT_NOTE);
                     break;
                 }
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT_FAST)) {        // Eject Button Pressed     
-                    setState(State_CS.EJECT_NOTE);
-                    break;
-                }
-
+                
                 break;
 
             case State_CS.SHOOTER_INTAKE:
@@ -303,20 +299,14 @@ public class CollectShooter extends SubsystemBase{
                     break;
                 }
  
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT_FAST)) {        // Eject Button Pressed     
-                    setCollectorSpeed(CS.kEjectFast);
-                    setState(State_CS.EJECT_NOTE);
-                    break;
-                }
-
                 // if the note is not all the way in, then move it up slowly
                  if (IO2.Sensor.getNoteSensor(1) && !IO2.Sensor.getNoteSensor(5)) {
-                    setCollectorSpeed(.2);;
+                    setCollectorSpeed(.2);
                  }   
 
                 // if the note is too far in, then move it down slowly
                  if (!IO2.Sensor.getNoteSensor(1) && IO2.Sensor.getNoteSensor(5)) {
-                    setCollectorSpeed(-.2);;
+                    setCollectorSpeed(-.2);
                  }  
 
                 break;
@@ -365,12 +355,6 @@ public class CollectShooter extends SubsystemBase{
 
                 if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
                     setCollectorSpeed(CS.kEjectSlow);
-                    setState(State_CS.EJECT_NOTE);
-                    break;
-                }
- 
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT_FAST)) {        // Eject Button Pressed     
-                    setCollectorSpeed(CS.kEjectFast);
                     setState(State_CS.EJECT_NOTE);
                     break;
                 }

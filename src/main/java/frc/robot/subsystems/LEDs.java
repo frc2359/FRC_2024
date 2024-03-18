@@ -40,7 +40,8 @@ public class LEDs extends SubsystemBase {
     private int moveCount = 0;
     private int movePos = 0;
 
-     private void waitMSecs(long delay) {
+
+    private void waitMSecs(long delay) {
         startTime = System.currentTimeMillis();
         elapsedTime = 0;
         while (elapsedTime < delay) {
@@ -48,12 +49,68 @@ public class LEDs extends SubsystemBase {
         }
     }
 
+    public class LEDColorRGB {
+        private int cR = 0;
+        private int cG = 0;
+        private int cB = 0;
+        //constructor
+        public void LEDColorRGB(int r, int g, int b) {
+            cR = r;
+            cG = g;
+            cB = b;
+        }
+        public void LEDColorRGB() {
+            cR = 0;
+            cG = 0;
+            cB = 0;
+        }
+
+        public void set(int r, int g, int b) {
+            this.cR = r;
+            this.cG = g;
+            this.cB = b;
+        }
+        public int getRed() {
+            return this.cR;
+        }
+        public int getGreen() {
+            return this.cG;
+        }
+        public int getBlue() {
+            return this.cB;
+        }
+    }
+    public LEDColorRGB kColorBlack = new LEDColorRGB();
+    public LEDColorRGB kColorWhite = new LEDColorRGB();
+    public LEDColorRGB kColorPurple = new LEDColorRGB();
+    public LEDColorRGB kColorPink = new LEDColorRGB();
+    public LEDColorRGB kColorOrange = new LEDColorRGB();
+    public LEDColorRGB kColorYellow= new LEDColorRGB();
+    public LEDColorRGB kColorGreen = new LEDColorRGB();
+    public LEDColorRGB kColorBlue = new LEDColorRGB();
+    public LEDColorRGB kColorRed = new LEDColorRGB();
+
     public void init() {
+        kColorBlack.set(0,0,0);
+        kColorWhite.set(245,75,55);
+        kColorPurple.set(156,0,205);
+        kColorPink.set(255,0,46);
+        kColorOrange.set(255,15,0);
+        kColorYellow.set(255,146,0);
+        kColorGreen.set(0,255,20);
+        kColorRed.set(255,0,0);
+        kColorBlue.set(0,0,255);
+
         leds = new AddressableLED(PWM_LEDS);
         ledBuffer = new AddressableLEDBuffer(144);
         leds.setLength(ledBuffer.getLength());
         leds.setData(ledBuffer);
         leds.start();
+    }
+
+    public void initLEDs() {
+        setState(STATE_LEDS_INIT);
+        runLEDs();
     }
 
     public void setCol(int cR, int cG, int cB, boolean blink) {
@@ -72,35 +129,26 @@ public class LEDs extends SubsystemBase {
         //leds.setData(ledBuffer);
     }
 
-    public void initLEDs() {
-        setState(STATE_LEDS_INIT);
-        runLEDs();
+    private void setColor(int iStart, int iEnd, LEDColorRGB col) {
+        setColor(iStart,iEnd,col.getRed(),col.getGreen(),col.getBlue());
     }
 
     public void testLEDs() {
-        /*setColor(1,12,128,0,0);
-        setColor(13,24,255,0,0);
-        setColor(25,36,128,128,0);
-        setColor(37,48,255,255,0);
-        setColor(49,60,0,192,0);
-        setColor(61,72,0,255,0);
-        setColor(72,83,0,128,128);
-        setColor(84,95,0,255,255);
-        setColor(96,107,0,0,128);
-        setColor(106,117,0,0,255);*/
-        /*setColor(1,19,255,0,66);
-        setColor(20,40,255,15,0);
-        setColor(41,59,255,146,0);
-        setColor(60,80,0,255,20);
-        setColor(81,99,176,0,225);
-        setColor(100,117,245,205,155);*/
-
-        setColor(1,19,245,75,55);
-        setColor(20,40,156,0,205);
-        setColor(41,59,255,0,46);
-        setColor(60,80,255,15,0);
-        setColor(81,99,255,146,0);
-        setColor(100,117,0,255,20);
+        //setColor(1,19,245,75,55);
+        setColor(1,14,kColorWhite);
+        //setColor(20,40,156,0,205);
+        setColor(15,29,kColorPurple);
+        //setColor(41,59,255,0,46);
+        setColor(30,44,kColorPink);        
+        //setColor(60,80,255,15,0);
+        setColor(45,59,kColorOrange);
+        //setColor(81,99,255,146,0);
+        setColor(60,74,kColorYellow);
+       // setColor(100,117,0,255,20);
+        setColor(75,89,kColorGreen);
+        setColor(1,14,kColorGreen);
+        setColor(90,104,kColorRed);
+        setColor(105,119,kColorBlue);
         leds.setData(ledBuffer);
     }
 
@@ -132,6 +180,10 @@ public class LEDs extends SubsystemBase {
             } else {
                 ledBuffer.setRGB(iP, cR, cG, cB);
             }
+    }
+
+    private void setRGB(int iP, LEDColorRGB col) {
+        setRGB(iP, col.getRed(), col.getGreen(), col.getBlue());
     }
 
     public void runLEDs() {
