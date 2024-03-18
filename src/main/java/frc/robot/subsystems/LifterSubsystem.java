@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.LifterConstants.PIDConstants;
 import frc.robot.IO2;
+import frc.robot.RobotMap.ButtonBOX;
+import frc.robot.RobotMap.CollectShooterConstants.State_CS;
 import frc.robot.RobotMap.LifterConstants.CANID;
 import frc.robot.RobotMap.LifterConstants.LifterStates;
 
@@ -19,7 +21,7 @@ public class LifterSubsystem extends SubsystemBase {
     private double speedLifterLeft = 0;
     private double speedLifterRight = 0;
     
-    private int state = 0;
+    private int stateLifter = 0;
 
     private CANSparkMax left = new CANSparkMax(CANID.kLeft, MotorType.kBrushless);
     private RelativeEncoder leftEncoder = left.getEncoder();;
@@ -35,13 +37,20 @@ public class LifterSubsystem extends SubsystemBase {
     public void init() {
         left.restoreFactoryDefaults();
         left.clearFaults();
+        //left.setInverted(false);
         left.setIdleMode(IdleMode.kBrake);
-        //leftEncoder.;
+        //leftEncoder.setInverted(false);
+        leftEncoder.setPositionConversionFactor(1);
+        leftEncoder.setPosition(0);
+        //SmartDashboard.putNumber("LL-EncCpR", leftEncoder.getCountsPerRevolution());
+        //SmartDashboard.putNumber("LL-EncPCF",leftEncoder.getPositionConversionFactor());
 
         right.restoreFactoryDefaults();
         right.clearFaults();
+        //right.setInverted(true);
         right.setIdleMode(IdleMode.kBrake);
-        //rightEncoder.reset();
+        //rightEncoder.setInverted(true);
+        rightEncoder.setPosition(0);
     }
 
     public void homeLeftLifter() {
@@ -49,7 +58,9 @@ public class LifterSubsystem extends SubsystemBase {
     }
 
     public Double getLeftPosition() {
-        return leftEncoder.getPosition();
+        double encPos  = leftEncoder.getPosition() / 24 * 10;    // 277 is 11.5 inches, so about 24 per inch
+        encPos = Math.round(encPos);
+        return encPos / 10;      
     }
 
     public void homeRightLifter() {
@@ -57,6 +68,12 @@ public class LifterSubsystem extends SubsystemBase {
     }
 
     public Double getRightPosition() {
+        double encPos  = rightEncoder.getPosition() / 42 * 10;    // 485 is 11.5 inches, so about 42 per inch
+        encPos = Math.round(encPos);
+        return -encPos / 10;      // invert direction
+    }
+
+    public double getRightRawPos() {
         return rightEncoder.getPosition();
     }
 
@@ -67,34 +84,42 @@ public class LifterSubsystem extends SubsystemBase {
 
     public void setLifterRightSpeed(double spdNew) {
         speedLifterRight = spdNew;
-        right.set(-speedLifterRight);
+        right.set(-speedLifterRight);           // invert direction
     }
 
     public int stateMachine( int state ) {
+        stateLifter = state;
+        executePeriodic();
+        return stateLifter;
+    }
+
+    public int executePeriodic() {
         double spdL = 0;
         double spdR = 0;
         double posL = getLeftPosition();
         double posR = getRightPosition();
-        SmartDashboard.putNumber("LiftL", posL);
-        SmartDashboard.getNumber("LiftR", posR);
-        int pov = IO2.OI.OperatorHID.getJoystickPos();
+        SmartDashboard.putNumber("LiftL-Pos", posL);
+        //Math.round((inNum * mult )) / mult;
+        SmartDashboard.putNumber("LiftR-Pos", posR);
+        int pos = IO2.OI.OperatorHID.getJoystickPos();
         
-        if (!IO2.OI.OperatorHID.getButton(11)) {
+        SmartDashboard.putBoolean("Btn9", IO2.OI.OperatorHID.getButton(9));
+        if (!IO2.OI.OperatorHID.getButton(9)) {
             //homeLeftLifter();
             //homeRightLifter();
-            state = LifterStates.OFF;
+            stateLifter = LifterStates.OFF;
         }
-        
-        if (pov != 0) {
-            state = LifterStates.MANUAL;
+        // Lifter joystick: Pos = 0 is center; Pos 1 to 8 starts at top and goes clockwise around joystick
+        if (pos != 0) {
+            stateLifter = LifterStates.MANUAL;
         }
-        switch(state) {
+        switch(stateLifter) {
             case LifterStates.UNKNOWN:
                 break;
 
             case LifterStates.MANUAL:
                 // need to determine optimal controls here
-                switch (pov) {
+                switch (pos) {
                     case 0:
                         spdL = 0;
                         spdR = 0;
@@ -132,13 +157,73 @@ public class LifterSubsystem extends SubsystemBase {
                         spdR = 0;
                         break;
                 }
+                if (pos == 0) {
+                    stateLifter = LifterStates.OFF;
+                }
                 break;
             
             case LifterStates.OFF:
                 spdL = 0;
                 spdR = 0;
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.LIFTER_UP)) {
+                    stateLifter = LifterStates.LIFTER_UP;
+                    break;
+                }
+                if (IO2.OI.OperatorHID.getButton(ButtonBOX.LIFTER_DOWN)) {
+                    stateLifter = LifterStates.LIFTER_DOWN;
+                    break;
+                }
                 break;
-            
+
+            case LifterStates.LIFTER_UP:
+                if (posL < 10) {
+                    if (posL > 8) {
+                        spdL = .5;
+                    } else {
+                        spdL = 1;
+                    }               
+                } else {
+                    spdL = 0;
+                }
+                if (posR < 10) {
+                    if (posR > 8) {
+                        spdR = .5;
+                    } else {
+                        spdR = 1;
+                    }               
+                } else {
+                    spdR = 0;
+                }
+                if (posL > 10 && posR > 10) {
+                    stateLifter = LifterStates.OFF;
+                }
+                break;
+ 
+            case LifterStates.LIFTER_DOWN:
+                if (posL > 1) {
+                    if (posL < 3) {
+                        spdL = -.5;
+                    } else {
+                        spdL = -1;
+                    }               
+                } else {
+                    spdL = 0;
+                }
+                if (posR > 1) {
+                    if (posR < 3) {
+                        spdR = -.5;
+                    } else {
+                        spdR = -1;
+                    }               
+                } else {
+                    spdR = 0;
+                }
+                if (posL <= 0 && posR <= 0) {
+                    stateLifter = LifterStates.OFF;
+                }
+                break;
+
+           
             case LifterStates.LIFT_LINEAR:
                 // need to know what fully up case is
                 // way to determine dist to fully up so that we can
@@ -153,7 +238,8 @@ public class LifterSubsystem extends SubsystemBase {
                 break;
         }
         setLifterLeftSpeed(spdL * .5);
-        setLifterRightSpeed(spdR * .5);
-        return state;
+        setLifterRightSpeed(spdR * .85);
+        SmartDashboard.putNumber("lifterState", stateLifter);
+        return stateLifter;
     }
 }

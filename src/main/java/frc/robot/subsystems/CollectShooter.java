@@ -288,7 +288,8 @@ public class CollectShooter extends SubsystemBase{
                 }
 
                 // if the note is in the correct position in the chute, it is ready to be processed
-                if (IO2.Sensor.isNoteDetected() && !IO2.Sensor.getNoteSensor(1) && !IO2.Sensor.getNoteSensor(5)) {
+                if (IO2.Sensor.isNoteDetected() && !IO2.Sensor.getNoteSensor(1) && !IO2.Sensor.getNoteSensor(5)
+                    && IO2.Sensor.getNoteSensor(3)) {
                     setState(State_CS.NOTE_READY);
                     break;
                 }
@@ -354,7 +355,7 @@ public class CollectShooter extends SubsystemBase{
                 */
 
                 if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
-                    setCollectorSpeed(CS.kEjectSlow);
+                    setCollectorSpeed(CS.kEjectFast);
                     setState(State_CS.EJECT_NOTE);
                     break;
                 }

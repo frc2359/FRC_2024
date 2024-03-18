@@ -32,7 +32,7 @@ public class Robot extends TimedRobot {
 
     private int countAuto = 0;
 
-    private boolean autoSide = false; // goes to robot left during auto
+    private boolean autoSide = true; // goes to robot left during auto
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -46,6 +46,8 @@ public class Robot extends TimedRobot {
        // m_robotContainer.getSwerveSubsystem().setDriveMode(true);
 
         collectShooter.init();
+
+        lifter.init();
 
         leds.init();
         leds.initLEDs();
@@ -69,25 +71,34 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         //CommandScheduler.getInstance().run();
-        leds.runLEDs();
+        leds.executePeriodic();
     }
 
     @Override
     public void disabledInit() {
-        //leds.setCol(192,192,0,true);
-        //leds.setCol(255,95,21,true);
-        //leds.setCol(255,95,0,false);    
-        //leds.testLEDs();
+
     }
 
 
     @Override
     public void disabledPeriodic() {
-         /* ------------------------------ ROBOT BUTTONS ----------------------------- */
+         /* ------------------------------ ROBOT BUTTONS -----------------------------
+          * White  = Robot Status
+          * Yellow = reset Gyro heading
+          * Red    = set motors to coast mode
+          * Green  = TBD
+          * Blue   = show LED alignment pattern
+          */
         if(RobotControls.getDIO(RobotMap.RobotButtons.kWhite)) {
             leds.setState(LEDConstants.STATE_LEDS_STATUS);
+        } else if (RobotControls.getDIO(RobotMap.RobotButtons.kBlue)) {
+            leds.setState(LEDConstants.STATE_LEDS_ALIGN);
+        } else if (RobotControls.getDIO(RobotMap.RobotButtons.kGreen)) {
+            leds.testLEDs();
+        } else {
+            //leds.SetColor(128,45,0,true);
         }
-        SmartDashboard.putBoolean("DIO_W", RobotControls.getDIO(RobotMap.RobotButtons.kWhite));
+        //SmartDashboard.putBoolean("DIO_W", RobotControls.getDIO(RobotMap.RobotButtons.kWhite));
         if (RobotControls.getDIO(RobotMap.RobotButtons.kYellow)) {
             IO2.Gyro.zeroHeading();
         }
@@ -97,20 +108,13 @@ public class Robot extends TimedRobot {
         if (RobotControls.getDIO(RobotMap.RobotButtons.kGreen)) {
             //leds.setState(LEDConstants.STATE_LEDS_ALIGN);
         }
-        if (RobotControls.getDIO(RobotMap.RobotButtons.kBlue)) {
-            leds.setState(LEDConstants.STATE_LEDS_ALIGN);
-        }
-        leds.testLEDs();
+
 
     }
 
     /** This function is called one time before autonomousPeriodic is run. */
     @Override
     public void autonomousInit() {
-        //System.out.println(Math.atan2(1,1));
-        //System.out.println(Math.atan2(-1,1));
-        //System.out.println(Math.atan2(-1,-1));
-        //System.out.println(Math.atan2(1,-1));
         countAuto = 0;
         collectShooter.off();
     }
@@ -349,22 +353,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("Sens 5",IO2.Sensor.getNoteSensor(5));
         SmartDashboard.putBoolean("Note Det.", IO2.Sensor.isNoteDetected());
 
-
-        //final Double spd2 = -1 * IO_Subsystem.getSpeedDial() / 2;
-        //SmartDashboard.putNumber("Mult",spd2);
-        lifter.stateMachine(0);
-        /*
-        if (IO2.OI.OperatorHID.getButton(ButtonBOX.LEFT_LIFTER)) {      
-           lifter.setLifterLeftSpeed(spd2);
-        } 
-        if (IO2.OI.OperatorHID.getButton(ButtonBOX.RIGHT_LIFTER)) {   
-            lifter.setLifterRightSpeed(spd2);
-        } 
-         if (IO2.OI.OperatorHID.getButton(ButtonBOX.STOP_LIFTER)) { 
-             lifter.setLifterLeftSpeed(0);
-             lifter.setLifterRightSpeed(0);
-        }
-        */
+        lifter.executePeriodic();
     }
 
     @Override

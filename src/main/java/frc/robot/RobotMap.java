@@ -102,6 +102,8 @@ public interface RobotMap {
             public static final int OFF = 1;
             public static final int LIFT_LINEAR = 2;
             public static final int LIFT_BALANCE = 3;
+            public static final int LIFTER_UP = 4;
+            public static final int LIFTER_DOWN = 5;
             public static final int MANUAL = 99;
         }
     }

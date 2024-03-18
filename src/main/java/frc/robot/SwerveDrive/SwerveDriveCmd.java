@@ -9,6 +9,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.IO2;
 import frc.robot.IO.IO_Subsystem;
 import frc.robot.Navigation.*;
 
@@ -49,6 +50,7 @@ public class SwerveDriveCmd extends Command {
     double angle = Math.atan2(y, x);
     double gyroAngle = navigationSubsystem.angleRad();
     if(ioSubsystem.getTrigger()) {gyroAngle = 0;}
+    if(ioSubsystem.getButton(9)) {IO2.Gyro.zeroHeading();}
     //gyroAngle = 0;  // Temp override of field orientated
 
     // if (Math.abs(x) < 0.1 && Math.abs(y) < 0.1) {

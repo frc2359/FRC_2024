@@ -27,6 +27,7 @@ public class LEDs extends SubsystemBase {
     private AddressableLED leds;
     private AddressableLEDBuffer ledBuffer;
 
+    private int numLEDs = 144;
     private boolean flagGRB = false;     // Set to True if Leds are GRB otherwise false if RGB
    
     private long startTime = 0;
@@ -92,7 +93,7 @@ public class LEDs extends SubsystemBase {
 
     public void init() {
         kColorBlack.set(0,0,0);
-        kColorWhite.set(245,75,55);
+        kColorWhite.set(245,95,65);
         kColorPurple.set(156,0,205);
         kColorPink.set(255,0,46);
         kColorOrange.set(255,15,0);
@@ -110,7 +111,7 @@ public class LEDs extends SubsystemBase {
 
     public void initLEDs() {
         setState(STATE_LEDS_INIT);
-        runLEDs();
+        executePeriodic();
     }
 
     public void setCol(int cR, int cG, int cB, boolean blink) {
@@ -129,8 +130,19 @@ public class LEDs extends SubsystemBase {
         //leds.setData(ledBuffer);
     }
 
+    private void setColor(int rCol, int gCol, int bCol) {
+        for (int i = 0; i < numLEDs; i++) {
+            setRGB(i, gCol, rCol, bCol);
+        }
+        //leds.setData(ledBuffer);
+    }
+
     private void setColor(int iStart, int iEnd, LEDColorRGB col) {
         setColor(iStart,iEnd,col.getRed(),col.getGreen(),col.getBlue());
+    }
+
+    private void setColor(LEDColorRGB col) {
+        setColor (1, numLEDs, col);
     }
 
     public void testLEDs() {
@@ -146,7 +158,6 @@ public class LEDs extends SubsystemBase {
         setColor(60,74,kColorYellow);
        // setColor(100,117,0,255,20);
         setColor(75,89,kColorGreen);
-        setColor(1,14,kColorGreen);
         setColor(90,104,kColorRed);
         setColor(105,119,kColorBlue);
         leds.setData(ledBuffer);
@@ -167,29 +178,30 @@ public class LEDs extends SubsystemBase {
     }
 
     public void setPair(int iP, int cR, int cG, int cB) {
-        if (iP>=1 && iP<=31) {
+        if (iP > 0 && iP <= numLEDs /2) {
             setColor(iP, iP, cR, cG, cB);
-            setColor(62-iP, 62-iP, cR, cG, cB);
+            setColor(numLEDs+1-iP, numLEDs+1-iP, cR, cG, cB);
         }
     }
 
+    public void setPair(int iP, LEDColorRGB col) {
+        setPair(iP, col.getRed(), col.getGreen(), col.getBlue());
+    }
+
     private void setRGB(int iP, int cR, int cG, int cB) {
-            //ledBuffer.setRGB(iP, cG, cR, cB);
-            if (flagGRB) {
-                ledBuffer.setRGB(iP, cG, cR, cB);
-            } else {
-                ledBuffer.setRGB(iP, cR, cG, cB);
-            }
+            if (iP > 0 && iP <= numLEDs) {
+                if (flagGRB) {
+                    ledBuffer.setRGB(iP, cG, cR, cB);
+                } else {
+                    ledBuffer.setRGB(iP, cR, cG, cB);
+                }
+            }          
     }
 
-    private void setRGB(int iP, LEDColorRGB col) {
-        setRGB(iP, col.getRed(), col.getGreen(), col.getBlue());
-    }
-
-    public void runLEDs() {
+    public void executePeriodic() {
         switch (stateLEDs) {
             case STATE_LEDS_OFF:
-                setColor(1, 144, 0, 0, 0);
+                setColor(kColorBlack);
                 break;
 
             case STATE_LEDS_COLOR:
@@ -204,24 +216,19 @@ public class LEDs extends SubsystemBase {
                     countBlink = 0;
                 }
                 if(!flagBlink) {
-                    for (int i = 0; i < 144; i++) {
-                        setRGB(i, colR, colG, colB);
-                    }
+                    setColor(colR, colG, colB);
                 } else {
-                    for (int i=0; i < 144; i++) {
-                        setRGB(i, 0, 0, 0);
-                    }
+                    setColor(kColorBlack);
                 }
-
                 break;
 
             case STATE_LEDS_INIT:
                 setColor(1, 144, 0, 0, 0);
                 for (int i = 1; i<=144 ; i++) {
                     setColor(1, i, 255,255,255);
-                    waitMSecs(10);
-                    //setColor(0, i, i, 0,0,0);
+                    waitMSecs(5);
                 }
+                waitMSecs(20);
                 stateLEDs = STATE_LEDS_OFF;
                 break;
 
@@ -253,61 +260,59 @@ public class LEDs extends SubsystemBase {
 
                 int rdyLvl = 0;
 
-                for (int i=0; i<144; i++) {
-                    setRGB(i, 0, 0, 0);
-                }
+                setColor(kColorBlack);
                 double batVal = IO2.Status.getBattVoltage();
                  
+                // Battery Level
                 if (batVal > 12.5) {
-                    setPair(4, 0, 255, 0);
-                    setPair(5, 0, 0, 255);
+                    setPair(4, kColorGreen);
+                    setPair(5, kColorBlue);
                     rdyLvl = Math.max(rdyLvl, 1);
                 }
                 if (batVal >= 12.0 && batVal <12.5 ) {
-                    setPair(4, 0, 255, 0);
-                    setPair(5, 0, 255, 0);
+                    setPair(4, kColorGreen);
+                    setPair(5, kColorGreen);
                     rdyLvl = Math.max(rdyLvl, 1);
                 }
                 if (batVal >= 11.5 && batVal <12.0 ) {
-                    setPair(4, 0, 255, 0);
-                    setPair(5, 255, 255, 0);
+                    setPair(4, kColorGreen);
+                    setPair(5, kColorYellow);
                     rdyLvl = Math.max(rdyLvl, 2);
                 }
                 if (batVal >= 11.0 && batVal <11.5 ) {
-                    setPair(4, 255, 255, 0);
-                    setPair(5, 255, 255, 0);
+                    setPair(4, kColorYellow);
+                    setPair(5, kColorYellow);
                     rdyLvl = Math.max(rdyLvl, 2);
                 }
                 if (batVal <11.0 ) {
-                    setPair(4, 255, 0, 0);
-                    setPair(5, 255, 0, 0);
+                    setPair(4, kColorRed);
+                    setPair(5, kColorRed);
                     rdyLvl = Math.max(rdyLvl, 3);
                 }
 
                 // Status Info
-
                 if (DriverStation.isEnabled()) {
-                    setPair(7, 0,255, 0);
+                    setPair(7, kColorGreen);
                     if (DriverStation.isAutonomous()) {
-                        setPair(8, 255, 255, 0);
+                        setPair(8, kColorYellow);
                     }
                     if (DriverStation.isTeleop()) {
-                        setPair(8, 0, 255, 0);
+                        setPair(8, kColorGreen);
                     }
                     if (DriverStation.isTest()) {
-                        setPair(8, 255, 255, 255);
+                        setPair(8, kColorWhite);
                     }
-                    setPair(9, 0,255, 0); 
+                    setPair(9, kColorGreen); 
                 }
                 if (DriverStation.isDisabled()) {
-                    setPair(7, 128,128, 0);
-                    setPair(8, 128,128, 0);
-                    setPair(9, 128,128, 0); 
+                    setPair(7, kColorYellow);
+                    setPair(8, kColorYellow);
+                    setPair(9, kColorYellow); 
                 }
                 if (DriverStation.isEStopped()) {
-                    setPair(7, 255,0, 0);
-                    setPair(8, 255,0, 0);
-                    setPair(9, 255,0, 0); 
+                    setPair(7, kColorRed);
+                    setPair(8, kColorRed);
+                    setPair(9, kColorRed); 
                     rdyLvl = Math.max(rdyLvl, 3);
                 }
 
@@ -315,67 +320,65 @@ public class LEDs extends SubsystemBase {
                 int stn = DriverStation.getLocation().getAsInt();
                 for (int i = 0; i<stn; i++) {
                     if(IO2.Status.isTeamRed()) {
-                        setPair(11+i,255,0,0);
+                        setPair(11+i,kColorRed);
                     }
                     else {
-                        setPair(11+i,0,0,255);
+                        setPair(11+i,kColorBlue);
                     }
                 }
                 for (int i=stn; i<3; i++) {
-                    setPair(11+i, 128, 128, 128);
+                    setPair(11+i, kColorPurple);
                 }
                 
                 if (DriverStation.isFMSAttached()) {
-                    setPair(15, 0, 255, 0);
+                    setPair(15, kColorGreen);
                 } else {
-                    setPair(15, 255, 0, 0);
+                    setPair(15, kColorRed);
                 }
 
                 if (DriverStation.isDSAttached()) {
-                    setPair(17, 0, 255, 0);
+                    setPair(17, kColorGreen);
                     rdyLvl = Math.max(rdyLvl, 1);
                 } else {
-                    setPair(17, 255, 0, 0);
+                    setPair(17, kColorRed);
                     rdyLvl = Math.max(rdyLvl, 2);
                 }
 
                 if (IO2.Gyro.isNavXAvail()) {
-                    setPair(19, 0, 255, 0);
+                    setPair(19, kColorGreen);
                     rdyLvl = Math.max(rdyLvl, 1);
                 } else {
-                    setPair(19, 255, 0, 0);
+                    setPair(19,kColorRed);
                     rdyLvl = Math.max(rdyLvl, 3);
                 }
                 // Show Readiness Level
                 switch (rdyLvl) {
                     case 0:
-                        setColor(29, 33, 128, 128, 128);
+                        setColor(29, 33, kColorPurple);
                         break;
                     case 1:
-                        setColor(29, 33, 0, 255, 0);
+                        setColor(29, 33, kColorGreen);
                         break;
                     case 2:
-                        setColor(29, 33, 128, 128, 0);
+                        setColor(29, 33, kColorYellow);
                         break;
                     case 3:
-                        setColor(29, 33, 255, 0, 0);
+                        setColor(29, 33, kColorRed);
                         break;
                 }
 
                 break;
 
             case STATE_LEDS_COLLECT_SHOOT:
-                for (int i=0; i<144; i++) {
-                    setRGB(i, 0, 0, 0);
-                }
+                setColor(kColorBlack);
                 switch(csState) {
                     case State_CS.OFF:
-                        setColor(15, 90, 255, 255, 255);
+                        setColor(15, 90, kColorWhite);
                         break;
                     
                     case State_CS.COLLECTOR_INTAKE:
-                        setColor(130, 144, 255, 255, 0);
-                        setColor(1,9,255,255,0);
+                        setColor(130, 144, kColorYellow);
+                        setColor(1,9,kColorYellow);
                         moveCount++;
                         if (moveCount > 3) {
                             moveCount = 0;
@@ -384,8 +387,8 @@ public class LEDs extends SubsystemBase {
                                 movePos = 0;
                             }
                         }
-                        setColor(110 - movePos, 129 - movePos, 255, 95, 0);
-                        setColor(10, 10+movePos, 255,255,0);
+                        setColor(110 - movePos, 129 - movePos, kColorYellow);
+                        setColor(10, 10+movePos, kColorYellow);
                         break;
  
                     case State_CS.EJECT_NOTE:
@@ -398,11 +401,11 @@ public class LEDs extends SubsystemBase {
                                 movePos = 0;
                             }
                         }
-                        setColor(41 + movePos, 45 + movePos, 255, 95, 0);
+                        setColor(41 + movePos, 45 + movePos, kColorYellow);
                         break;
 
                     case State_CS.SHOOTER_INTAKE:
-                        setColor(36, 75, 255, 95, 0);
+                        setColor(36, 75, kColorYellow);
                         moveCount++;
                         if (moveCount > 3) {
                             moveCount = 0;
@@ -411,22 +414,21 @@ public class LEDs extends SubsystemBase {
                                 movePos = 0;
                             }
                         }
-                        setColor(77 +  movePos, 96 + movePos, 255, 95, 0);
+                        setColor(77 +  movePos, 96 + movePos, kColorYellow);
                         break;
 
                     case State_CS.ALIGN_NOTE:
                         //setColor(41, 55, 255, 95, 0);
-                        setColor(1, 105, 255, 95, 0);
+                        setColor(1, 105, kColorOrange);
                         break;
 
                     case State_CS.NOTE_READY:
-                        setColor(1, 144, 0, 255, 0);
-                        //setColor(15,25,0,255,0);
+                        setColor(1, 144, kColorGreen);
                         break;
 
                     case State_CS.PREPARE_TO_SHOOT:
                     case State_CS.SHOOT:
-                        setColor(130, 144, 0, 255, 0);
+                        setColor(130, 144, kColorGreen);
                         moveCount++;
                         if (moveCount > 1) {
                             moveCount = 0;
@@ -435,9 +437,8 @@ public class LEDs extends SubsystemBase {
                                 movePos = 0;
                             }
                         }
-                        setColor(130 - movePos, 110 - movePos, 255, 95, 0);
+                        setColor(130 - movePos, 110 - movePos, kColorGreen);
                         break;
-
                 }
 
                 break;    
