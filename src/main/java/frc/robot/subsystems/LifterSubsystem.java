@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkLimitSwitch;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.SparkPIDController.AccelStrategy;
@@ -25,8 +26,11 @@ public class LifterSubsystem extends SubsystemBase {
 
     private CANSparkMax left = new CANSparkMax(CANID.kLeft, MotorType.kBrushless);
     private RelativeEncoder leftEncoder = left.getEncoder();;
+    private SparkLimitSwitch limitSwLeft;
+
     private CANSparkMax right = new CANSparkMax(CANID.kRight, MotorType.kBrushless);
     private RelativeEncoder rightEncoder = right.getEncoder();
+    private SparkLimitSwitch limitSwRight;
 
     
     //private SparkPIDController leftPID;
@@ -44,6 +48,8 @@ public class LifterSubsystem extends SubsystemBase {
         leftEncoder.setPosition(0);
         //SmartDashboard.putNumber("LL-EncCpR", leftEncoder.getCountsPerRevolution());
         //SmartDashboard.putNumber("LL-EncPCF",leftEncoder.getPositionConversionFactor());
+        limitSwLeft = left.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+
 
         right.restoreFactoryDefaults();
         right.clearFaults();
@@ -51,6 +57,7 @@ public class LifterSubsystem extends SubsystemBase {
         right.setIdleMode(IdleMode.kBrake);
         //rightEncoder.setInverted(true);
         rightEncoder.setPosition(0);
+        limitSwRight = right.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
     }
 
     public void homeLeftLifter() {
@@ -87,6 +94,14 @@ public class LifterSubsystem extends SubsystemBase {
         right.set(-speedLifterRight);           // invert direction
     }
 
+    public boolean isLeftLimit() {
+        return limitSwLeft.isPressed();
+    }
+
+    public boolean isRightLimit() {
+        return limitSwRight.isPressed();
+    }
+
     public int stateMachine( int state ) {
         stateLifter = state;
         executePeriodic();
@@ -96,6 +111,15 @@ public class LifterSubsystem extends SubsystemBase {
     public int executePeriodic() {
         double spdL = 0;
         double spdR = 0;
+        SmartDashboard.putBoolean("L LS", isLeftLimit());        
+        SmartDashboard.putBoolean("R LS", isRightLimit());
+
+        if (isLeftLimit()) {
+            homeLeftLifter();
+        }
+        if (isRightLimit()) {
+            homeRightLifter();
+        }
         double posL = getLeftPosition();
         double posR = getRightPosition();
         SmartDashboard.putNumber("LiftL-Pos", posL);
@@ -218,7 +242,7 @@ public class LifterSubsystem extends SubsystemBase {
                 } else {
                     spdR = 0;
                 }
-                if (posL <= 0 && posR <= 0) {
+                if (posL <= 1 && posR <= 1) {
                     stateLifter = LifterStates.OFF;
                 }
                 break;
@@ -238,7 +262,7 @@ public class LifterSubsystem extends SubsystemBase {
                 break;
         }
         setLifterLeftSpeed(spdL * .5);
-        setLifterRightSpeed(spdR * .85);
+        setLifterRightSpeed(spdR * .85);        // higher rate due to brake on right lifter
         SmartDashboard.putNumber("lifterState", stateLifter);
         return stateLifter;
     }

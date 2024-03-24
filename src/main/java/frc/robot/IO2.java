@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -47,6 +48,7 @@ public class IO2 {
     private static DigitalInput green = new DigitalInput(RobotButtons.kGreen);
     private static DigitalInput blue = new DigitalInput(RobotButtons.kBlue);
     
+    private static boolean cameraReady = false;
 
     /** Note Sensor Class*/
     public static class Sensor {
@@ -100,6 +102,20 @@ public class IO2 {
 
         public static boolean isTeamRed() {
             return DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+        }
+    }
+
+    public static class Camera {
+        public static void initCamera() {
+            cameraReady = false;
+            try {
+                CameraServer.startAutomaticCapture(0);
+                cameraReady = true;
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+            // SmartDashboard.putBoolean("Is Camera Ready", cameraReady);
+
         }
     }
 

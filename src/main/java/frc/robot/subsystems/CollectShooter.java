@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkPIDController.AccelStrategy;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.RelativeEncoder;
 
 //import edu.wpi.first.wpilibj.DigitalInput;
 
@@ -16,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap.CollectShooterConstants.State_CS;
 import frc.robot.IO2;
 import frc.robot.IO2.OI;
+import frc.robot.IO2.OI.OperatorHID;
+import frc.robot.IO2.OI.OperatorXbox;
 import frc.robot.IO2.Modifiers;
 import frc.robot.RobotMap.ButtonBOX;
 import frc.robot.RobotMap.CollectShooterConstants.CS;
@@ -47,6 +50,9 @@ public class CollectShooter extends SubsystemBase{
     private SparkPIDController shootTopPID;
     private SparkPIDController shootBottomPID;
 
+    private RelativeEncoder encoderTop;
+    private RelativeEncoder encoderBottom;
+
     public final static int kIntakeGround = 1;
     public final static int kIntakeShooter = 2;
 
@@ -61,10 +67,12 @@ public class CollectShooter extends SubsystemBase{
         shootTop.restoreFactoryDefaults();
         shootTop.clearFaults();
         shootTop.setIdleMode(IdleMode.kBrake);
+        encoderTop = shootTop.getEncoder();
 
         shootBottom.restoreFactoryDefaults();
         shootBottom.clearFaults();
         shootBottom.setIdleMode(IdleMode.kBrake);
+        encoderBottom = shootBottom.getEncoder();
 
         //shootBottom.setInverted(true);
         
@@ -105,16 +113,16 @@ public class CollectShooter extends SubsystemBase{
 
     /** Set percent power for the shooter motors */
     public void setShooterPctPower(double percent) {
-        shootTop.set(Modifiers.withDeadband(OI.OperatorXbox.getRightX(), 0.1));        
-        shootBottom.set(-Modifiers.withDeadband(OI.OperatorXbox.getRightX(), 0.1));
+        shootTop.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));        
+        shootBottom.set(-Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
   }
 
     /** Basic run function for the shooter */
     public void runShooter() {
         // collectorSpark.set(Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1));
-        collector.set(Modifiers.withDeadband(OI.OperatorXbox.getLeftX(), 0.1));
-        shootTop.set(Modifiers.withDeadband(OI.OperatorXbox.getRightX(), 0.1));        
-        shootBottom.set(-Modifiers.withDeadband(OI.OperatorXbox.getRightX(), 0.1));
+        collector.set(Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1));
+        shootTop.set(Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));        
+        shootBottom.set(-Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1));
 
     }
 
@@ -177,12 +185,12 @@ public class CollectShooter extends SubsystemBase{
     // Process the current state of the shooter
     // Execute code relevant to the state, and transition to a new state (if needed)
     // Return the value of the state machine after all code has executed
-    public int stateMachine() {
+    public int executePeriodic() {
 
         SmartDashboard.putNumber("Current State", stateCurrent);
 
-        joyCollector = -1 * Modifiers.withDeadband(OI.OperatorXbox.getLeftX(), 0.1);
-        joyShooter = Modifiers.withDeadband(OI.OperatorXbox.getRightX(), 0.1);   
+        joyCollector = -1 * Modifiers.withDeadband(OperatorXbox.getLeftX(), 0.1);
+        joyShooter = Modifiers.withDeadband(OperatorXbox.getRightX(), 0.1);   
         if (joyCollector != 0 || joyShooter != 0) {
             setState(State_CS.MANUAL);
         }
@@ -190,6 +198,10 @@ public class CollectShooter extends SubsystemBase{
         countLoop ++;
         if (countLoop > 1000) {countLoop = 0;}
         SmartDashboard.putNumber("cnt Loop", countLoop);
+
+        SmartDashboard.putNumber("TopRPM", encoderTop.getVelocity());
+        SmartDashboard.putNumber("BotRPM",encoderBottom.getVelocity());
+
 
         /** if joystick1`<>0 or joystick2 <>0 then currentState = State_CD.MANUAL */
 
@@ -220,12 +232,12 @@ public class CollectShooter extends SubsystemBase{
                 // shooter motor to zero power
                 setShooterSpeed(0);
 
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_COLLECTOR)) {
+                if (OperatorHID.getButton(ButtonBOX.INTAKE_COLLECTOR) || OperatorXbox.isYPressed()) {
                     setState(State_CS.COLLECTOR_INTAKE);
                     break;
                 }
                 
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_SHOOTER)) { 
+                if (OperatorHID.getButton(ButtonBOX.INTAKE_SHOOTER) || OperatorXbox.isAPressed()) { 
                      setState(State_CS.SHOOTER_INTAKE);
                     break;
                 }
@@ -249,12 +261,12 @@ public class CollectShooter extends SubsystemBase{
                     break;
                 }
 
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {        // Shoot Speaker Button Pressed
+                if (OperatorHID.getButton(ButtonBOX.INTAKE_OFF) || OperatorXbox.isXPressed()) {        // Shoot Speaker Button Pressed
                     csTarget = CS.kTargetSpeaker;
                     setState(State_CS.OFF);
                     break;
                 }
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
+                if (OperatorHID.getButton(ButtonBOX.INTAKE_EJECT) || OperatorXbox.isBPressed()) {        // Eject Button Pressed     
                     setState(State_CS.EJECT_NOTE);
                     break;
                 }
@@ -273,7 +285,7 @@ public class CollectShooter extends SubsystemBase{
                     setState(State_CS.ALIGN_NOTE);
                 }
 
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {        // Off Button Pressed
+                if (OperatorHID.getButton(ButtonBOX.INTAKE_OFF) || OperatorXbox.isXPressed()) {        // Off Button Pressed
                     setState(State_CS.OFF);
                     break;
                 }
@@ -289,24 +301,24 @@ public class CollectShooter extends SubsystemBase{
 
                 // if the note is in the correct position in the chute, it is ready to be processed
                 if (IO2.Sensor.isNoteDetected() && !IO2.Sensor.getNoteSensor(1) && !IO2.Sensor.getNoteSensor(5)
-                    && IO2.Sensor.getNoteSensor(3)) {
+                    && IO2.Sensor.getNoteSensor(3) && IO2.Sensor.getNoteSensor(2) && IO2.Sensor.getNoteSensor(4)) {
                     setState(State_CS.NOTE_READY);
                     break;
                 }
 
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
-                    setCollectorSpeed(CS.kEjectSlow);
+                if (OperatorHID.getButton(ButtonBOX.INTAKE_EJECT) || OperatorXbox.isBPressed()) {        // Eject Button Pressed     
+                    setCollectorSpeed(CS.kEjectFast);
                     setState(State_CS.EJECT_NOTE);
                     break;
                 }
  
                 // if the note is not all the way in, then move it up slowly
-                 if (IO2.Sensor.getNoteSensor(1) && !IO2.Sensor.getNoteSensor(5)) {
+                 if (IO2.Sensor.getNoteSensor(2) && !IO2.Sensor.getNoteSensor(4)) {
                     setCollectorSpeed(.2);
                  }   
 
                 // if the note is too far in, then move it down slowly
-                 if (!IO2.Sensor.getNoteSensor(1) && IO2.Sensor.getNoteSensor(5)) {
+                 if (!IO2.Sensor.getNoteSensor(2) && IO2.Sensor.getNoteSensor(4)) {
                     setCollectorSpeed(-.2);
                  }  
 
@@ -321,40 +333,31 @@ public class CollectShooter extends SubsystemBase{
                 setShooterSpeed(0);
 
                 // if the note is no longer detected move to OFF state
-                if (!IO2.Sensor.isNoteDetected() || IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_OFF)) {
+                if (!IO2.Sensor.isNoteDetected() || OperatorHID.getButton(ButtonBOX.INTAKE_OFF) || OperatorXbox.isXPressed()) {
                     setState(State_CS.OFF);
                     break;
                 }
 
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.SHOOT_SPEAKER)) {        // Shoot Speaker Button Pressed
+                if (OperatorHID.getButton(ButtonBOX.SHOOT_SPEAKER) || OperatorXbox.isRightBumpPressed()) {        // Shoot Speaker Button Pressed
                     csTarget = CS.kTargetSpeaker;
                     setState(State_CS.PREPARE_TO_SHOOT);
                     break;
                 }
                 
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.SHOOT_AMP)) {        // Shoot Amp Button Pressed     
+                if (OperatorHID.getButton(ButtonBOX.SHOOT_AMP) || OperatorXbox.isLeftBumpPressed()) {        // Shoot Amp Button Pressed     
                     csTarget = CS.kTargetAmp;
                     setState(State_CS.PREPARE_TO_SHOOT);
                     break;
                 }
 
                                 
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.SHOOT_MAX)) {        // Shoot Amp Button Pressed     
+                if (OperatorHID.getButton(ButtonBOX.SHOOT_MAX) || OperatorXbox.isYPressed()) {        // Shoot Amp Button Pressed     
                     csTarget = CS.kTargetMax;
                     setState(State_CS.PREPARE_TO_SHOOT);
                     break;
                 }
 
-                
-                /* TODO
-                Do we want two different buttons for two different speeds, SPEAKER and AMP
-                or will one button do both?
-
-                Decided: 2 buttons for 2 speeds, likely passing the speed parameter to shoot
-                This will optimize the states, we won't need different states for SPEAKER vs AMP
-                */
-
-                if (IO2.OI.OperatorHID.getButton(ButtonBOX.INTAKE_EJECT)) {        // Eject Button Pressed     
+                if (OperatorHID.getButton(ButtonBOX.INTAKE_EJECT) || OperatorXbox.isXPressed()) {        // Eject Button Pressed     
                     setCollectorSpeed(CS.kEjectFast);
                     setState(State_CS.EJECT_NOTE);
                     break;
@@ -410,7 +413,7 @@ public class CollectShooter extends SubsystemBase{
                 break;
         }
 
-        SmartDashboard.putNumber("Current State", stateCurrent);
+        //SmartDashboard.putNumber("CS State", stateCurrent);
         return stateCurrent; 
     }
 

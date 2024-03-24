@@ -1,9 +1,11 @@
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.IO2;
+import frc.robot.IO2.Camera;
 import frc.robot.IO2.OI;
 import frc.robot.IO2.OI.RobotControls;
 import frc.robot.RobotMap.ButtonBOX;
@@ -51,6 +53,8 @@ public class Robot extends TimedRobot {
 
         leds.init();
         leds.initLEDs();
+
+        Camera.initCamera();
 
         driveSubsystem.setDefaultCommand(new SwerveDriveCmd(driveSubsystem, ioSubsystem, navigationSubsystem));
 
@@ -141,7 +145,7 @@ public class Robot extends TimedRobot {
         }
         */
         SmartDashboard.putNumber("AutoC", countAuto);
-        csState = collectShooter.stateMachine();
+        csState = collectShooter.executePeriodic();
         leds.setState(LEDConstants.STATE_LEDS_COLLECT_SHOOT,csState);
 
         // Delayed Move
@@ -343,13 +347,15 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         CommandScheduler.getInstance().run();
         // collectShooter.runShooter();
-        csState = collectShooter.stateMachine();
+        csState = collectShooter.executePeriodic();
         //if (csState != State_CS.OFF) {
             leds.setState(LEDConstants.STATE_LEDS_COLLECT_SHOOT,csState);
         //}
-        SmartDashboard.putNumber("cs State", csState);
+        SmartDashboard.putNumber("CS State", csState);
         SmartDashboard.putBoolean("Sens 1",IO2.Sensor.getNoteSensor(1));
+        SmartDashboard.putBoolean("Sens 2",IO2.Sensor.getNoteSensor(2));
         SmartDashboard.putBoolean("Sens 3",IO2.Sensor.getNoteSensor(3));
+        SmartDashboard.putBoolean("Sens 4",IO2.Sensor.getNoteSensor(4));
         SmartDashboard.putBoolean("Sens 5",IO2.Sensor.getNoteSensor(5));
         SmartDashboard.putBoolean("Note Det.", IO2.Sensor.isNoteDetected());
 
