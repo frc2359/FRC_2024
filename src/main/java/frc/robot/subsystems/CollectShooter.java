@@ -68,11 +68,14 @@ public class CollectShooter extends SubsystemBase{
         shootTop.clearFaults();
         shootTop.setIdleMode(IdleMode.kBrake);
         encoderTop = shootTop.getEncoder();
+        encoderTop.setVelocityConversionFactor(1);
 
         shootBottom.restoreFactoryDefaults();
         shootBottom.clearFaults();
         shootBottom.setIdleMode(IdleMode.kBrake);
         encoderBottom = shootBottom.getEncoder();
+        // encoderBottom.setInverted(true);
+        encoderBottom.setVelocityConversionFactor(1);
 
         //shootBottom.setInverted(true);
         
@@ -80,17 +83,18 @@ public class CollectShooter extends SubsystemBase{
         shootBottomPID = shootBottom.getPIDController();   
 
         // set PID coefficients
-        shootTopPID.setSmartMotionMaxVelocity(6000, 0);
-        shootTopPID.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
+        // shootTopPID.setSmartMotionMaxVelocity(6000, 0);
+        // shootTopPID.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
         shootTopPID.setP(PIDConstants.kP);
         shootTopPID.setI(PIDConstants.kI);
         shootTopPID.setD(PIDConstants.kD);
         shootTopPID.setIZone(PIDConstants.kIz);
         shootTopPID.setFF(PIDConstants.kFF);
         shootTopPID.setOutputRange(PIDConstants.kMinOutput, PIDConstants.kMaxOutput);
+        // shootTopPID.
 
-        shootBottomPID.setSmartMotionMaxVelocity(6000, 0);
-        shootBottomPID.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
+        // shootBottomPID.setSmartMotionMaxVelocity(6000, 0);
+        // shootBottomPID.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
         shootBottomPID.setP(PIDConstants.kP);
         shootBottomPID.setI(PIDConstants.kI);
         shootBottomPID.setD(PIDConstants.kD);
@@ -105,10 +109,18 @@ public class CollectShooter extends SubsystemBase{
         // collectorSpark.set(percent);
     }
 
-    public void setShooterVelocity(double velocity) {
-        shootTopPID.setReference(velocity, CANSparkBase.ControlType.kVelocity);
-        shootBottomPID.setReference(velocity, CANSparkBase.ControlType.kVelocity);
+    // public void te() {
+    //     setShooterVelocity(2500);
+    //     // shootBottomPID.get/
+        
 
+    // }
+
+    public void setShooterVelocity(double velocity) {
+        shootTopPID.setReference(velocity, CANSparkFlex.ControlType.kVelocity);
+        shootBottomPID.setReference(-velocity, CANSparkBase.ControlType.kVelocity);
+        SmartDashboard.putNumber("TopRPM", encoderTop.getVelocity());
+        SmartDashboard.putNumber("BotRPM",encoderBottom.getVelocity());
     }
 
     /** Set percent power for the shooter motors */
@@ -377,13 +389,17 @@ public class CollectShooter extends SubsystemBase{
                     setShooterSpeed(1);
                 } else {
                     setShooterSpeed(.18);
+                    // setShooterVelocity(780);
                 }
 
                 // wait a period of time for the robot to eject the note
-                if (countLoop > 35) {
+                if (countLoop > 50) { // OLD COUNT WAS 35
                 // after the wait - transition back to the stop state
                     setState(State_CS.SHOOT);
                 }
+                // if(encoderTop.getVelocity() >= 3500) {
+                //     setState(State_CS.SHOOT);
+                // }
 
                 break;
 

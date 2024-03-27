@@ -348,6 +348,7 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         // collectShooter.runShooter();
         csState = collectShooter.executePeriodic();
+
         //if (csState != State_CS.OFF) {
             leds.setState(LEDConstants.STATE_LEDS_COLLECT_SHOOT,csState);
         //}
@@ -365,5 +366,6 @@ public class Robot extends TimedRobot {
     @Override
     public void testPeriodic() {
         //m_robotContainer.getSwerveSubsystem().showData();
+        // collectShooter.setShooterVelocity(1200);
     }
 }

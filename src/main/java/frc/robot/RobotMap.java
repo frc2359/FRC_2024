@@ -44,11 +44,11 @@ public interface RobotMap {
             public static final int kCANBot = 3;
         }
         public static final class PIDConstants {
-            public static final double kP = 6e-5; 
-            public static final double kI = 0;
+            public static final double kP = 6e-4; //6e-5
+            public static final double kI = 5e-7; //0
             public static final double kD = 0; 
             public static final double kIz = 0; 
-            public static final double kFF = 0.000015; 
+            public static final double kFF = 0.0001; //0.000015;
             public static final double kMaxOutput = 1; 
             public static final double kMinOutput = -1;
             public static final double maxRPM = 5700;
