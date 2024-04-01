@@ -116,6 +116,24 @@ public class CollectShooter extends SubsystemBase{
 
     // }
 
+    public void setPIDFfFromSmartDashbaord(double p, double i, double d, double ff) {
+        double pSet = SmartDashboard.getNumber("CS P", PIDConstants.kP);        
+        double iSet = SmartDashboard.getNumber("CS I", PIDConstants.kI);
+        double dSet = SmartDashboard.getNumber("CS D", PIDConstants.kD);
+        double ffSet = SmartDashboard.getNumber("CS Ff", PIDConstants.kFF);
+
+        if(pSet != shootBottomPID.getP()) {
+            shootBottomPID.setP(pSet);
+            shootBottomPID.setI(iSet);
+            shootBottomPID.setD(dSet);
+            shootBottomPID.setFF(ffSet);
+            shootTopPID.setP(pSet);
+            shootTopPID.setI(iSet);
+            shootTopPID.setD(dSet);
+            shootTopPID.setFF(ffSet);
+        }
+    }
+    
     public void setShooterVelocity(double velocity) {
         shootTopPID.setReference(velocity, CANSparkFlex.ControlType.kVelocity);
         shootBottomPID.setReference(-velocity, CANSparkBase.ControlType.kVelocity);
@@ -290,6 +308,7 @@ public class CollectShooter extends SubsystemBase{
                 // collect a note from the source
                 // code to run the shooter motors in reverse (slowly maybe)
                 setShooterSpeed(-.2);
+                setCollectorSpeed(-.4);
 
                 // if statement for sensors or limit switches goes here
                 // if true - transition to a new state
@@ -313,7 +332,7 @@ public class CollectShooter extends SubsystemBase{
 
                 // if the note is in the correct position in the chute, it is ready to be processed
                 if (IO2.Sensor.isNoteDetected() && !IO2.Sensor.getNoteSensor(1) && !IO2.Sensor.getNoteSensor(5)
-                    && IO2.Sensor.getNoteSensor(3) && IO2.Sensor.getNoteSensor(2) && IO2.Sensor.getNoteSensor(4)) {
+                    && IO2.Sensor.getNoteSensor(2) && IO2.Sensor.getNoteSensor(4)) {
                     setState(State_CS.NOTE_READY);
                     break;
                 }
@@ -326,12 +345,12 @@ public class CollectShooter extends SubsystemBase{
  
                 // if the note is not all the way in, then move it up slowly
                  if (IO2.Sensor.getNoteSensor(2) && !IO2.Sensor.getNoteSensor(4)) {
-                    setCollectorSpeed(.2);
+                    setCollectorSpeed(.3);
                  }   
 
                 // if the note is too far in, then move it down slowly
                  if (!IO2.Sensor.getNoteSensor(2) && IO2.Sensor.getNoteSensor(4)) {
-                    setCollectorSpeed(-.2);
+                    setCollectorSpeed(-.3);
                  }  
 
                 break;
@@ -388,7 +407,7 @@ public class CollectShooter extends SubsystemBase{
                 } else if (csTarget == CS.kTargetMax) {
                     setShooterSpeed(1);
                 } else {
-                    setShooterSpeed(.18);
+                    setShooterSpeed(.195);
                     // setShooterVelocity(780);
                 }
 
